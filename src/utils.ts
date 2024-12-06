@@ -12,7 +12,7 @@ import {
 
 export const fetchAllSignatures = async (
   connection: Connection,
-  programId: PublicKey,
+  address: PublicKey,
   lastTxHash: string | undefined
 ) => {
   const allSignatures: ConfirmedSignatureInfo[] = [];
@@ -21,7 +21,7 @@ export const fetchAllSignatures = async (
 
   while (!done) {
     const signatures = await connection.getSignaturesForAddress(
-      programId,
+      address,
       { before: beforeTxHash, until: lastTxHash },
       "confirmed"
     );
@@ -85,9 +85,19 @@ export const extractEvents = (
   transactionLog: string[]
 ) => {
   const eventsObject = initialEvents;
-  const eventLogs = transactionLog.filter((log) =>
-    log.startsWith("Program data:")
-  );
+
+  const eventLogs: string[] = [];
+
+  transactionLog.map((log, index) => {
+    if (
+      log.startsWith("Program data:") &&
+      transactionLog[index + 1].startsWith(
+        `Program ${market.program.programId.toBase58()}`
+      )
+    )
+      eventLogs.push(log);
+  });
+
   eventLogs.forEach((eventLog) => {
     const decodedEvent = market.eventDecoder.decode(
       eventLog.split("Program data: ")[1]
