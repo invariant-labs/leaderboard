@@ -1,12 +1,170 @@
 {
-  "CreatePositionEvent": [
-    {
-      "owner": "6Wpj1RUs1hBwKuAzfFPGeHtgiQp5Fx4PVkDwfgzkLYCu",
-      "pool": "BeBSTyo7BnVcQ3KP7DyDwiFtkbUFRnmnp2KvDnYmjBWY",
-      "id": "2f",
-      "liquidity": "02643257e55a77b7",
-      "currentTimestamp": "6752b545"
-    }
-  ],
-  "RemovePositionEvent": []
+  "6Wpj1RUs1hBwKuAzfFPGeHtgiQp5Fx4PVkDwfgzkLYCu": {
+    "active": [
+      {
+        "event": {
+          "owner": "6Wpj1RUs1hBwKuAzfFPGeHtgiQp5Fx4PVkDwfgzkLYCu",
+          "pool": "BeBSTyo7BnVcQ3KP7DyDwiFtkbUFRnmnp2KvDnYmjBWY",
+          "id": "2f",
+          "liquidity": "02643257e55a77b7",
+          "currentTimestamp": "6752b545"
+        }
+      }
+    ],
+    "closed": [
+      {
+        "events": [
+          {
+            "owner": "6Wpj1RUs1hBwKuAzfFPGeHtgiQp5Fx4PVkDwfgzkLYCu",
+            "pool": "BeBSTyo7BnVcQ3KP7DyDwiFtkbUFRnmnp2KvDnYmjBWY",
+            "id": "30",
+            "liquidity": "3a033cdcdc9e8c",
+            "currentTimestamp": "ffff1a50ffff1794"
+          },
+          {
+            "owner": "6Wpj1RUs1hBwKuAzfFPGeHtgiQp5Fx4PVkDwfgzkLYCu",
+            "pool": "BeBSTyo7BnVcQ3KP7DyDwiFtkbUFRnmnp2KvDnYmjBWY",
+            "id": "30",
+            "liquidity": "3a033cdcdc9e8c",
+            "upperTick": -58800,
+            "currentTick": -59800,
+            "lowerTick": -59500,
+            "upperTickSecondsPerLiquidityOutside": "00",
+            "lowerTickSecondsPerLiquidityOutside": "00",
+            "poolSecondsPerLiquidityGlobal": "1cf3b6a8a6ed25ebfb5d",
+            "currentTimestamp": "67531c41"
+          }
+        ]
+      }
+    ]
+  },
+  "3ZB2UBvE4QUTKNexk55TW4UwE85WNaVdmjqTenuGADV1": {
+    "active": [
+      {
+        "event": {
+          "owner": "3ZB2UBvE4QUTKNexk55TW4UwE85WNaVdmjqTenuGADV1",
+          "pool": "BeBSTyo7BnVcQ3KP7DyDwiFtkbUFRnmnp2KvDnYmjBWY",
+          "id": "34",
+          "liquidity": "0922785e8b40",
+          "currentTimestamp": "ffff4cb4fffee01c"
+        }
+      },
+      {
+        "event": {
+          "owner": "3ZB2UBvE4QUTKNexk55TW4UwE85WNaVdmjqTenuGADV1",
+          "pool": "BeBSTyo7BnVcQ3KP7DyDwiFtkbUFRnmnp2KvDnYmjBWY",
+          "id": "35",
+          "liquidity": "0642190f3fda",
+          "currentTimestamp": "ffff2158fffeb4c0"
+        }
+      },
+      {
+        "event": {
+          "owner": "3ZB2UBvE4QUTKNexk55TW4UwE85WNaVdmjqTenuGADV1",
+          "pool": "BeBSTyo7BnVcQ3KP7DyDwiFtkbUFRnmnp2KvDnYmjBWY",
+          "id": "37",
+          "liquidity": "0544970b1180",
+          "currentTimestamp": "ffff2158fffeb4c0"
+        }
+      }
+    ],
+    "closed": [
+      {
+        "events": [
+          {
+            "owner": "3ZB2UBvE4QUTKNexk55TW4UwE85WNaVdmjqTenuGADV1",
+            "pool": "BeBSTyo7BnVcQ3KP7DyDwiFtkbUFRnmnp2KvDnYmjBWY",
+            "id": "31",
+            "liquidity": "0ad3bee90469",
+            "currentTimestamp": "ffff4cb4fffee01c"
+          },
+          {
+            "owner": "3ZB2UBvE4QUTKNexk55TW4UwE85WNaVdmjqTenuGADV1",
+            "pool": "BeBSTyo7BnVcQ3KP7DyDwiFtkbUFRnmnp2KvDnYmjBWY",
+            "id": "31",
+            "liquidity": "0ad3bee90469",
+            "upperTick": -45900,
+            "currentTick": -59800,
+            "lowerTick": -73700,
+            "upperTickSecondsPerLiquidityOutside": "00",
+            "lowerTickSecondsPerLiquidityOutside": "1cf3b6a8a6ed25ebfb5d",
+            "poolSecondsPerLiquidityGlobal": "1cf462f8f0a1c08deb79",
+            "currentTimestamp": "6753434a"
+          }
+        ]
+      },
+      {
+        "events": [
+          {
+            "owner": "3ZB2UBvE4QUTKNexk55TW4UwE85WNaVdmjqTenuGADV1",
+            "pool": "BeBSTyo7BnVcQ3KP7DyDwiFtkbUFRnmnp2KvDnYmjBWY",
+            "id": "32",
+            "liquidity": "039bea4dac23",
+            "currentTimestamp": "ffff4cb4fffee01c"
+          },
+          {
+            "owner": "3ZB2UBvE4QUTKNexk55TW4UwE85WNaVdmjqTenuGADV1",
+            "pool": "BeBSTyo7BnVcQ3KP7DyDwiFtkbUFRnmnp2KvDnYmjBWY",
+            "id": "32",
+            "liquidity": "039bea4dac23",
+            "upperTick": -45900,
+            "currentTick": -59800,
+            "lowerTick": -73700,
+            "upperTickSecondsPerLiquidityOutside": "00",
+            "lowerTickSecondsPerLiquidityOutside": "1cf3b6a8a6ed25ebfb5d",
+            "poolSecondsPerLiquidityGlobal": "1cf466f14b29cc94351d",
+            "currentTimestamp": "67534432"
+          }
+        ]
+      },
+      {
+        "events": [
+          {
+            "owner": "3ZB2UBvE4QUTKNexk55TW4UwE85WNaVdmjqTenuGADV1",
+            "pool": "BeBSTyo7BnVcQ3KP7DyDwiFtkbUFRnmnp2KvDnYmjBWY",
+            "id": "33",
+            "liquidity": "0922785e8b40",
+            "currentTimestamp": "ffff4cb4fffee01c"
+          },
+          {
+            "owner": "3ZB2UBvE4QUTKNexk55TW4UwE85WNaVdmjqTenuGADV1",
+            "pool": "BeBSTyo7BnVcQ3KP7DyDwiFtkbUFRnmnp2KvDnYmjBWY",
+            "id": "33",
+            "liquidity": "0922785e8b40",
+            "upperTick": -45900,
+            "currentTick": -70900,
+            "lowerTick": -73700,
+            "upperTickSecondsPerLiquidityOutside": "00",
+            "lowerTickSecondsPerLiquidityOutside": "1cf3b6a8a6ed25ebfb5d",
+            "poolSecondsPerLiquidityGlobal": "1d67a87bbcc04ecd32f6",
+            "currentTimestamp": "67544906"
+          }
+        ]
+      },
+      {
+        "events": [
+          {
+            "owner": "3ZB2UBvE4QUTKNexk55TW4UwE85WNaVdmjqTenuGADV1",
+            "pool": "BeBSTyo7BnVcQ3KP7DyDwiFtkbUFRnmnp2KvDnYmjBWY",
+            "id": "36",
+            "liquidity": "0642190f3fda",
+            "currentTimestamp": "ffff2158fffeb4c0"
+          },
+          {
+            "owner": "3ZB2UBvE4QUTKNexk55TW4UwE85WNaVdmjqTenuGADV1",
+            "pool": "BeBSTyo7BnVcQ3KP7DyDwiFtkbUFRnmnp2KvDnYmjBWY",
+            "id": "36",
+            "liquidity": "0642190f3fda",
+            "upperTick": -57000,
+            "currentTick": -70900,
+            "lowerTick": -84800,
+            "upperTickSecondsPerLiquidityOutside": "00",
+            "lowerTickSecondsPerLiquidityOutside": "1cfe78af9c6a4fd68185",
+            "poolSecondsPerLiquidityGlobal": "1d7002161324d572c0dc",
+            "currentTimestamp": "6754533d"
+          }
+        ]
+      }
+    ]
+  }
 }

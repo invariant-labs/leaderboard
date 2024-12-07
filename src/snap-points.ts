@@ -13,6 +13,7 @@ import {
   fetchAllSignatures,
   extractEvents,
   fetchTransactionLogs,
+  convertJson,
 } from "./utils";
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires
@@ -85,10 +86,8 @@ export const createSnapshotForNetwork = async (network: Network) => {
   );
 
   const finalLogs = txLogs.flat();
-  const initialEvents = JSON.parse(
-    fs.readFileSync(eventsSnapFilename, "utf-8")
-  );
-  const events = extractEvents(initialEvents, market, finalLogs);
+  const previousData = JSON.parse(fs.readFileSync(eventsSnapFilename, "utf-8"));
+  const events = extractEvents(convertJson(previousData), market, finalLogs);
   fs.writeFileSync(eventsSnapFilename, JSON.stringify(events, null, 2));
 };
 
