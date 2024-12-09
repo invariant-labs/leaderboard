@@ -1,9 +1,7 @@
 import {
-  // CreatePositionEvent,
   InvariantEventNames,
   Market,
   parseEvent,
-  // RemovePositionEvent,
 } from "@invariant-labs/sdk-eclipse";
 import {
   Connection,
