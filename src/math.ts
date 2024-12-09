@@ -8,12 +8,14 @@ const SECONDS_PER_LIQUIDITY_DENOMINATOR = new BN(10).pow(
   new BN(SECONDS_PER_LIQUIDITY_DECIMAL)
 );
 
-export const POINTS_PER_SECONDS = new BN(1000);
+export const POINTS_PER_SECOND = new BN(10000);
 
 export const calculateReward = (
   liquidity: BN,
   secondsPerLiquidityInsideInitial: BN,
-  secondsPerLiquidityInside: BN
+  secondsPerLiquidityInside: BN,
+  pointsToDistribute: BN,
+  totalSecondsPerLiquidity: BN
 ): BN => {
   const secondsInside = wrappingSub(
     secondsPerLiquidityInside,
@@ -23,17 +25,26 @@ export const calculateReward = (
     .div(SECONDS_PER_LIQUIDITY_DENOMINATOR)
     .div(LIQUIDITY_DENOMINATOR);
 
-  const points = POINTS_PER_SECONDS.mul(secondsInside);
+  const points = pointsToDistribute
+    .mul(secondsInside)
+    .div(totalSecondsPerLiquidity);
 
   return points;
+};
+
+export const calculatePointsToDistribute = (
+  lastSnapTimestamp: BN,
+  currentTimestamp: BN
+) => {
+  return POINTS_PER_SECOND.mul(currentTimestamp.sub(lastSnapTimestamp));
 };
 
 export const calculateSecondsPerLiquidityGlobal = (
   currentSecondsPerLiquidityGlobal: BN,
   liquidity: BN,
-  lastTimestamp: BN
+  lastTimestamp: BN,
+  now: BN
 ): BN => {
-  const now = getTimestampInSeconds();
   const deltaTime = now
     .sub(lastTimestamp)
     .mul(SECONDS_PER_LIQUIDITY_DENOMINATOR);

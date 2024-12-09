@@ -1,7 +1,7 @@
 import {
   CreatePositionEvent,
   RemovePositionEvent,
-} from "@invariant-labs/sdk-eclipse";
+} from "@invariant-labs/sdk-eclipse/lib/market";
 
 export interface IActive {
   event: CreatePositionEvent;

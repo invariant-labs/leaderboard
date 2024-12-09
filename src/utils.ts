@@ -1,9 +1,7 @@
 import {
-  CreatePositionEvent,
   InvariantEventNames,
   Market,
   parseEvent,
-  RemovePositionEvent,
 } from "@invariant-labs/sdk-eclipse";
 import {
   Connection,
@@ -14,6 +12,10 @@ import {
 import { PROMOTED_POOLS } from "./consts";
 import { BN } from "@coral-xyz/anchor";
 import { IPositions } from "./types";
+import {
+  CreatePositionEvent,
+  RemovePositionEvent,
+} from "@invariant-labs/sdk-eclipse/lib/market";
 
 export const fetchAllSignatures = async (
   connection: Connection,
