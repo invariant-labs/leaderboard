@@ -17,6 +17,10 @@ export const calculateReward = (
   pointsToDistribute: BN,
   totalSecondsPerLiquidity: BN
 ): BN => {
+  if (totalSecondsPerLiquidity.eqn(0)) {
+    return new BN(0);
+  }
+
   const secondsInside = wrappingSub(
     secondsPerLiquidityInside,
     secondsPerLiquidityInsideInitial
