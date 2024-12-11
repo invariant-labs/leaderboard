@@ -20,6 +20,7 @@ import {
   processNewOpen,
   processNewClosed,
   processNewOpenClosed,
+  validateLogs,
 } from "./utils";
 import { IActive, IConfig, IPoints, IPoolAndTicks, IPositions } from "./types";
 import {
@@ -94,23 +95,24 @@ export const createSnapshotForNetwork = async (network: Network) => {
     MAX_SIGNATURES_PER_CALL
   );
 
-  const finalLogs = txLogs.flat();
   const previousData = JSON.parse(fs.readFileSync(eventsSnapFilename, "utf-8"));
   const eventsObject: Record<string, IPositions> = {
     ...convertJson(previousData),
   };
 
-  const eventLogs: string[] = [];
+  // const finalLogs = txLogs.flat();
+  // const eventLogs: string[] = [];
+  // finalLogs.map((log, index) => {
+  //   if (
+  //     log.startsWith("Program data:") &&
+  //     finalLogs[index + 1].startsWith(
+  //       `Program ${market.program.programId.toBase58()}`
+  //     )
+  //   )
+  //     eventLogs.push(log.split("Program data: ")[1]);
+  // });
 
-  finalLogs.map((log, index) => {
-    if (
-      log.startsWith("Program data:") &&
-      finalLogs[index + 1].startsWith(
-        `Program ${market.program.programId.toBase58()}`
-      )
-    )
-      eventLogs.push(log.split("Program data: ")[1]);
-  });
+  const eventLogs = validateLogs(txLogs, market.program.programId);
 
   const decodedEvents = eventLogs
     .map((log) => market.eventDecoder.decode(log))
