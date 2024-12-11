@@ -1,6 +1,7 @@
 import { VercelRequest, VercelResponse } from "@vercel/node";
 import ECLIPSE_TESTNET_DATA from "../../data/points_testnet.json";
 import ECLIPSE_MAINNET_DATA from "../../data/points_mainnet.json";
+import { IPointsHistory, IPointsJson } from "../../src/types";
 
 interface IData {
   user: {
@@ -8,14 +9,14 @@ interface IData {
     address: string;
     points: number;
     last24hPoints: number;
-    posiitons: number;
+    positions: number;
   } | null;
   leaderboard: {
     rank: number;
     address: string;
     points: number;
     last24hPoints: number;
-    posiitons: number;
+    positions: number;
   }[];
 }
 
@@ -34,52 +35,55 @@ export default function (req: VercelRequest, res: VercelResponse) {
   );
 
   const { net, address } = req.query;
-
+  const pubkey = address as string;
   let data: IData;
+  let currentData: Record<string, IPointsJson>;
 
   if (net === "eclipse-testnet") {
-    const sortedKeys = Object.keys(ECLIPSE_TESTNET_DATA).sort(
-      (a, b) =>
-        ECLIPSE_TESTNET_DATA[b].totalPoints -
-        ECLIPSE_TESTNET_DATA[a].totalPoints
-    );
-
-    sortedKeys.forEach((key, index) => {
-      ECLIPSE_TESTNET_DATA[key].rank = index + 1;
-    });
-    const userData = address
-      ? ECLIPSE_TESTNET_DATA[address as string] ?? null
-      : null;
-    const testnetData: IData = {
-      user: userData ? { ...userData, address } : null,
-      leaderboard: Object.keys(ECLIPSE_TESTNET_DATA).map((key) => {
-        return { ...ECLIPSE_TESTNET_DATA[key], address: key };
-      }),
-    };
-    data = testnetData;
+    currentData = ECLIPSE_TESTNET_DATA as Record<string, IPointsJson>;
   } else if (net === "eclipse-mainnet") {
-    const sortedKeys = Object.keys(ECLIPSE_MAINNET_DATA).sort(
-      (a, b) =>
-        ECLIPSE_MAINNET_DATA[b].totalPoints -
-        ECLIPSE_MAINNET_DATA[a].totalPoints
-    );
-
-    sortedKeys.forEach((key, index) => {
-      ECLIPSE_MAINNET_DATA[key].rank = index + 1;
-    });
-    const userData = address
-      ? ECLIPSE_MAINNET_DATA[address as string] ?? null
-      : null;
-    const mainnetData: IData = {
-      user: userData ? { ...userData, address } : null,
-      leaderboard: Object.keys(ECLIPSE_MAINNET_DATA).map((key) => {
-        return { ...ECLIPSE_MAINNET_DATA[key], address: key };
-      }),
-    };
-    data = mainnetData;
+    currentData = ECLIPSE_MAINNET_DATA as Record<string, IPointsJson>;
   } else {
     return res.status(400).send("INVALID NETWORK");
   }
+
+  const rank: Record<string, number> = {};
+  const last24HoursPoints: Record<string, number> = {};
+  const sortedKeys = Object.keys(currentData).sort(
+    (a, b) => currentData[b].totalPoints - currentData[a].totalPoints
+  );
+
+  sortedKeys.forEach((key, index) => {
+    rank[key] = index + 1;
+    last24HoursPoints[key] = currentData[key].points24HoursHistory.reduce(
+      (acc: number, curr: IPointsHistory) => (acc += curr.diff),
+      0
+    );
+  });
+
+  const userData =
+    address && currentData[pubkey]
+      ? {
+          rank: rank[pubkey],
+          last24hPoints: last24HoursPoints[pubkey],
+          points: currentData[pubkey].totalPoints,
+          address: pubkey,
+          positions: currentData[pubkey].positionsAmount,
+        }
+      : null;
+  const finalData: IData = {
+    user: userData ? { ...userData } : null,
+    leaderboard: Object.keys(currentData).map((key) => {
+      return {
+        address: key,
+        rank: rank[key],
+        last24hPoints: last24HoursPoints[key],
+        points: currentData[key].totalPoints,
+        positions: currentData[key].positionsAmount,
+      };
+    }),
+  };
+  data = finalData;
 
   res.json(data);
 }

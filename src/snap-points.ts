@@ -10,11 +10,10 @@ import { AnchorProvider, BN } from "@coral-xyz/anchor";
 import { PublicKey } from "@solana/web3.js";
 import fs from "fs";
 import path from "path";
-import { MAX_SIGNATURES_PER_CALL, PROMOTED_POOLS } from "./consts";
+import { DAY, MAX_SIGNATURES_PER_CALL, PROMOTED_POOLS } from "./consts";
 import {
   fetchAllSignatures,
   fetchTransactionLogs,
-  convertJson,
   isPromotedPool,
   processStillOpen,
   processNewOpen,
@@ -22,7 +21,14 @@ import {
   processNewOpenClosed,
   validateLogs,
 } from "./utils";
-import { IActive, IConfig, IPoints, IPoolAndTicks, IPositions } from "./types";
+import {
+  IActive,
+  IConfig,
+  IPoints,
+  IPointsJson,
+  IPoolAndTicks,
+  IPositions,
+} from "./types";
 import {
   CreatePositionEvent,
   RemovePositionEvent,
@@ -95,22 +101,9 @@ export const createSnapshotForNetwork = async (network: Network) => {
     MAX_SIGNATURES_PER_CALL
   );
 
-  const previousData = JSON.parse(fs.readFileSync(eventsSnapFilename, "utf-8"));
-  const eventsObject: Record<string, IPositions> = {
-    ...convertJson(previousData),
-  };
-
-  // const finalLogs = txLogs.flat();
-  // const eventLogs: string[] = [];
-  // finalLogs.map((log, index) => {
-  //   if (
-  //     log.startsWith("Program data:") &&
-  //     finalLogs[index + 1].startsWith(
-  //       `Program ${market.program.programId.toBase58()}`
-  //     )
-  //   )
-  //     eventLogs.push(log.split("Program data: ")[1]);
-  // });
+  const eventsObject: Record<string, IPositions> = JSON.parse(
+    fs.readFileSync(eventsSnapFilename, "utf-8")
+  );
 
   const eventLogs = validateLogs(txLogs, market.program.programId);
 
@@ -156,12 +149,33 @@ export const createSnapshotForNetwork = async (network: Network) => {
           return acc;
         }
         const correspondingItemIndexPreviousData = ownerData.active.findIndex(
-          (item) => item.event.id.eq(event.id)
+          (item) => new BN(item.event.id, "hex").eq(event.id)
         );
+
         if (correspondingItemIndexPreviousData >= 0) {
           const correspondingItem =
             ownerData.active[correspondingItemIndexPreviousData];
-          acc.newClosed.push([correspondingItem, event]);
+          acc.newClosed.push([
+            {
+              event: {
+                ...correspondingItem.event,
+                id: new BN(correspondingItem.event.id, "hex"),
+                owner: new PublicKey(correspondingItem.event.owner),
+                pool: new PublicKey(correspondingItem.event.pool),
+                liquidity: new BN(correspondingItem.event.liquidity, "hex"),
+                currentTimestamp: new BN(
+                  correspondingItem.event.currentTimestamp,
+                  "hex"
+                ),
+              },
+              previousSnapSecondsPerLiquidityInside: new BN(
+                correspondingItem.previousSnapSecondsPerLiquidityInside,
+                "hex"
+              ),
+              points: correspondingItem.points,
+            },
+            event,
+          ]);
           return acc;
         }
         acc.newOpenClosed.push([null, event]);
@@ -176,11 +190,25 @@ export const createSnapshotForNetwork = async (network: Network) => {
 
   Object.values(eventsObject).forEach((positions) =>
     positions.active.forEach((activeEntry) => {
-      const hasBeenClosed = newClosed.some(
-        (newClosedEntry) => newClosedEntry[0].event.id === activeEntry.event.id
+      const hasBeenClosed = newClosed.some((newClosedEntry) =>
+        newClosedEntry[0].event.id.eq(new BN(activeEntry.event.id, "hex"))
       );
       if (!hasBeenClosed) {
-        stillOpen.push(activeEntry);
+        stillOpen.push({
+          event: {
+            ...activeEntry.event,
+            id: new BN(activeEntry.event.id, "hex"),
+            owner: new PublicKey(activeEntry.event.owner),
+            pool: new PublicKey(activeEntry.event.pool),
+            liquidity: new BN(activeEntry.event.liquidity, "hex"),
+            currentTimestamp: new BN(activeEntry.event.currentTimestamp, "hex"),
+          },
+          previousSnapSecondsPerLiquidityInside: new BN(
+            activeEntry.previousSnapSecondsPerLiquidityInside,
+            "hex"
+          ),
+          points: activeEntry.points,
+        });
       }
     })
   );
@@ -271,8 +299,21 @@ export const createSnapshotForNetwork = async (network: Network) => {
     currentTimestamp: currentTimestamp.toNumber(),
   };
 
+  const previousPoints: Record<string, IPointsJson> = JSON.parse(
+    fs.readFileSync(pointsFileName, "utf-8")
+  );
   const points: Record<string, IPoints> = Object.keys(eventsObject).reduce(
     (acc, curr) => {
+      const prev24HoursHistory = previousPoints[curr]?.points24HoursHistory;
+      if (prev24HoursHistory) {
+        prev24HoursHistory.forEach((item, idx) => {
+          if (new BN(item.timestamp, "hex").add(DAY).lt(currentTimestamp)) {
+            prev24HoursHistory.splice(idx, 1);
+          }
+        });
+      }
+      const previousTotalPoints = previousPoints[curr]?.totalPoints ?? 0;
+
       const pointsForOpen: number[] = eventsObject[curr].active.map(
         (entry) => entry.points
       );
@@ -285,8 +326,20 @@ export const createSnapshotForNetwork = async (network: Network) => {
       acc[curr] = {
         totalPoints,
         positionsAmount: eventsObject[curr].active.length,
-        last24HoursPoints: 0,
-        rank: 0,
+        points24HoursHistory: prev24HoursHistory
+          ? [
+              ...prev24HoursHistory,
+              {
+                diff: totalPoints - previousTotalPoints,
+                timestamp: currentTimestamp,
+              },
+            ]
+          : [
+              {
+                diff: totalPoints - previousTotalPoints,
+                timestamp: currentTimestamp,
+              },
+            ],
       };
       return acc;
     },
