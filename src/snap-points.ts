@@ -130,8 +130,10 @@ export const createSnapshotForNetwork = async (network: Network) => {
       if (curr.name === InvariantEventNames.CreatePositionEvent) {
         const event = parseEvent(curr) as CreatePositionEvent;
         if (!isPromotedPool(event.pool)) return acc;
-        const correspondingItemIndex = acc.newOpenClosed.findIndex((item) =>
-          item[1].id.eq(event.id)
+        const correspondingItemIndex = acc.newOpenClosed.findIndex(
+          (item) =>
+            item[1].id.eq(event.id) &&
+            item[1].pool.toString() === event.pool.toString()
         );
         if (correspondingItemIndex >= 0) {
           const correspondingItem = acc.newOpenClosed[correspondingItemIndex];
@@ -149,8 +151,10 @@ export const createSnapshotForNetwork = async (network: Network) => {
           active: [],
           closed: [],
         };
-        const correspondingItemIndex = acc.newOpen.findIndex((item) =>
-          item.id.eq(event.id)
+        const correspondingItemIndex = acc.newOpen.findIndex(
+          (item) =>
+            item.id.eq(event.id) &&
+            item.pool.toString() === event.pool.toString()
         );
         if (correspondingItemIndex >= 0) {
           const correspondingItem = acc.newOpen[correspondingItemIndex];
@@ -159,7 +163,9 @@ export const createSnapshotForNetwork = async (network: Network) => {
           return acc;
         }
         const correspondingItemIndexPreviousData = ownerData.active.findIndex(
-          (item) => new BN(item.event.id, "hex").eq(event.id)
+          (item) =>
+            new BN(item.event.id, "hex").eq(event.id) &&
+            item.event.pool.toString() === event.pool.toString()
         );
 
         if (correspondingItemIndexPreviousData >= 0) {
@@ -200,8 +206,11 @@ export const createSnapshotForNetwork = async (network: Network) => {
 
   Object.values(eventsObject).forEach((positions) =>
     positions.active.forEach((activeEntry) => {
-      const hasBeenClosed = newClosed.some((newClosedEntry) =>
-        newClosedEntry[0].event.id.eq(new BN(activeEntry.event.id, "hex"))
+      const hasBeenClosed = newClosed.some(
+        (newClosedEntry) =>
+          newClosedEntry[0].event.id.eq(new BN(activeEntry.event.id, "hex")) &&
+          newClosedEntry[0].event.pool.toString() ===
+            activeEntry.event.pool.toString()
       );
       if (!hasBeenClosed) {
         stillOpen.push({
