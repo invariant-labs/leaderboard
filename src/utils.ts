@@ -256,3 +256,29 @@ export const processNewOpenClosed = (
 
   return updatedNewOpenClosed;
 };
+
+export const validateLogs = (logs: string[][], programId: PublicKey) => {
+  const rawEvents: string[] = [];
+  for (const txLog of logs) {
+    txLog.map((log, index) => {
+      if (
+        log.slice(0, -4) === `Program ${programId.toBase58()} invoke` &&
+        (txLog[index + 1] === "Program log: Instruction: CreatePosition" ||
+          txLog[index + 1] === "Program log: Instruction: RemovePosition")
+      ) {
+        for (let i = index; i < txLog.length; i++) {
+          if (txLog[i] === `Program ${programId.toBase58()} success`) {
+            const associatedSlice = txLog.slice(index, i + 1);
+            const event = associatedSlice.find((log) =>
+              log.startsWith("Program data:")
+            );
+            if (event) {
+              rawEvents.push(event);
+            }
+          }
+        }
+      }
+    });
+  }
+  return rawEvents;
+};

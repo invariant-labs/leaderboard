@@ -19,6 +19,7 @@ import {
   processNewOpen,
   processNewClosed,
   processNewOpenClosed,
+  validateLogs,
 } from "./utils";
 import {
   IActive,
@@ -100,22 +101,11 @@ export const createSnapshotForNetwork = async (network: Network) => {
     MAX_SIGNATURES_PER_CALL
   );
 
-  const finalLogs = txLogs.flat();
   const eventsObject: Record<string, IPositions> = JSON.parse(
     fs.readFileSync(eventsSnapFilename, "utf-8")
   );
 
-  const eventLogs: string[] = [];
-
-  finalLogs.map((log, index) => {
-    if (
-      log.startsWith("Program data:") &&
-      finalLogs[index + 1].startsWith(
-        `Program ${market.program.programId.toBase58()}`
-      )
-    )
-      eventLogs.push(log.split("Program data: ")[1]);
-  });
+  const eventLogs = validateLogs(txLogs, market.program.programId);
 
   const decodedEvents = eventLogs
     .map((log) => market.eventDecoder.decode(log))
