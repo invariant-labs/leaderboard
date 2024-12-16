@@ -21,6 +21,9 @@ export interface IPositions {
 }
 export interface IConfig {
   lastTxHash: string;
+  lastSnapTimestamp: string;
+  lastPointsDistributed: number;
+  lastPointsThatShouldHaveBeenDistrubuted: number;
 }
 export interface IPoolAndTicks {
   pool: PublicKey;

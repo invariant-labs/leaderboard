@@ -33,7 +33,11 @@ import {
   CreatePositionEvent,
   RemovePositionEvent,
 } from "@invariant-labs/sdk-eclipse/lib/market";
-import { getTimestampInSeconds } from "./math";
+import {
+  getTimestampInSeconds,
+  POINTS_DENOMINATOR,
+  POINTS_PER_SECOND,
+} from "./math";
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 require("dotenv").config();
@@ -89,7 +93,7 @@ export const createSnapshotForNetwork = async (network: Network) => {
     fs.readFileSync(configFileName, "utf-8")
   );
 
-  const { lastTxHash } = previousConfig;
+  const { lastTxHash, lastSnapTimestamp } = previousConfig;
   const sigs = await retryOperation(
     fetchAllSignatures(connection, market.eventOptAccount.address, lastTxHash)
   );
@@ -301,10 +305,6 @@ export const createSnapshotForNetwork = async (network: Network) => {
     eventsObject[ownerKey].closed.push(entry);
   });
 
-  const config = {
-    lastTxHash: sigs[0] ?? lastTxHash,
-  };
-
   const previousPoints: Record<string, IPointsJson> = JSON.parse(
     fs.readFileSync(pointsFileName, "utf-8")
   );
@@ -354,7 +354,27 @@ export const createSnapshotForNetwork = async (network: Network) => {
     },
     {}
   );
+  const snapTimeDifference: BN = currentTimestamp.sub(
+    new BN(lastSnapTimestamp, "hex")
+  );
+  const lastPointsThatShouldHaveBeenDistrubuted =
+    snapTimeDifference.mul(POINTS_PER_SECOND);
 
+  const lastPointsDistributed = Object.keys(points)
+    .reduce((acc, curr) => {
+      const pointsToAdd = points[curr].points24HoursHistory.find(
+        (item) => item.timestamp === currentTimestamp
+      )!.diff;
+      return acc.add(pointsToAdd);
+    }, new BN(0))
+    .div(POINTS_DENOMINATOR);
+
+  const config = {
+    lastTxHash: sigs[0] ?? lastTxHash,
+    lastSnapTimestamp: currentTimestamp,
+    lastPointsDistributed,
+    lastPointsThatShouldHaveBeenDistrubuted,
+  };
   fs.writeFileSync(configFileName, JSON.stringify(config, null, 2));
   fs.writeFileSync(eventsSnapFilename, JSON.stringify(eventsObject, null, 2));
   fs.writeFileSync(pointsFileName, JSON.stringify(points, null, 2));
