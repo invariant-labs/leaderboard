@@ -13,7 +13,8 @@ import path from "path";
 import {
   FULL_SNAP_START_TX_HASH,
   MAX_SIGNATURES_PER_CALL,
-  PROMOTED_POOLS,
+  PROMOTED_POOLS_TESTNET,
+  PROMOTED_POOLS_MAINNET,
 } from "./consts";
 import {
   fetchAllSignatures,
@@ -35,6 +36,7 @@ require("dotenv").config();
 export const createFullSnapshotForNetwork = async (network: Network) => {
   let provider: AnchorProvider;
   let eventsSnapFilename: string;
+  let PROMOTED_POOLS: PublicKey[];
 
   switch (network) {
     case Network.MAIN:
@@ -43,6 +45,7 @@ export const createFullSnapshotForNetwork = async (network: Network) => {
         __dirname,
         "../data/events_full_snap_mainnet.json"
       );
+      PROMOTED_POOLS = PROMOTED_POOLS_MAINNET;
       break;
     case Network.TEST:
       provider = AnchorProvider.local(
@@ -52,6 +55,7 @@ export const createFullSnapshotForNetwork = async (network: Network) => {
         __dirname,
         "../data/events_full_snap_testnet.json"
       );
+      PROMOTED_POOLS = PROMOTED_POOLS_TESTNET;
       break;
     default:
       throw new Error("Unknown network");
@@ -104,7 +108,7 @@ export const createFullSnapshotForNetwork = async (network: Network) => {
     (acc, curr) => {
       if (curr.name === InvariantEventNames.CreatePositionEvent) {
         const event = parseEvent(curr) as CreatePositionEvent;
-        if (!isPromotedPool(event.pool)) return acc;
+        if (!isPromotedPool(PROMOTED_POOLS, event.pool)) return acc;
         const correspondingItemIndex = acc.newOpenClosed.findIndex((item) =>
           item[1].id.eq(event.id)
         );
@@ -118,7 +122,7 @@ export const createFullSnapshotForNetwork = async (network: Network) => {
         return acc;
       } else if (curr.name === InvariantEventNames.RemovePositionEvent) {
         const event = parseEvent(curr) as RemovePositionEvent;
-        if (!isPromotedPool(event.pool)) return acc;
+        if (!isPromotedPool(PROMOTED_POOLS, event.pool)) return acc;
         const correspondingItemIndex = acc.newOpen.findIndex((item) =>
           item.id.eq(event.id)
         );

@@ -4,7 +4,7 @@ import {
   ConfirmedSignatureInfo,
   ParsedTransactionWithMeta,
 } from "@solana/web3.js";
-import { MAX_RETIRES, PROMOTED_POOLS } from "./consts";
+import { MAX_RETIRES } from "./consts";
 import { BN } from "@coral-xyz/anchor";
 import { IActive, IClosed, IPoolAndTicks } from "./types";
 import {
@@ -106,8 +106,8 @@ export const fetchTransactionLogs = async (
   ).flat();
 };
 
-export const isPromotedPool = (pool: PublicKey) =>
-  PROMOTED_POOLS.some(
+export const isPromotedPool = (promotedPools: PublicKey[], pool: PublicKey) =>
+  promotedPools.some(
     (promotedPool) => promotedPool.toString() === pool.toString()
   );
 

@@ -17,6 +17,7 @@ interface IData {
     last24hPoints: string;
     positions: number;
   }[];
+  totalItems: number;
 }
 
 interface ICachedData {
@@ -64,6 +65,7 @@ export default function (req: VercelRequest, res: VercelResponse) {
       offset,
       size ? offset + size : currentData.length
     ),
+    totalItems: currentData.length,
   };
 
   res.json(finalData);

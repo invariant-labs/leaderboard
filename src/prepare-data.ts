@@ -62,11 +62,11 @@ prepareFinalData(Network.TEST).then(
   }
 );
 
-// prepareFinalData(Network.MAIN).then(
-//   () => {
-//     console.log("Eclipse: Final data prepared!");
-//   },
-//   (err) => {
-//     console.log(err);
-//   }
-// );
+prepareFinalData(Network.MAIN).then(
+  () => {
+    console.log("Eclipse: Final data prepared!");
+  },
+  (err) => {
+    console.log(err);
+  }
+);
