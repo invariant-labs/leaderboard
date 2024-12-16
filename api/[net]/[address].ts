@@ -1,7 +1,6 @@
 import { VercelRequest, VercelResponse } from "@vercel/node";
 import ECLIPSE_TESTNET_DATA from "../../data/final_data_testnet.json";
 import ECLIPSE_MAINNET_DATA from "../../data/final_data_mainnet.json";
-import { BN } from "@coral-xyz/anchor";
 
 interface IData {
   user: {
@@ -43,6 +42,7 @@ export default function (req: VercelRequest, res: VercelResponse) {
   );
 
   const { net, address } = req.query;
+
   const pubkey = address as string;
   let currentData: ICachedData[];
 
@@ -54,11 +54,16 @@ export default function (req: VercelRequest, res: VercelResponse) {
     return res.status(400).send("INVALID NETWORK");
   }
 
+  const offset = Number(req.query.offset) || 0;
+  const size = Number(req.query.size) || undefined;
   const userItem = currentData.find((item) => item.address === pubkey);
   const userData = address && userItem ? userItem : null;
   const finalData: IData = {
     user: userData ? { ...userData } : null,
-    leaderboard: currentData,
+    leaderboard: currentData.slice(
+      offset,
+      size ? offset + size : currentData.length
+    ),
   };
 
   res.json(finalData);
