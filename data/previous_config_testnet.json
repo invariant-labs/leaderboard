@@ -1,3 +1,6 @@
 {
-  "lastTxHash": "2kpMhPmbvtcXwJdRJ9QSzVbkqPYwChk1qE5PxCic6VcAXitDHAaBjYjEG4x9KPtZZhqQtK4V5JG5MKgXR7FPBXop"
+  "lastTxHash": "2kpMhPmbvtcXwJdRJ9QSzVbkqPYwChk1qE5PxCic6VcAXitDHAaBjYjEG4x9KPtZZhqQtK4V5JG5MKgXR7FPBXop",
+  "lastSnapTimestamp": "00",
+  "lastPointsDistributed": "00",
+  "lastPointsThatShouldHaveBeenDistrubuted": "00"
 }
