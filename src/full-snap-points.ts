@@ -71,9 +71,11 @@ export const createFullSnapshotForNetwork = async (network: Network) => {
     programId
   );
 
+  const refAddress = market.getEventOptAccount(PROMOTED_POOLS[0]).address;
+
   const sigs = await fetchAllSignatures(
     connection,
-    market.eventOptAccount.address,
+    refAddress,
     FULL_SNAP_START_TX_HASH
   );
   const txLogs = await fetchTransactionLogs(

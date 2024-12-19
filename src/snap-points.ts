@@ -98,8 +98,9 @@ export const createSnapshotForNetwork = async (network: Network) => {
   );
 
   const { lastTxHash } = previousConfig;
+  const refAddress = market.getEventOptAccount(PROMOTED_POOLS[0]).address;
   const sigs = await retryOperation(
-    fetchAllSignatures(connection, market.eventOptAccount.address, lastTxHash)
+    fetchAllSignatures(connection, refAddress, lastTxHash)
   );
 
   const txLogs = await retryOperation(
@@ -368,20 +369,20 @@ export const createSnapshotForNetwork = async (network: Network) => {
   fs.writeFileSync(pointsFileName, JSON.stringify(points, null, 2));
 };
 
-// createSnapshotForNetwork(Network.TEST).then(
-//   () => {
-//     console.log("Eclipse: Testnet snapshot done!");
-//   },
-//   (err) => {
-//     console.log(err);
-//   }
-// );
-
-createSnapshotForNetwork(Network.MAIN).then(
+createSnapshotForNetwork(Network.TEST).then(
   () => {
-    console.log("Eclipse: Mainnet snapshot done!");
+    console.log("Eclipse: Testnet snapshot done!");
   },
   (err) => {
     console.log(err);
   }
 );
+
+// createSnapshotForNetwork(Network.MAIN).then(
+//   () => {
+//     console.log("Eclipse: Mainnet snapshot done!");
+//   },
+//   (err) => {
+//     console.log(err);
+//   }
+// );

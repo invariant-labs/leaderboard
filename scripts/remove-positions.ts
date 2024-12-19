@@ -64,7 +64,7 @@ const main = async () => {
       userTokenY: userAccountY,
       payer: FOUNDER.publicKey,
     };
-    const tx = await market.removePositionTransaction(params);
+    const tx = await market.removePositionTx(params);
     await signAndSend(tx, [FOUNDER, wallet], connection);
   }
 };

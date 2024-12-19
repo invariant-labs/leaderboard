@@ -44,9 +44,13 @@ const validatePointsDistribution = async () => {
     programId
   );
 
+  const refAddress = market.getEventOptAccount(
+    PROMOTED_POOLS_MAINNET[0]
+  ).address;
+
   const sigsFullSnap = await fetchAllSignatures(
     connection,
-    market.eventOptAccount.address,
+    refAddress,
     FULL_SNAP_START_TX_HASH
   );
   const txLogsFullSnap = await fetchTransactionLogs(
@@ -123,11 +127,7 @@ const validatePointsDistribution = async () => {
   );
 
   const { lastTxHash } = previousConfig;
-  const sigs = await fetchAllSignatures(
-    connection,
-    market.eventOptAccount.address,
-    lastTxHash
-  );
+  const sigs = await fetchAllSignatures(connection, refAddress, lastTxHash);
   const txLogs = await fetchTransactionLogs(
     connection,
     sigs,

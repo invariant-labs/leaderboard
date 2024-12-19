@@ -2,9 +2,8 @@ import { AnchorProvider } from "@coral-xyz/anchor";
 import { bs58 } from "@coral-xyz/anchor/dist/cjs/utils/bytes";
 import { IWallet, Market, Network, Pair } from "@invariant-labs/sdk-eclipse";
 import {
-  InitPosition,
-  InitPositionInstructionCache,
-  InitPositionTransactionCache,
+  CreatePosition,
+  CreatePositionTransactionCache,
   PositionListCache,
 } from "@invariant-labs/sdk-eclipse/lib/market";
 import {
@@ -68,7 +67,7 @@ const main = async () => {
   // const upperTick = currentTickIndex + pair.tickSpacing;
   const lowerTick = -Infinity;
   const upperTick = Infinity;
-  const params: InitPosition = {
+  const params: CreatePosition = {
     knownPrice: poolState.sqrtPrice,
     liquidityDelta: new BN(100000000000),
     lowerTick,
@@ -86,9 +85,9 @@ const main = async () => {
 
 const initPosition = async (
   market: Market,
-  params: InitPosition,
+  params: CreatePosition,
   payer: Keypair,
-  cache: InitPositionTransactionCache = {}
+  cache: CreatePositionTransactionCache = {}
 ) => {
   const { pair, lowerTick: lowerIndex, upperTick: upperIndex } = params;
 
@@ -119,7 +118,7 @@ const initPosition = async (
     if (cache.lowerTickExists !== undefined) {
       accountsToFetch.lowerTick = false;
       if (!cache.lowerTickExists) {
-        lowerTickInstruction = await market.createTickInstruction(
+        lowerTickInstruction = await market.createTickIx(
           { pair, index: lowerTick, payer: payer.publicKey },
           cache
         );
@@ -129,7 +128,7 @@ const initPosition = async (
     if (cache.upperTickExists !== undefined) {
       accountsToFetch.upperTick = false;
       if (!cache.upperTickExists) {
-        upperTickInstruction = await market.createTickInstruction(
+        upperTickInstruction = await market.createTickIx(
           { pair, index: upperTick, payer: payer.publicKey },
           cache
         );
@@ -167,13 +166,13 @@ const initPosition = async (
     );
 
     if (indexes.low !== undefined && fetchedAccounts[indexes.low] === null) {
-      lowerTickInstruction = await market.createTickInstruction(
+      lowerTickInstruction = await market.createTickIx(
         { pair, index: lowerTick, payer: payer.publicKey },
         cache
       );
     }
     if (indexes.up !== undefined && fetchedAccounts[indexes.up] === null) {
-      upperTickInstruction = await market.createTickInstruction(
+      upperTickInstruction = await market.createTickIx(
         { pair, index: upperTick, payer: payer.publicKey },
         cache
       );
@@ -184,7 +183,7 @@ const initPosition = async (
     if (cache.positionList !== undefined) {
       positionList = cache.positionList;
       if (!cache.positionList.initialized) {
-        positionListInstruction = await market.createPositionListInstruction(
+        positionListInstruction = await market.createPositionListIx(
           params.owner!,
           payer.publicKey
         );
@@ -196,7 +195,7 @@ const initPosition = async (
       const list = await market.getPositionList(params.owner!);
       positionList = { head: list.head, initialized: true };
     } catch (e) {
-      positionListInstruction = await market.createPositionListInstruction(
+      positionListInstruction = await market.createPositionListIx(
         params.owner!,
         payer.publicKey
       );
@@ -216,7 +215,7 @@ const initPosition = async (
   cache.positionList = positionList!;
 
   if (!positionList!.initialized) {
-    positionListInstruction = await market.createPositionListInstruction(
+    positionListInstruction = await market.createPositionListIx(
       params.owner!,
       payer.publicKey
     );
@@ -254,9 +253,9 @@ const initPositionInstruction = async (
     liquidityDelta,
     knownPrice,
     slippage,
-  }: InitPosition,
+  }: CreatePosition,
   payer: Keypair,
-  cache: InitPositionInstructionCache = {}
+  cache: CreatePositionTransactionCache = {}
 ) => {
   const slippageLimitLower = calculatePriceAfterSlippage(
     knownPrice,
@@ -333,7 +332,7 @@ const initPositionInstruction = async (
       tokenYProgram,
       rent: SYSVAR_RENT_PUBKEY,
       systemProgram: SystemProgram.programId,
-      eventOptAcc: market.eventOptAccount.address,
+      eventOptAcc: market.getEventOptAccount(poolAddress).address,
     })
     .instruction();
 };
