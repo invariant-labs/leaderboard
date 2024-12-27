@@ -24,6 +24,10 @@ export const PROMOTED_POOLS_MAINNET: IPromotedPool[] = [
     address: new PublicKey("HRgVv1pyBLXdsAddq4ubSqo8xdQWRrYbvmXqEDtectce"),
     pointsPerSecond: new BN(100),
   }, // ETH/USDC 0.09%
+  {
+    address: new PublicKey("FvVsbwsbGVo6PVfimkkPhpcRfBrRitiV946nMNNuz7f9"),
+    pointsPerSecond: new BN(10),
+  }, // ETH/tETH 0.01%
 ];
 export const DAY = new BN(86400);
 export const MAX_RETIRES = 3;

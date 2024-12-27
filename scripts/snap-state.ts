@@ -8,16 +8,13 @@ import { PoolStructure } from "@invariant-labs/sdk-eclipse/lib/market";
 
 require("dotenv").config();
 
-const provider = AnchorProvider.local(
-  "https://testnet.dev2.eclipsenetwork.xyz",
-  {
-    commitment: "confirmed",
-  }
-);
+const provider = AnchorProvider.local("https://eclipse.helius-rpc.com", {
+  commitment: "confirmed",
+});
 
 const connection = provider.connection;
 
-const POOL = new PublicKey("G28wnbasJuXihJ76KgFxynsA8WCj4yJZujq9ZhTbBLQm");
+const POOL = new PublicKey("FvVsbwsbGVo6PVfimkkPhpcRfBrRitiV946nMNNuz7f9");
 
 const main = async () => {
   const market = Market.build(
@@ -65,6 +62,8 @@ const main = async () => {
     path.join(__dirname, `../pool_data/${POOL}/timestamp.json`),
     JSON.stringify(timestamp, null, 2)
   );
+
+  console.log("Transaction hash", recentTxHash);
 };
 
 const getLatestTxHash = async (programId: PublicKey) => {
