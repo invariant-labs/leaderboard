@@ -478,16 +478,7 @@ const validatePointsDistribution = async (network: Network) => {
   console.log("Actual points distributed:", pointsFromSnapshot.toNumber());
 };
 
-validatePointsDistribution(Network.TEST).then(
-  () => {
-    console.log("Validation over");
-  },
-  (err) => {
-    console.log(err);
-  }
-);
-
-// validatePointsDistribution(Network.MAIN).then(
+// validatePointsDistribution(Network.TEST).then(
 //   () => {
 //     console.log("Validation over");
 //   },
@@ -495,3 +486,12 @@ validatePointsDistribution(Network.TEST).then(
 //     console.log(err);
 //   }
 // );
+
+validatePointsDistribution(Network.MAIN).then(
+  () => {
+    console.log("Validation over");
+  },
+  (err) => {
+    console.log(err);
+  }
+);
