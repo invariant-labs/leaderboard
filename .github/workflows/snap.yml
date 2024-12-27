@@ -2,7 +2,7 @@ name: "Create snapshot of points"
 on:
   # schedule:
   # - cron: "0,30 * * * *" # every 0th and 30th minute of an hour
-  # - cron: "*/5 * * * *" # every 5 minutes
+  - cron: "*/5 * * * *" # every 5 minutes
   workflow_dispatch:
 
 concurrency:
