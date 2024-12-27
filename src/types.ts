@@ -19,13 +19,12 @@ export interface IPositions {
   active: IActive[];
   closed: IClosed[];
 }
-export interface IConfig {
-  lastTxHash: string;
-}
+
 export interface IPoolAndTicks {
   pool: PublicKey;
   poolStructure: PoolStructure;
   ticks: Tick[];
+  pointsPerSecond: BN;
 }
 export interface IPointsHistory {
   diff: BN;
@@ -46,4 +45,13 @@ export interface IPointsJson {
   totalPoints: string;
   positionsAmount: number;
   points24HoursHistory: IPointsHistoryJson[];
+}
+export interface ILastSnapData {
+  lastSnapTimestamp: string;
+  lastPointsDistributed: string;
+  lastPointsThatShouldHaveBeenDistributed: string;
+}
+export interface IPromotedPool {
+  address: PublicKey;
+  pointsPerSecond: BN;
 }

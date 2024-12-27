@@ -1,5 +1,5 @@
 import { VercelRequest, VercelResponse } from "@vercel/node";
-import { POINTS_DECIMAL, POINTS_PER_SECOND } from "../../src/math";
+import { POINTS_DECIMAL } from "../../src/math";
 import { PROMOTED_POOLS_MAINNET } from "../../src/consts";
 
 export default function (req: VercelRequest, res: VercelResponse) {
@@ -18,7 +18,6 @@ export default function (req: VercelRequest, res: VercelResponse) {
 
   const config = {
     refreshTime: 30 * 60,
-    pointsPerSecond: POINTS_PER_SECOND,
     pointsDecimal: POINTS_DECIMAL,
     promotedPools: PROMOTED_POOLS_MAINNET,
   };

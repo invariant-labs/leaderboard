@@ -1,0 +1,26 @@
+[
+  {
+    "feeGrowthOutsideX": "00",
+    "feeGrowthOutsideY": "00",
+    "liquidityChange": "07f919e510a72a",
+    "liquidityGross": "07f919e510a72a",
+    "secondsPerLiquidityOutside": "00",
+    "sqrtPrice": "0799e89ec224c6bb901000",
+    "pool": "GTVKQs8o9D52y9SdwfAXCQSDrrCLosvsP19HgHKugpfw",
+    "sign": false,
+    "bump": 254,
+    "index": 44363
+  },
+  {
+    "feeGrowthOutsideX": "00",
+    "feeGrowthOutsideY": "00",
+    "liquidityChange": "07f919e510a72a",
+    "liquidityGross": "07f919e510a72a",
+    "secondsPerLiquidityOutside": "00",
+    "sqrtPrice": "170af9230aa91c01f000",
+    "pool": "GTVKQs8o9D52y9SdwfAXCQSDrrCLosvsP19HgHKugpfw",
+    "sign": true,
+    "bump": 254,
+    "index": -44364
+  }
+]

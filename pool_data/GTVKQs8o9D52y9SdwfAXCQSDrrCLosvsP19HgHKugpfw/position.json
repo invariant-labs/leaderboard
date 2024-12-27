@@ -1,0 +1,34 @@
+[
+  {
+    "feeGrowthInsideX": "00",
+    "feeGrowthInsideY": "00",
+    "liquidity": "03fc8c266ec6ea",
+    "secondsPerLiquidityInside": "00",
+    "tokensOwedX": "00",
+    "tokensOwedY": "00",
+    "owner": "FA62Nzqaz2EEBFLdYK7QYCxqz8dgNCzPnHJmfb9zQNmR",
+    "pool": "GTVKQs8o9D52y9SdwfAXCQSDrrCLosvsP19HgHKugpfw",
+    "id": "01",
+    "lowerTickIndex": -44364,
+    "upperTickIndex": 44363,
+    "lastSlot": "03ad7943",
+    "bump": 255,
+    "address": "FZxC9U8mgAHNjS1TrUCVgXW9M1UMxMqxKoN3ZeyGxoDu"
+  },
+  {
+    "feeGrowthInsideX": "00",
+    "feeGrowthInsideY": "00",
+    "liquidity": "03fc8dbea1e040",
+    "secondsPerLiquidityInside": "00",
+    "tokensOwedX": "00",
+    "tokensOwedY": "00",
+    "owner": "3ZB2UBvE4QUTKNexk55TW4UwE85WNaVdmjqTenuGADV1",
+    "pool": "GTVKQs8o9D52y9SdwfAXCQSDrrCLosvsP19HgHKugpfw",
+    "id": "00",
+    "lowerTickIndex": -44364,
+    "upperTickIndex": 44363,
+    "lastSlot": "03ad6ea7",
+    "bump": 252,
+    "address": "GePeajdjMH89WsUZvaiprGdLtRsirjP8283Tev6ZtaRX"
+  }
+]
