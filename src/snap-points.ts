@@ -30,7 +30,6 @@ import {
 } from "./utils";
 import {
   IActive,
-  ILastSnapData,
   IPoints,
   IPointsJson,
   IPoolAndTicks,
@@ -54,7 +53,6 @@ export const createSnapshotForNetwork = async (network: Network) => {
   let pointsFileName: string;
   let PROMOTED_POOLS: IPromotedPool[];
   let poolsFileName: string;
-  let lastSnapDataFile: string;
   let FULL_SNAP_START_TX_HASH: string;
   switch (network) {
     case Network.MAIN:
@@ -67,10 +65,6 @@ export const createSnapshotForNetwork = async (network: Network) => {
       poolsFileName = path.join(
         __dirname,
         "../data/pools_last_tx_hashes_mainnet.json"
-      );
-      lastSnapDataFile = path.join(
-        __dirname,
-        "../data/last_snap_data_mainnet.json"
       );
       PROMOTED_POOLS = PROMOTED_POOLS_MAINNET;
       FULL_SNAP_START_TX_HASH = FULL_SNAP_START_TX_HASH_MAINNET;
@@ -87,10 +81,6 @@ export const createSnapshotForNetwork = async (network: Network) => {
       poolsFileName = path.join(
         __dirname,
         "../data/pools_last_tx_hashes_testnet.json"
-      );
-      lastSnapDataFile = path.join(
-        __dirname,
-        "../data/last_snap_data_testnet.json"
       );
       PROMOTED_POOLS = PROMOTED_POOLS_TESTNET;
       FULL_SNAP_START_TX_HASH = FULL_SNAP_START_TX_HASH_TESTNET;
@@ -405,52 +395,6 @@ export const createSnapshotForNetwork = async (network: Network) => {
     {}
   );
 
-  const lastSnapData: ILastSnapData = JSON.parse(
-    fs.readFileSync(lastSnapDataFile, "utf-8")
-  );
-
-  const { lastSnapTimestamp } = lastSnapData;
-
-  const snapTimeDifference: BN = currentTimestamp.sub(
-    new BN(lastSnapTimestamp, "hex")
-  );
-
-  const areActivePositionsInPools = PROMOTED_POOLS.map((pool) => {
-    return {
-      pointsPerSecond: pool.pointsPerSecond,
-      hasActiveEntry: Object.keys(eventsObject).some((key) =>
-        eventsObject[key].active.some(
-          (entry) => entry.event.pool.toString() === pool.address.toString()
-        )
-      ),
-    };
-  });
-
-  const lastPointsThatShouldHaveBeenDistributed: BN =
-    areActivePositionsInPools.reduce((acc, curr) => {
-      if (curr.hasActiveEntry) {
-        return acc.add(snapTimeDifference.mul(curr.pointsPerSecond));
-      }
-      return acc;
-    }, new BN(0));
-
-  const lastPointsDistributed = Object.keys(points)
-    .reduce((acc, curr) => {
-      const pointsToAdd = points[curr].points24HoursHistory.find(
-        (item) => item.timestamp === currentTimestamp
-      )!.diff;
-      return acc.add(pointsToAdd);
-    }, new BN(0))
-    .div(POINTS_DENOMINATOR);
-
-  const snapData = {
-    lastSnapTimestamp: currentTimestamp,
-    timePassed: snapTimeDifference,
-    lastPointsDistributed,
-    lastPointsThatShouldHaveBeenDistributed,
-  };
-
-  fs.writeFileSync(lastSnapDataFile, JSON.stringify(snapData, null, 2));
   fs.writeFileSync(poolsFileName, JSON.stringify(newPoolsFile, null, 2));
   fs.writeFileSync(eventsSnapFilename, JSON.stringify(eventsObject, null, 2));
   fs.writeFileSync(pointsFileName, JSON.stringify(points, null, 2));

@@ -13,22 +13,27 @@ export const PROMOTED_POOLS_TESTNET: IPromotedPool[] = [
   {
     address: new PublicKey("G28wnbasJuXihJ76KgFxynsA8WCj4yJZujq9ZhTbBLQm"),
     pointsPerSecond: new BN(100),
+    startCountTimestamp: new BN(0),
   }, // USDC/TTS 0.01%
   {
     address: new PublicKey("3YnSG9bS5tp7Bp8QZK6xZKKmfrNJJK8TE8UyZq99nhxH"),
     pointsPerSecond: new BN(100),
+    startCountTimestamp: new BN(0),
   }, // USDC/V2 0.02%
 ];
 export const PROMOTED_POOLS_MAINNET: IPromotedPool[] = [
   {
     address: new PublicKey("HRgVv1pyBLXdsAddq4ubSqo8xdQWRrYbvmXqEDtectce"),
     pointsPerSecond: new BN(100),
+    startCountTimestamp: new BN(1734793434),
   }, // ETH/USDC 0.09%
   // {
   //   address: new PublicKey("FvVsbwsbGVo6PVfimkkPhpcRfBrRitiV946nMNNuz7f9"),
   //   pointsPerSecond: new BN(10),
+  //   startCountTimestamp: new BN(0),
   // }, // ETH/tETH 0.01%
 ];
+
 export const DAY = new BN(86400);
 export const MAX_RETIRES = 3;
 export const RETRY_DELAY = 800;

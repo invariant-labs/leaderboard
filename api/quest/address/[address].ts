@@ -26,7 +26,10 @@ export default function (req: VercelRequest, res: VercelResponse) {
 
   const pubkey = address ? (address as string) : null;
 
-  const data: Record<string, IPointsJson> = ECLIPSE_MAINNET_POINTS;
+  const data: Record<string, IPointsJson> = ECLIPSE_MAINNET_POINTS as Record<
+    string,
+    IPointsJson
+  >;
 
   const defaultReturn = {
     totalPoints: new BN(0),
