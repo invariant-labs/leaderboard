@@ -48,6 +48,7 @@ export interface IPointsJson {
 }
 export interface ILastSnapData {
   lastSnapTimestamp: string;
+  timePassed: string;
   lastPointsDistributed: string;
   lastPointsThatShouldHaveBeenDistributed: string;
 }
