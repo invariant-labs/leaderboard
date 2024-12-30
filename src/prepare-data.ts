@@ -15,11 +15,11 @@ export const prepareFinalData = async (network: Network) => {
   switch (network) {
     case Network.MAIN:
       finalDataFile = path.join(__dirname, "../data/final_data_mainnet.json");
-      data = ECLIPSE_MAINNET_POINTS;
+      data = ECLIPSE_MAINNET_POINTS as Record<string, IPointsJson>;
       break;
     case Network.TEST:
       finalDataFile = path.join(__dirname, "../data/final_data_testnet.json");
-      data = ECLIPSE_TESTNET_POINTS;
+      data = ECLIPSE_TESTNET_POINTS as Record<string, IPointsJson>;
       break;
     default:
       throw new Error("Unknown network");

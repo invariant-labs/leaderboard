@@ -16,7 +16,7 @@ import {
 import * as fs from "fs";
 import path from "path";
 import { AnchorProvider, BN } from "@coral-xyz/anchor";
-import { getTimestampInSeconds } from "../src/math";
+import { getTimestampInSeconds, POINTS_DENOMINATOR } from "../src/math";
 
 import { PublicKey } from "@solana/web3.js";
 import {
@@ -93,85 +93,6 @@ const validatePointsDistribution = async (network: Network) => {
     connection,
     programId
   );
-
-  const sigsFullSnap = (
-    await Promise.all(
-      PROMOTED_POOLS.map(({ address }) => {
-        const refAddr = market.getEventOptAccount(address).address;
-        return retryOperation(
-          fetchAllSignatures(connection, refAddr, FULL_SNAP_START_TX_HASH)
-        );
-      })
-    )
-  ).flat();
-
-  const txLogsFullSnap = await fetchTransactionLogs(
-    connection,
-    sigsFullSnap,
-    MAX_SIGNATURES_PER_CALL
-  );
-
-  const finalLogsFullSnap = txLogsFullSnap.flat();
-  const eventsObjectFullSnap: Record<string, IPositions> = {};
-
-  const eventLogsFullSnap: string[] = [];
-
-  finalLogsFullSnap.map((log, index) => {
-    if (
-      log.startsWith("Program data:") &&
-      finalLogsFullSnap[index + 1].startsWith(
-        `Program ${market.program.programId.toBase58()}`
-      )
-    )
-      eventLogsFullSnap.push(log.split("Program data: ")[1]);
-  });
-
-  const decodedEventsFullSnap = eventLogsFullSnap
-    .map((log) => market.eventDecoder.decode(log))
-    .filter((decodedEvent) => !!decodedEvent);
-
-  const { newOpen: newOpenFullSnap, newOpenClosed: newOpenClosedFullSnap } =
-    decodedEventsFullSnap.reduce<{
-      newOpen: CreatePositionEvent[];
-      newOpenClosed: [CreatePositionEvent | null, RemovePositionEvent][];
-    }>(
-      (acc, curr) => {
-        if (curr.name === InvariantEventNames.CreatePositionEvent) {
-          const event = parseEvent(curr) as CreatePositionEvent;
-          const correspondingItemIndex = acc.newOpenClosed.findIndex(
-            (item) =>
-              item[1].id.eq(event.id) &&
-              item[1].pool.toString() === event.pool.toString()
-          );
-          if (correspondingItemIndex >= 0) {
-            const correspondingItem = acc.newOpenClosed[correspondingItemIndex];
-            acc.newOpenClosed.splice(correspondingItemIndex, 1);
-            acc.newOpenClosed.push([event, correspondingItem[1]]);
-            return acc;
-          }
-          acc.newOpen.push(event);
-          return acc;
-        } else if (curr.name === InvariantEventNames.RemovePositionEvent) {
-          const event = parseEvent(curr) as RemovePositionEvent;
-          const correspondingItemIndex = acc.newOpen.findIndex(
-            (item) =>
-              item.id.eq(event.id) &&
-              item.pool.toString() === event.pool.toString()
-          );
-          if (correspondingItemIndex >= 0) {
-            const correspondingItem = acc.newOpen[correspondingItemIndex];
-            acc.newOpen.splice(correspondingItemIndex, 1);
-            acc.newOpenClosed.push([correspondingItem, event]);
-            return acc;
-          }
-
-          acc.newOpenClosed.push([null, event]);
-          return acc;
-        }
-        return acc;
-      },
-      { newOpen: [], newOpenClosed: [] }
-    );
 
   const previousPools: Record<string, string | undefined> = JSON.parse(
     fs.readFileSync(poolsFileName, "utf-8")
@@ -401,32 +322,6 @@ const validatePointsDistribution = async (network: Network) => {
     eventsObject[ownerKey].closed.push(entry);
   });
 
-  const updatedNewOpenFullSnap = processNewOpen(
-    newOpenFullSnap,
-    poolsWithTicks,
-    currentTimestamp
-  );
-
-  const updatedNewOpenClosedFullSnap = processNewOpenClosed(
-    newOpenClosedFullSnap,
-    poolsWithTicks
-  );
-
-  updatedNewOpenFullSnap.forEach((entry) => {
-    const ownerKey = entry.event.owner.toString();
-    if (!eventsObjectFullSnap[ownerKey]) {
-      eventsObjectFullSnap[ownerKey] = { active: [], closed: [] };
-    }
-    eventsObjectFullSnap[ownerKey].active.push(entry);
-  });
-  updatedNewOpenClosedFullSnap.forEach((entry) => {
-    const ownerKey = entry.events[1].owner.toString();
-    if (!eventsObjectFullSnap[ownerKey]) {
-      eventsObjectFullSnap[ownerKey] = { active: [], closed: [] };
-    }
-    eventsObjectFullSnap[ownerKey].closed.push(entry);
-  });
-
   const pointsFromSnapshot: BN = Object.keys(eventsObject).reduce(
     (acc, curr) => {
       const pointsForOpen: BN[] = eventsObject[curr].active.map(
@@ -445,37 +340,19 @@ const validatePointsDistribution = async (network: Network) => {
     new BN(0)
   );
 
-  const pointsFromFullSnapshot: BN = Object.keys(eventsObjectFullSnap).reduce(
-    (acc, curr) => {
-      const pointsForOpen: BN[] = eventsObjectFullSnap[curr].active.map(
-        (entry) => entry.points
-      );
-      const pointsForClosed: BN[] = eventsObjectFullSnap[curr].closed.map(
-        (entry) => entry.points
-      );
-
-      const totalPoints = pointsForOpen
-        .concat(pointsForClosed)
-        .reduce((sum, point) => sum.add(point), new BN(0));
-
-      return acc.add(totalPoints);
-    },
-    new BN(0)
-  );
-
-  const pointsDiff = pointsFromFullSnapshot.sub(pointsFromSnapshot);
-  const percentageDiff = pointsDiff.muln(100).div(pointsFromFullSnapshot);
+  const expectedPoints = PROMOTED_POOLS.reduce((acc, curr) => {
+    const timeDiff: BN = currentTimestamp.sub(curr.startCountTimestamp);
+    const pointsForPool: BN = timeDiff.mul(curr.pointsPerSecond);
+    return acc.add(pointsForPool);
+  }, new BN(0)).mul(POINTS_DENOMINATOR);
 
   console.log(
-    "Distributed: ",
-    pointsFromSnapshot.muln(100).div(pointsFromFullSnapshot).toNumber(),
-    "%",
-    `${pointsFromSnapshot.toNumber()} / ${pointsFromFullSnapshot.toNumber()}`
+    `Distributed: ${(
+      pointsFromSnapshot.muln(10000).div(expectedPoints).toNumber() / 100
+    ).toFixed(
+      2
+    )}% ${pointsFromSnapshot.toNumber()} / ${expectedPoints.toNumber()}`
   );
-  console.log(
-    `Loss: ${percentageDiff.toNumber()} % (${pointsDiff} / ${pointsFromFullSnapshot})`
-  );
-  console.log("Actual points distributed:", pointsFromSnapshot.toNumber());
 };
 
 // validatePointsDistribution(Network.TEST).then(
