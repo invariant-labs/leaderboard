@@ -83,8 +83,8 @@ export const insertPreviousPositionsFromPool = async (
         position.upperTickIndex,
         position.lowerTickIndex,
         poolState.currentTickIndex,
-        new BN(lowerTick.secondsPerLiquidityOutside, "hex"),
         new BN(upperTick.secondsPerLiquidityOutside, "hex"),
+        new BN(lowerTick.secondsPerLiquidityOutside, "hex"),
         secondsPerLiquidityGlobal
       );
     const event: CreatePositionEvent = {

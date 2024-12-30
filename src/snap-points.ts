@@ -445,6 +445,7 @@ export const createSnapshotForNetwork = async (network: Network) => {
 
   const snapData = {
     lastSnapTimestamp: currentTimestamp,
+    timePassed: snapTimeDifference,
     lastPointsDistributed,
     lastPointsThatShouldHaveBeenDistributed,
   };
