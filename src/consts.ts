@@ -27,11 +27,11 @@ export const PROMOTED_POOLS_MAINNET: IPromotedPool[] = [
     pointsPerSecond: new BN(100),
     startCountTimestamp: new BN(1734793434),
   }, // ETH/USDC 0.09%
-  // {
-  //   address: new PublicKey("FvVsbwsbGVo6PVfimkkPhpcRfBrRitiV946nMNNuz7f9"),
-  //   pointsPerSecond: new BN(10),
-  //   startCountTimestamp: new BN(0),
-  // }, // ETH/tETH 0.01%
+  {
+    address: new PublicKey("FvVsbwsbGVo6PVfimkkPhpcRfBrRitiV946nMNNuz7f9"),
+    pointsPerSecond: new BN(10),
+    startCountTimestamp: new BN(1735587867),
+  }, // ETH/tETH 0.01%
 ];
 
 export const DAY = new BN(86400);

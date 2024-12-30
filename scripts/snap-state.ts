@@ -64,6 +64,7 @@ const main = async () => {
   );
 
   console.log("Transaction hash", recentTxHash);
+  console.log("Timestamp taken", timestamp.toString());
 };
 
 const getLatestTxHash = async (programId: PublicKey) => {
