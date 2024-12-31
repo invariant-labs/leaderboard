@@ -36,6 +36,7 @@ export const PROMOTED_POOLS_MAINNET: IPromotedPool[] = [
 
 export const DAY = new BN(86400);
 export const MAX_RETIRES = 3;
+export const MAX_RETRIES_FOR_STATE_INCONSISTENCY = 15;
 export const RETRY_DELAY = 800;
 export const FULL_SNAP_START_TX_HASH_MAINNET =
   "zt4f4PYU2qKyvevjvED2Q9RSUJbiGSJns8NCQGAuLFgrTJ8irentnaEzc7uxxoi65vtmWxhwZh8HDg6NRsWjQxw";

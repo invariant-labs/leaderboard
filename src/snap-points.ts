@@ -5,7 +5,6 @@ import {
   IWallet,
   InvariantEventNames,
   parseEvent,
-  Pair,
 } from "@invariant-labs/sdk-eclipse";
 import { AnchorProvider, BN } from "@coral-xyz/anchor";
 import { PublicKey } from "@solana/web3.js";
@@ -27,6 +26,7 @@ import {
   processNewClosed,
   processNewOpenClosed,
   retryOperation,
+  fetchPoolsWithTicks,
 } from "./utils";
 import {
   IActive,
@@ -38,9 +38,7 @@ import {
 } from "./types";
 import {
   CreatePositionEvent,
-  PoolStructure,
   RemovePositionEvent,
-  Tick,
 } from "@invariant-labs/sdk-eclipse/lib/market";
 import { getTimestampInSeconds, POINTS_DENOMINATOR } from "./math";
 
@@ -54,6 +52,7 @@ export const createSnapshotForNetwork = async (network: Network) => {
   let PROMOTED_POOLS: IPromotedPool[];
   let poolsFileName: string;
   let FULL_SNAP_START_TX_HASH: string;
+  let lastSnapTimestampFileName: string;
   switch (network) {
     case Network.MAIN:
       provider = AnchorProvider.local("https://eclipse.helius-rpc.com");
@@ -68,6 +67,10 @@ export const createSnapshotForNetwork = async (network: Network) => {
       );
       PROMOTED_POOLS = PROMOTED_POOLS_MAINNET;
       FULL_SNAP_START_TX_HASH = FULL_SNAP_START_TX_HASH_MAINNET;
+      lastSnapTimestampFileName = path.join(
+        __dirname,
+        "../data/last_snap_timestamp_mainnet.json"
+      );
       break;
     case Network.TEST:
       provider = AnchorProvider.local(
@@ -84,6 +87,10 @@ export const createSnapshotForNetwork = async (network: Network) => {
       );
       PROMOTED_POOLS = PROMOTED_POOLS_TESTNET;
       FULL_SNAP_START_TX_HASH = FULL_SNAP_START_TX_HASH_TESTNET;
+      lastSnapTimestampFileName = path.join(
+        __dirname,
+        "../data/last_snap_timestamp_testnet.json"
+      );
       break;
     default:
       throw new Error("Unknown network");
@@ -268,29 +275,14 @@ export const createSnapshotForNetwork = async (network: Network) => {
       }
     })
   );
-
-  const poolsWithTicks: IPoolAndTicks[] = await Promise.all(
-    PROMOTED_POOLS.map(async ({ address, pointsPerSecond }) => {
-      const poolStructure: PoolStructure = await retryOperation(
-        market.getPoolByAddress(address)
-      );
-      const ticks: Tick[] = await retryOperation(
-        market.getAllTicks(
-          new Pair(poolStructure.tokenX, poolStructure.tokenY, {
-            fee: poolStructure.fee,
-            tickSpacing: poolStructure.tickSpacing,
-          })
-        )
-      );
-
-      return {
-        pool: address,
-        poolStructure: poolStructure,
-        ticks,
-        pointsPerSecond,
-      };
-    })
+  const poolsWithTicks: IPoolAndTicks[] | null = await fetchPoolsWithTicks(
+    0,
+    market,
+    connection,
+    PROMOTED_POOLS
   );
+
+  if (!poolsWithTicks) return;
 
   const currentTimestamp = getTimestampInSeconds();
 
@@ -394,8 +386,43 @@ export const createSnapshotForNetwork = async (network: Network) => {
     },
     {}
   );
+  const { lastSnapTimestamp } = JSON.parse(
+    fs.readFileSync(lastSnapTimestampFileName, "utf-8")
+  );
+  const snapTimeDifference: BN = currentTimestamp.sub(
+    new BN(lastSnapTimestamp, "hex")
+  );
 
-  fs.writeFileSync(poolsFileName, JSON.stringify(newPoolsFile, null, 2));
+  const lastPointsThatShouldHaveBeenDistrubuted = PROMOTED_POOLS.reduce(
+    (acc, curr) => {
+      return acc.add(curr.pointsPerSecond.mul(snapTimeDifference));
+    },
+    new BN(0)
+  );
+
+  const lastPointsDistributed = Object.keys(points)
+    .reduce((acc, curr) => {
+      const pointsToAdd = points[curr].points24HoursHistory.find(
+        (item) => item.timestamp === currentTimestamp
+      )!.diff;
+      return acc.add(pointsToAdd);
+    }, new BN(0))
+    .div(POINTS_DENOMINATOR);
+
+  const currentSnapTimestampData = {
+    lastSnapTimestamp: currentTimestamp,
+  };
+
+  if (lastPointsDistributed.gt(lastPointsThatShouldHaveBeenDistrubuted)) return;
+
+  fs.writeFileSync(
+    lastSnapTimestampFileName,
+    JSON.stringify(currentSnapTimestampData, null, 2)
+  );
+  fs.writeFileSync(
+    poolsFileName,
+    JSON.stringify(currentSnapTimestampData, null, 2)
+  );
   fs.writeFileSync(eventsSnapFilename, JSON.stringify(eventsObject, null, 2));
   fs.writeFileSync(pointsFileName, JSON.stringify(points, null, 2));
 };
