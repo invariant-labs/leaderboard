@@ -389,34 +389,35 @@ export const createSnapshotForNetwork = async (network: Network) => {
     },
     {}
   );
-  const { lastSnapTimestamp } = JSON.parse(
-    fs.readFileSync(lastSnapTimestampFileName, "utf-8")
-  );
-  const snapTimeDifference: BN = currentTimestamp.sub(
-    new BN(lastSnapTimestamp, "hex")
-  );
+  // const { lastSnapTimestamp } = JSON.parse(
+  //   fs.readFileSync(lastSnapTimestampFileName, "utf-8")
+  // );
 
-  const lastPointsThatShouldHaveBeenDistrubuted = PROMOTED_POOLS.reduce(
-    (acc, curr) => {
-      return acc.add(curr.pointsPerSecond.mul(snapTimeDifference));
-    },
-    new BN(0)
-  );
+  // const snapTimeDifference: BN = currentTimestamp.sub(
+  //   new BN(lastSnapTimestamp, "hex")
+  // );
 
-  const lastPointsDistributed = Object.keys(points)
-    .reduce((acc, curr) => {
-      const pointsToAdd = points[curr].points24HoursHistory.find(
-        (item) => item.timestamp === currentTimestamp
-      )!.diff;
-      return acc.add(pointsToAdd);
-    }, new BN(0))
-    .div(POINTS_DENOMINATOR);
+  // const lastPointsThatShouldHaveBeenDistrubuted = PROMOTED_POOLS.reduce(
+  //   (acc, curr) => {
+  //     return acc.add(curr.pointsPerSecond.mul(snapTimeDifference));
+  //   },
+  //   new BN(0)
+  // );
+
+  // const lastPointsDistributed = Object.keys(points)
+  //   .reduce((acc, curr) => {
+  //     const pointsToAdd = points[curr].points24HoursHistory.find(
+  //       (item) => item.timestamp === currentTimestamp
+  //     )!.diff;
+  //     return acc.add(pointsToAdd);
+  //   }, new BN(0))
+  //   .div(POINTS_DENOMINATOR);
+
+  //if (lastPointsDistributed.gt(lastPointsThatShouldHaveBeenDistrubuted)) return;
 
   const currentSnapTimestampData = {
     lastSnapTimestamp: currentTimestamp,
   };
-
-  //if (lastPointsDistributed.gt(lastPointsThatShouldHaveBeenDistrubuted)) return;
 
   fs.writeFileSync(
     lastSnapTimestampFileName,
