@@ -282,7 +282,10 @@ export const createSnapshotForNetwork = async (network: Network) => {
     PROMOTED_POOLS
   );
 
-  if (!poolsWithTicks) return;
+  if (!poolsWithTicks)
+    throw new Error(
+      "Failed to fetch pools with ticks due to state inconsistency"
+    );
 
   const currentTimestamp = getTimestampInSeconds();
 
@@ -413,7 +416,7 @@ export const createSnapshotForNetwork = async (network: Network) => {
     lastSnapTimestamp: currentTimestamp,
   };
 
-  if (lastPointsDistributed.gt(lastPointsThatShouldHaveBeenDistrubuted)) return;
+  //if (lastPointsDistributed.gt(lastPointsThatShouldHaveBeenDistrubuted)) return;
 
   fs.writeFileSync(
     lastSnapTimestampFileName,

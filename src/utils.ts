@@ -314,10 +314,10 @@ export const getLatestTxHash = async (
 };
 
 export const fetchPoolsWithTicks = async (
-  retries: number = 0,
+  retries: number,
   market: Market,
   connection: Connection,
-  PROMOTED_POOLS: IPromotedPool[]
+  promotedPools: IPromotedPool[]
 ): Promise<IPoolAndTicks[] | null> => {
   if (retries >= MAX_RETRIES_FOR_STATE_INCONSISTENCY) {
     return null;
@@ -329,7 +329,7 @@ export const fetchPoolsWithTicks = async (
   );
 
   const poolsWithTicks = await Promise.all(
-    PROMOTED_POOLS.map(async ({ address, pointsPerSecond }) => {
+    promotedPools.map(async ({ address, pointsPerSecond }) => {
       const poolStructure: PoolStructure = await retryOperation(
         market.getPoolByAddress(address)
       );
@@ -360,5 +360,5 @@ export const fetchPoolsWithTicks = async (
     return poolsWithTicks;
   }
 
-  return fetchPoolsWithTicks(retries + 1, market, connection, PROMOTED_POOLS);
+  return fetchPoolsWithTicks(retries + 1, market, connection, promotedPools);
 };
