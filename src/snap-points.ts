@@ -422,10 +422,7 @@ export const createSnapshotForNetwork = async (network: Network) => {
     lastSnapTimestampFileName,
     JSON.stringify(currentSnapTimestampData, null, 2)
   );
-  fs.writeFileSync(
-    poolsFileName,
-    JSON.stringify(currentSnapTimestampData, null, 2)
-  );
+  fs.writeFileSync(poolsFileName, JSON.stringify(newPoolsFile, null, 2));
   fs.writeFileSync(eventsSnapFilename, JSON.stringify(eventsObject, null, 2));
   fs.writeFileSync(pointsFileName, JSON.stringify(points, null, 2));
 };
