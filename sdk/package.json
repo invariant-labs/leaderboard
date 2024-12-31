@@ -1,0 +1,22 @@
+{
+  "name": "@invariant-labs/points-sdk",
+  "version": "0.0.1",
+  "main": "lib/index.js",
+  "types": "lib/index.d.ts",
+  "scripts": {
+    "build": "tsc"
+  },
+  "dependencies": {
+    "@invariant-labs/sdk-eclipse": "^0.0.63",
+    "bn.js": "^5.2.1",
+    "typescript": "^5.6.3"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "description": "",
+  "type": "commonjs",
+  "devDependencies": {
+    "@types/bn.js": "^5.1.6"
+  }
+}
