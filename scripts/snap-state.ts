@@ -5,6 +5,7 @@ import fs from "fs";
 import path from "path";
 import { getTimestampInSeconds } from "../src/math";
 import { PoolStructure } from "@invariant-labs/sdk-eclipse/lib/market";
+import { getLatestTxHash } from "../src/utils";
 
 require("dotenv").config();
 
@@ -23,7 +24,10 @@ const main = async () => {
     connection
   );
 
-  const latestTxHash = await getLatestTxHash(market.program.programId);
+  const latestTxHash = await getLatestTxHash(
+    market.program.programId,
+    connection
+  );
 
   const poolState: PoolStructure = await market.getPoolByAddress(POOL);
   const pair = new Pair(poolState.tokenX, poolState.tokenY, {
@@ -37,7 +41,10 @@ const main = async () => {
     getTimestampInSeconds(),
   ]);
 
-  const recentTxHash = await getLatestTxHash(market.program.programId);
+  const recentTxHash = await getLatestTxHash(
+    market.program.programId,
+    connection
+  );
 
   if (recentTxHash !== latestTxHash) {
     console.log("State inconsistency, please try again");
@@ -67,12 +74,4 @@ const main = async () => {
   console.log("Timestamp taken", timestamp.toString());
 };
 
-const getLatestTxHash = async (programId: PublicKey) => {
-  const [signature] = await connection.getSignaturesForAddress(
-    programId,
-    { limit: 1 },
-    "confirmed"
-  );
-  return signature.signature;
-};
 main();

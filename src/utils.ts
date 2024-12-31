@@ -4,9 +4,13 @@ import {
   ConfirmedSignatureInfo,
   ParsedTransactionWithMeta,
 } from "@solana/web3.js";
-import { MAX_RETIRES, RETRY_DELAY } from "./consts";
+import {
+  MAX_RETIRES,
+  MAX_RETRIES_FOR_STATE_INCONSISTENCY,
+  RETRY_DELAY,
+} from "./consts";
 import { BN } from "@coral-xyz/anchor";
-import { IActive, IClosed, IPoolAndTicks } from "./types";
+import { IActive, IClosed, IPoolAndTicks, IPromotedPool } from "./types";
 import {
   calculatePointsToDistribute,
   calculateReward,
@@ -15,8 +19,12 @@ import {
 } from "./math";
 import {
   CreatePositionEvent,
+  Market,
+  PoolStructure,
   RemovePositionEvent,
+  Tick,
 } from "@invariant-labs/sdk-eclipse/lib/market";
+import { Pair } from "@invariant-labs/sdk-eclipse";
 
 export const retryOperation = async (fn: Promise<any>, retires: number = 0) => {
   try {
@@ -291,4 +299,66 @@ export const processNewOpenClosed = (
   });
 
   return updatedNewOpenClosed;
+};
+
+export const getLatestTxHash = async (
+  programId: PublicKey,
+  connection: Connection
+) => {
+  const [signature] = await connection.getSignaturesForAddress(
+    programId,
+    { limit: 1 },
+    "confirmed"
+  );
+  return signature.signature;
+};
+
+export const fetchPoolsWithTicks = async (
+  retries: number,
+  market: Market,
+  connection: Connection,
+  promotedPools: IPromotedPool[]
+): Promise<IPoolAndTicks[] | null> => {
+  if (retries >= MAX_RETRIES_FOR_STATE_INCONSISTENCY) {
+    return null;
+  }
+
+  const latestTxHash = await getLatestTxHash(
+    market.program.programId,
+    connection
+  );
+
+  const poolsWithTicks = await Promise.all(
+    promotedPools.map(async ({ address, pointsPerSecond }) => {
+      const poolStructure: PoolStructure = await retryOperation(
+        market.getPoolByAddress(address)
+      );
+      const ticks: Tick[] = await retryOperation(
+        market.getAllTicks(
+          new Pair(poolStructure.tokenX, poolStructure.tokenY, {
+            fee: poolStructure.fee,
+            tickSpacing: poolStructure.tickSpacing,
+          })
+        )
+      );
+
+      return {
+        pool: address,
+        poolStructure,
+        ticks,
+        pointsPerSecond,
+      };
+    })
+  );
+
+  const recentTxHash = await getLatestTxHash(
+    market.program.programId,
+    connection
+  );
+
+  if (recentTxHash === latestTxHash) {
+    return poolsWithTicks;
+  }
+
+  return fetchPoolsWithTicks(retries + 1, market, connection, promotedPools);
 };
