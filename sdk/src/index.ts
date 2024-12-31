@@ -1,12 +1,12 @@
 import {
-  estimatePointsForPosition,
+  estimatePointsForLiquidity,
   estimatePointsForUserPositions,
   isPositionActive,
   isPriceWithinPositionRange,
 } from "./utils";
 
 export {
-  estimatePointsForPosition,
+  estimatePointsForLiquidity,
   estimatePointsForUserPositions,
   isPositionActive,
   isPriceWithinPositionRange,

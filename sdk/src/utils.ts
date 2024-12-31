@@ -20,8 +20,8 @@ export const isPositionActive = (pool: PoolStructure, position: Position) =>
   position.lowerTickIndex >= pool.currentTickIndex &&
   position.upperTickIndex < pool.currentTickIndex;
 
-export const estimatePointsForPosition = (
-  position: Position,
+export const estimatePointsForLiquidity = (
+  liquidity: BN,
   pool: PoolStructure,
   pointsPerSecond: BN,
   compoundLiquidity: boolean = true,
@@ -30,10 +30,10 @@ export const estimatePointsForPosition = (
   const points = pointsPerSecond.mul(period);
 
   if (compoundLiquidity) {
-    const denominator = pool.liquidity.add(position.liquidity);
-    return position.liquidity.mul(points).div(denominator);
+    const denominator = pool.liquidity.add(liquidity);
+    return liquidity.mul(points).div(denominator);
   } else {
-    return position.liquidity.mul(points).div(pool.liquidity);
+    return liquidity.mul(points).div(pool.liquidity);
   }
 };
 
