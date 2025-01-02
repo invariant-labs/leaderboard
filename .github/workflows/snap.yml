@@ -88,18 +88,14 @@ jobs:
           git config --global user.name invariantStats
           git add ./data/
           git commit -m "Snapshot of points done!"
-      - name: Disable Git LFS
-        run: git config --global filter.lfs.skip true
-
-      - name: GitHub Push
-        uses: ad-m/github-push-action@v0.6.0
-        with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          branch: master
-          force: true
-      - name: Re-enable Git LFS
-        if: always() # This ensures it runs even if previous steps fail
-        run: git config --global filter.lfs.skip false
+      - name: Configure Git and Push
+        run: |
+          git config --global filter.lfs.smudge "git-lfs smudge --skip -- %f"
+          git config --global filter.lfs.process "git-lfs filter-process --skip"
+          git config --global filter.lfs.clean "git-lfs clean -- %f"
+          git config --global filter.lfs.skip true
+          git config --global filter.lfs.required false
+          git push origin master --force --no-verify
       - uses: actions/setup-node@v2
         with:
           node-version: "16"
