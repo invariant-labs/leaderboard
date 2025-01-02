@@ -88,13 +88,21 @@ jobs:
           git config --global user.name invariantStats
           git add ./data/
           git commit -m "Snapshot of points done!"
-      - name: Configure Git and Push
+      - name: Clean LFS and Push
         run: |
+          git lfs uninstall
+          rm -f .gitattributes
+              
+          git rm --cached -r .
+              
+          git add -A
+          git commit -m "Convert LFS to regular files"
+              
           git config --global filter.lfs.smudge "git-lfs smudge --skip -- %f"
           git config --global filter.lfs.process "git-lfs filter-process --skip"
-          git config --global filter.lfs.clean "git-lfs clean -- %f"
-          git config --global filter.lfs.skip true
           git config --global filter.lfs.required false
+          git config --global filter.lfs.skip true
+              
           git push origin master --force --no-verify
       - uses: actions/setup-node@v2
         with:
