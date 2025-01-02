@@ -16,6 +16,9 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
+        with:
+          lfs: true
+          fetch-depth: 0
       - uses: actions/setup-node@v2
         with:
           node-version: "16"
@@ -65,24 +68,31 @@ jobs:
     permissions: write-all
     steps:
       - uses: actions/checkout@v2
+        with:
+          lfs: true
+          fetch-depth: 0
+      - name: Configure Git LFS
+        run: |
+          git lfs install
+          git lfs pull
       - name: Download snapshot
         uses: actions/download-artifact@v4
         with:
           name: eclipse-points-snapshot-${{ github.run_id }}
           path: ./data/
         continue-on-error: true
-      - name: Commit changes
+      - name: Commit and Push Changes
         run: |
           git config --global user.email stats@invariant.app
           git config --global user.name invariantStats
+          git lfs track "data/*.json"
+          git add .gitattributes
           git add ./data/
           git commit -m "Snapshot of points done!"
-      - name: GitHub Push
-        uses: ad-m/github-push-action@v0.6.0
-        with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          branch: master
-          force: true
+          git lfs push origin master --all
+          git push origin master --force
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - uses: actions/setup-node@v2
         with:
           node-version: "16"
