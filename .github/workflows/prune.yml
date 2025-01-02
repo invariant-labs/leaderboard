@@ -7,20 +7,24 @@ jobs:
     runs-on: ubuntu-latest
     permissions: write-all
     steps:
-      - name: Shallow clone without LFS
+      - name: Basic clone
         uses: actions/checkout@v2
         with:
           fetch-depth: 1
           lfs: false
 
-      - name: Force LFS prune
+      - name: Force cleanup
         run: |
-          export GIT_LFS_SKIP_SMUDGE=1
           git config --global user.email stats@invariant.app
           git config --global user.name invariantStats
+          git config lfs.locksverify false
+          git config lfs.fetchexclude "*"
+          git lfs uninstall
+          rm -rf .git/lfs
           git lfs install
           git lfs prune --force
-          git lfs push origin master --all
-          git push origin master
+          git add .
+          git commit -m "Force LFS cleanup"
+          git push origin master --force
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
