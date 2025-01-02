@@ -1,0 +1,30 @@
+name: "Force LFS Prune"
+on:
+  workflow_dispatch:
+
+jobs:
+  force-prune:
+    runs-on: ubuntu-latest
+    permissions: write-all
+    steps:
+      - name: Basic clone
+        uses: actions/checkout@v2
+        with:
+          fetch-depth: 1
+          lfs: false
+
+      - name: Force cleanup
+        run: |
+          git config --global user.email stats@invariant.app
+          git config --global user.name invariantStats
+          git config lfs.locksverify false
+          git config lfs.fetchexclude "*"
+          git lfs uninstall
+          rm -rf .git/lfs
+          git lfs install
+          git lfs prune --force
+          git add .
+          git commit -m "Force LFS cleanup"
+          git push origin master --force
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

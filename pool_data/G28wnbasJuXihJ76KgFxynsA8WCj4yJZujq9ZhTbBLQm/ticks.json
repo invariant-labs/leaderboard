@@ -1,0 +1,50 @@
+[
+  {
+    "feeGrowthOutsideX": "00",
+    "feeGrowthOutsideY": "00",
+    "liquidityChange": "03fc8dbea1e040",
+    "liquidityGross": "03fc8dbea1e040",
+    "secondsPerLiquidityOutside": "00",
+    "sqrtPrice": "0799e89ec224c6bb901000",
+    "pool": "G28wnbasJuXihJ76KgFxynsA8WCj4yJZujq9ZhTbBLQm",
+    "sign": false,
+    "bump": 253,
+    "index": 44363
+  },
+  {
+    "feeGrowthOutsideX": "00",
+    "feeGrowthOutsideY": "00",
+    "liquidityChange": "03fc8dbea1e040",
+    "liquidityGross": "03fc8dbea1e040",
+    "secondsPerLiquidityOutside": "00",
+    "sqrtPrice": "170af9230aa91c01f000",
+    "pool": "G28wnbasJuXihJ76KgFxynsA8WCj4yJZujq9ZhTbBLQm",
+    "sign": true,
+    "bump": 255,
+    "index": -44364
+  },
+  {
+    "feeGrowthOutsideX": "00",
+    "feeGrowthOutsideY": "00",
+    "liquidityChange": "03fc90ef5c6b01",
+    "liquidityGross": "03fc90ef5c6b01",
+    "secondsPerLiquidityOutside": "00",
+    "sqrtPrice": "0799b6cf538e8cf1c6c000",
+    "pool": "G28wnbasJuXihJ76KgFxynsA8WCj4yJZujq9ZhTbBLQm",
+    "sign": false,
+    "bump": 252,
+    "index": 44361
+  },
+  {
+    "feeGrowthOutsideX": "00",
+    "feeGrowthOutsideY": "00",
+    "liquidityChange": "03fc90ef5c6b01",
+    "liquidityGross": "03fc90ef5c6b01",
+    "secondsPerLiquidityOutside": "00",
+    "sqrtPrice": "170b90268d83b2b44000",
+    "pool": "G28wnbasJuXihJ76KgFxynsA8WCj4yJZujq9ZhTbBLQm",
+    "sign": true,
+    "bump": 255,
+    "index": -44362
+  }
+]
