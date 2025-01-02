@@ -3,7 +3,7 @@ import {
   Position,
 } from "@invariant-labs/sdk-eclipse/lib/market";
 import { priceToTick } from "@invariant-labs/sdk-eclipse/lib/math";
-import BN from "bn.js";
+import { BN } from "@coral-xyz/anchor";
 
 const ONE_DAY = new BN(86400);
 
@@ -17,8 +17,8 @@ export const isPriceWithinPositionRange = (
 };
 
 export const isPositionActive = (pool: PoolStructure, position: Position) =>
-  position.lowerTickIndex >= pool.currentTickIndex &&
-  position.upperTickIndex < pool.currentTickIndex;
+  position.lowerTickIndex <= pool.currentTickIndex &&
+  position.upperTickIndex > pool.currentTickIndex;
 
 export const estimatePointsForLiquidity = (
   liquidity: BN,
