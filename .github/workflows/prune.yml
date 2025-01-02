@@ -20,7 +20,7 @@ jobs:
           git config --global user.name invariantStats
           git lfs install
           git lfs prune --force
-          git lfs push origin master --force
+          git lfs push origin master --all
           git push origin master
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
