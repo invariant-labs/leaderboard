@@ -75,6 +75,7 @@ jobs:
         run: |
           git lfs install
           git lfs pull
+          git lfs prune
       - name: Download snapshot
         uses: actions/download-artifact@v4
         with:
