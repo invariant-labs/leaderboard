@@ -48,7 +48,8 @@ export default function (req: VercelRequest, res: VercelResponse) {
   let currentData: ICachedData[];
 
   if (net === "eclipse-testnet") {
-    currentData = ECLIPSE_TESTNET_DATA as ICachedData[];
+    // currentData = ECLIPSE_TESTNET_DATA as ICachedData[];
+    currentData = ECLIPSE_MAINNET_DATA as ICachedData[];
   } else if (net === "eclipse-mainnet") {
     currentData = ECLIPSE_MAINNET_DATA as ICachedData[];
   } else {
