@@ -10,6 +10,7 @@ concurrency:
 
 env:
   solana_version: 1.18.18
+  GIT_LFS_SKIP_SMUDGE: 1
 
 jobs:
   points-snap:
@@ -17,7 +18,7 @@ jobs:
     steps:
       - uses: actions/checkout@v2
         with:
-          lfs: true
+          # lfs: true
           fetch-depth: 0
       - uses: actions/setup-node@v2
         with:
@@ -69,13 +70,11 @@ jobs:
     steps:
       - uses: actions/checkout@v2
         with:
-          lfs: true
+          # lfs: true
           fetch-depth: 0
       - name: Configure Git LFS
         run: |
           git lfs install
-          git lfs pull
-          git lfs prune
       - name: Download snapshot
         uses: actions/download-artifact@v4
         with:
@@ -90,7 +89,6 @@ jobs:
           git add .gitattributes
           git add ./data/
           git commit -m "Snapshot of points done!"
-          git lfs push origin master --all
           git push origin master --force
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
