@@ -1,29 +1,26 @@
-name: "Git LFS Prune"
+name: "Force LFS Prune"
 on:
   workflow_dispatch:
-  schedule:
-    - cron: "0 0 * * *" # Daily at midnight
 
 jobs:
-  prune:
+  force-prune:
     runs-on: ubuntu-latest
     permissions: write-all
     steps:
-      - name: Checkout without LFS
+      - name: Shallow clone without LFS
         uses: actions/checkout@v2
         with:
-          fetch-depth: 0
+          fetch-depth: 1
+          lfs: false
 
-      - name: Configure Git
+      - name: Force LFS prune
         run: |
+          export GIT_LFS_SKIP_SMUDGE=1
           git config --global user.email stats@invariant.app
           git config --global user.name invariantStats
-
-      - name: Prune LFS
-        run: |
           git lfs install
-          git lfs prune
-          git lfs push origin master --all
+          git lfs prune --force
+          git lfs push origin master --force
           git push origin master
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
