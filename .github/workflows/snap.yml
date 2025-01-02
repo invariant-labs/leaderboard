@@ -60,59 +60,51 @@ jobs:
           name: eclipse-points-snapshot-${{ github.run_id }}
           path: |
             ./data/*.json
+ deploy:
+  needs: [points-snap]
+  if: ${{ always() }}
+  runs-on: ubuntu-latest
+  permissions: write-all
+  steps:
+    - uses: actions/checkout@v2
 
-  deploy:
-    needs: [points-snap]
-    if: ${{ always() }}
-    runs-on: ubuntu-latest
-    permissions: write-all
-    steps:
-      - uses: actions/checkout@v2
-        # with:
-        #   lfs: true
-        #   fetch-depth: 0
-      # - name: Configure Git LFS
-      #   run: |
-      #     git lfs install
-      #     git lfs pull
-      #     git lfs prune
-      - name: Download snapshot
-        uses: actions/download-artifact@v4
-        with:
-          name: eclipse-points-snapshot-${{ github.run_id }}
-          path: ./data/
-        continue-on-error: true
-      - name: Commit changes
-        run: |
-          git config --global user.email stats@invariant.app
-          git config --global user.name invariantStats
-          git add ./data/
-          git commit -m "Snapshot of points done!"
-      - name: Clean LFS and Push
-        run: |
-          git lfs uninstall
-          rm -f .gitattributes
-              
-          git rm --cached -r .
-              
-          git add -A
-          git commit -m "Convert LFS to regular files"
-              
-          git config --global filter.lfs.smudge "git-lfs smudge --skip -- %f"
-          git config --global filter.lfs.process "git-lfs filter-process --skip"
-          git config --global filter.lfs.required false
-          git config --global filter.lfs.skip true
-              
-          git push origin master --force --no-verify
-      - uses: actions/setup-node@v2
-        with:
-          node-version: "16"
-      - name: Deploy to Production
-        uses: amondnet/vercel-action@v20
-        id: deploy-vercel-production
-        with:
-          vercel-token: ${{ secrets.VERCEL_TOKEN }}
-          vercel-org-id: ${{ secrets.VERCEL_ORG_ID }}
-          vercel-project-id: ${{ secrets.VERCEL_PROJECT_ID }}
-          vercel-args: "--prod"
-          scope: ${{ secrets.VERCEL_ORG_ID }}
+    - name: Download snapshot
+      uses: actions/download-artifact@v4
+      with:
+        name: eclipse-points-snapshot-${{ github.run_id }}
+        path: ./data/
+      continue-on-error: true
+
+    - name: Configure Git
+      run: |
+        git config --global user.email stats@invariant.app
+        git config --global user.name invariantStats
+        git config --global filter.lfs.smudge "git-lfs smudge --skip -- %f"
+        git config --global filter.lfs.process "git-lfs filter-process --skip"
+        git config --global filter.lfs.required false
+        git config --global filter.lfs.skip true
+
+    - name: Remove LFS
+      run: |
+        git lfs uninstall
+        rm -f .gitattributes
+
+    - name: Stage and commit changes
+      run: |
+        git add ./data/
+        git commit -m "Snapshot of points done!"
+        git push origin master --force --no-verify
+
+    - uses: actions/setup-node@v2
+      with:
+        node-version: "16"
+
+    - name: Deploy to Production
+      uses: amondnet/vercel-action@v20
+      id: deploy-vercel-production
+      with:
+        vercel-token: ${{ secrets.VERCEL_TOKEN }}
+        vercel-org-id: ${{ secrets.VERCEL_ORG_ID }}
+        vercel-project-id: ${{ secrets.VERCEL_PROJECT_ID }}
+        vercel-args: "--prod"
+        scope: ${{ secrets.VERCEL_ORG_ID }}
