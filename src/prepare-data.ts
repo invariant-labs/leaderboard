@@ -2,7 +2,7 @@ import { Network } from "@invariant-labs/sdk-eclipse";
 import fs from "fs";
 import path from "path";
 import { IPointsHistoryJson, IPointsJson } from "./types";
-import ECLIPSE_TESTNET_POINTS from "../data/points_testnet.json";
+// import ECLIPSE_TESTNET_POINTS from "../data/points_testnet.json";
 import ECLIPSE_MAINNET_POINTS from "../data/points_mainnet.json";
 import { BN } from "@coral-xyz/anchor";
 
@@ -17,10 +17,10 @@ export const prepareFinalData = async (network: Network) => {
       finalDataFile = path.join(__dirname, "../data/final_data_mainnet.json");
       data = ECLIPSE_MAINNET_POINTS as Record<string, IPointsJson>;
       break;
-    case Network.TEST:
-      finalDataFile = path.join(__dirname, "../data/final_data_testnet.json");
-      data = ECLIPSE_TESTNET_POINTS as Record<string, IPointsJson>;
-      break;
+    // case Network.TEST:
+    //   finalDataFile = path.join(__dirname, "../data/final_data_testnet.json");
+    //   data = ECLIPSE_TESTNET_POINTS as Record<string, IPointsJson>;
+    //   break;
     default:
       throw new Error("Unknown network");
   }
