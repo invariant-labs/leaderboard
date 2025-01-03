@@ -1,30 +1,96 @@
-name: "Force LFS Prune"
+name: Git LFS Maintenance
+
+permissions:
+  contents: write
+  pull-requests: write
+
 on:
+  push:
+    branches:
+      - "lfs-test"
+  pull_request:
+    branches:
+      - "master"
+    paths:
+      - ".github/workflows/prune.yaml"
   workflow_dispatch:
 
 jobs:
-  force-prune:
+  lfs-maintenance:
     runs-on: ubuntu-latest
-    permissions: write-all
-    steps:
-      - name: Basic clone
-        uses: actions/checkout@v2
-        with:
-          fetch-depth: 1
-          lfs: false
 
-      - name: Force cleanup
+    steps:
+      - name: Shallow clone without LFS
         run: |
-          git config --global user.email stats@invariant.app
-          git config --global user.name invariantStats
-          git config lfs.locksverify false
+          git clone --no-checkout --depth 1 https://${{ secrets.GITHUB_TOKEN }}@github.com/${GITHUB_REPOSITORY}.git .
           git config lfs.fetchexclude "*"
-          git lfs uninstall
-          rm -rf .git/lfs
+
+      - name: Configure Git
+        run: |
+          git config --global user.email "github-actions@github.com"
+          git config --global user.name "GitHub Actions"
+          git config --global http.https://github.com/.extraheader "AUTHORIZATION: basic ${{ secrets.GITHUB_TOKEN }}"
+
+      - name: Clean LFS objects
+        run: |
+          # Initialize LFS but don't download objects
+          git lfs install --skip-smudge
+
+          # Get list of LFS files
+          git lfs ls-files -l | tee lfs_files.txt
+
+          # Calculate total size
+          echo "Current LFS objects size:"
+          cat lfs_files.txt | awk '{total += $4} END {print total/1024/1024 " MB"}'
+
+          # Untrack LFS files temporarily
+          git lfs untrack "**/*"
+          # git add .gitattributes
+
+          # Clean LFS objects from remote
+          git lfs prune --verify-remote
+
+      - name: Re-enable LFS tracking
+        run: |
+          # Re-track original LFS patterns
+          if [ -f .gitattributes.backup ]; then
+            mv .gitattributes.backup .gitattributes
+            git add .gitattributes
+          fi
+
+          # Re-initialize LFS properly
           git lfs install
-          git lfs prune --force
-          git add .
-          git commit -m "Force LFS cleanup"
-          git push origin master --force
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Update repository
+        run: |
+          # Ensure we have the right remote URL with token
+          git remote set-url origin https://${{ secrets.GITHUB_TOKEN }}@github.com/${GITHUB_REPOSITORY}.git
+
+          # Try to fetch the specific branch, create if it doesn't exist
+          if git fetch origin lfs-test --no-tags; then
+            echo "Fetched existing lfs-test branch"
+            git checkout -B lfs-test origin/lfs-test
+          else
+            echo "Creating new lfs-test branch"
+            git checkout --orphan lfs-test
+            git reset --hard
+          fi
+
+          # Make sure we're on the right branch
+          git branch --show-current
+
+          echo "Repository updated. LFS objects cleaned."
+
+      - name: Verify cleanup
+        run: |
+          echo "Remaining LFS objects size:"
+          git lfs ls-files -l | awk '{total += $4} END {print total/1024/1024 " MB" }'
+
+      - name: Prepare and push changes
+        run: |
+          echo "LFS cleanup timestamp: $(date)" > cleanup_status.txt
+          git add cleanup_status.txt
+          # git add .gitattributes
+          git commit -m "LFS cleanup $(date)" || echo "No changes to commit"
+          git remote set-url origin https://${{ secrets.GITHUB_TOKEN }}@github.com/${GITHUB_REPOSITORY}.git
+          git push origin HEAD:lfs-test --force
