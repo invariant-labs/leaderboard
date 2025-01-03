@@ -41,6 +41,7 @@ import {
   RemovePositionEvent,
 } from "@invariant-labs/sdk-eclipse/lib/market";
 import { getTimestampInSeconds, POINTS_DENOMINATOR } from "./math";
+import { PointsBinaryConverter } from "./conversion";
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 require("dotenv").config();
@@ -60,7 +61,7 @@ export const createSnapshotForNetwork = async (network: Network) => {
         __dirname,
         "../data/events_snap_mainnet.json"
       );
-      pointsFileName = path.join(__dirname, "../data/points_mainnet.json");
+      pointsFileName = path.join(__dirname, "../data/points_mainnet.bin");
       poolsFileName = path.join(
         __dirname,
         "../data/pools_last_tx_hashes_mainnet.json"
@@ -340,9 +341,14 @@ export const createSnapshotForNetwork = async (network: Network) => {
     eventsObject[ownerKey].closed.push(entry);
   });
 
-  const previousPoints: Record<string, IPointsJson> = JSON.parse(
-    fs.readFileSync(pointsFileName, "utf-8")
-  );
+  let previousPoints: Record<string, IPointsJson> = {};
+
+  if (pointsFileName.endsWith(".bin")) {
+    previousPoints = PointsBinaryConverter.readBinaryFile(pointsFileName);
+  } else {
+    previousPoints = JSON.parse(fs.readFileSync(pointsFileName, "utf-8"));
+  }
+
   const points: Record<string, IPoints> = Object.keys(eventsObject).reduce(
     (acc, curr) => {
       const prev24HoursHistory = previousPoints[curr]?.points24HoursHistory;
@@ -425,7 +431,11 @@ export const createSnapshotForNetwork = async (network: Network) => {
   );
   fs.writeFileSync(poolsFileName, JSON.stringify(newPoolsFile));
   fs.writeFileSync(eventsSnapFilename, JSON.stringify(eventsObject));
-  fs.writeFileSync(pointsFileName, JSON.stringify(points));
+  if (pointsFileName.endsWith(".bin")) {
+    PointsBinaryConverter.writeBinaryFile(pointsFileName, points);
+  } else {
+    fs.writeFileSync(pointsFileName, JSON.stringify(points));
+  }
 };
 
 // createSnapshotForNetwork(Network.TEST).then(
