@@ -18,7 +18,7 @@ export const prepareFinalData = async (network: Network) => {
       finalDataFile = path.join(__dirname, "../data/final_data_mainnet.json");
       // data = ECLIPSE_MAINNET_POINTS as Record<string, IPointsJson>;
       data = PointsBinaryConverter.readBinaryFile(
-        path.join(__dirname, "../data/points_mainnet.json")
+        path.join(__dirname, "../data/points_mainnet.bin")
       );
       break;
     // case Network.TEST:
@@ -28,6 +28,7 @@ export const prepareFinalData = async (network: Network) => {
     default:
       throw new Error("Unknown network");
   }
+
   const rank: Record<string, number> = {};
   const last24HoursPoints: Record<string, BN> = {};
   const sortedKeys = Object.keys(data).sort((a, b) =>
@@ -47,8 +48,8 @@ export const prepareFinalData = async (network: Network) => {
       return {
         address: key,
         rank: rank[key],
-        last24hPoints: last24HoursPoints[key],
-        points: new BN(data[key].totalPoints, "hex"),
+        last24hPoints: new BN(last24HoursPoints[key]).toString(16),
+        points: new BN(data[key].totalPoints).toString(16),
         positions: data[key].positionsAmount,
       };
     })

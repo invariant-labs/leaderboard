@@ -2,11 +2,15 @@ import path from "path";
 import { PointsBinaryConverter } from "../src/conversion";
 import { IPointsJson } from "../src/types";
 import { BN } from "@coral-xyz/anchor";
-import ORIGINAL_JSON from "../data/points_mainnet.json";
+
 async function main() {
   try {
     const originalFile = path.join(__dirname, "../data/points_mainnet.json");
     const binaryFile = path.join(__dirname, "../data/points_mainnet.bin");
+    const restoredFile = path.join(
+      __dirname,
+      "../data/restored_points_mainnet.json"
+    );
 
     console.log("Converting JSON to binary...");
     let start = Date.now();
@@ -23,7 +27,10 @@ async function main() {
 
     console.log("\nConversion completed successfully!");
 
-    Object.entries(ORIGINAL_JSON).forEach(([key, value]) => {
+    PointsBinaryConverter.convertBinaryToFile(binaryFile, restoredFile);
+
+    const originalJson = await import(originalFile);
+    Object.entries(originalJson).forEach(([key, value]) => {
       if (key === "default") {
         return;
       }

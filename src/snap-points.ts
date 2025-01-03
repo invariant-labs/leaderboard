@@ -360,7 +360,7 @@ export const createSnapshotForNetwork = async (network: Network) => {
         });
       }
       const previousTotalPoints: BN =
-        new BN(previousPoints[curr]?.totalPoints, "hex") ?? new BN(0);
+        new BN(previousPoints[curr]?.totalPoints) ?? new BN(0);
 
       const pointsForOpen: BN[] = eventsObject[curr].active.map(
         (entry) => entry.points
