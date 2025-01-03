@@ -1,7 +1,15 @@
 name: Git LFS Maintenance
 
 on:
-  workflow_dispatch: # Manual trigger
+  push:
+    branches:
+      - "lfs-test"
+  pull_request:
+    branches:
+      - "master"
+    paths:
+      - ".github/workflows/prune.yaml"
+  workflow_dispatch:
 
 jobs:
   lfs-maintenance:
