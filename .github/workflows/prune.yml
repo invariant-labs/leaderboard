@@ -86,8 +86,11 @@ jobs:
           echo "Remaining LFS objects size:"
           git lfs ls-files -l | awk '{total += $4} END {print total/1024/1024 " MB" }'
 
-      - name: Push changes
+      - name: Prepare and push changes
         run: |
+          echo "LFS cleanup timestamp: $(date)" > cleanup_status.txt
+          git add cleanup_status.txt
+          git add .gitattributes
+          git commit -m "LFS cleanup $(date)" || echo "No changes to commit"
           git remote set-url origin https://${{ secrets.GITHUB_TOKEN }}@github.com/${GITHUB_REPOSITORY}.git
-          git remote set-url origin https://${{ secrets.GITHUB_TOKEN }}@github.com/${GITHUB_REPOSITORY}.git
-          git push origin lfs-test --force
+          git push origin HEAD:lfs-test --force
