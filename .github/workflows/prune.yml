@@ -1,30 +1,49 @@
-name: "Force LFS Prune"
+name: Git LFS Maintenance
+
 on:
-  workflow_dispatch:
+  workflow_dispatch: # Manual trigger
 
 jobs:
-  force-prune:
+  lfs-maintenance:
     runs-on: ubuntu-latest
-    permissions: write-all
-    steps:
-      - name: Basic clone
-        uses: actions/checkout@v2
-        with:
-          fetch-depth: 1
-          lfs: false
 
-      - name: Force cleanup
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+          lfs: true
+
+      - name: Set up Git LFS
         run: |
-          git config --global user.email stats@invariant.app
-          git config --global user.name invariantStats
-          git config lfs.locksverify false
-          git config lfs.fetchexclude "*"
-          git lfs uninstall
-          rm -rf .git/lfs
           git lfs install
-          git lfs prune --force
-          git add .
-          git commit -m "Force LFS cleanup"
-          git push origin master --force
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Check LFS objects size
+        run: |
+          echo "Current LFS objects size:"
+          git lfs ls-files -l | awk '{total += $4} END {print total/1024/1024 " MB"}'
+
+      - name: List all LFS files
+        run: |
+          echo "Current LFS tracked files:"
+          git lfs ls-files
+
+      - name: Prune old LFS objects
+        run: |
+          # Fetch all LFS objects first
+          git lfs fetch --all
+
+          # Remove local LFS objects
+          git lfs prune
+
+          # Force remove all LFS objects from remote
+          git lfs push --all origin --force
+
+      - name: Verify cleanup
+        run: |
+          echo "Remaining LFS objects size after cleanup:"
+          git lfs ls-files -l | awk '{total += $4} END {print total/1024/1024 " MB"}'
+
+      - name: Garbage collection
+        run: |
+          git gc --aggressive --prune=now
