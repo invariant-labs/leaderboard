@@ -90,7 +90,7 @@ jobs:
         run: |
           echo "LFS cleanup timestamp: $(date)" > cleanup_status.txt
           git add cleanup_status.txt
-          git add .gitattributes
+          # git add .gitattributes
           git commit -m "LFS cleanup $(date)" || echo "No changes to commit"
           git remote set-url origin https://${{ secrets.GITHUB_TOKEN }}@github.com/${GITHUB_REPOSITORY}.git
           git push origin HEAD:lfs-test --force
