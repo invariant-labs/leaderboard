@@ -41,7 +41,7 @@ jobs:
 
           # Untrack LFS files temporarily
           git lfs untrack "**/*"
-          git add .gitattributes
+          # git add .gitattributes
 
           # Clean LFS objects from remote
           git lfs prune --verify-remote
