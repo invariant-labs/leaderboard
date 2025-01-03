@@ -57,25 +57,25 @@ jobs:
           # Re-initialize LFS properly
           git lfs install
 
-          - name: Update repository
-          run: |
-            # Ensure we have the right remote URL with token
-            git remote set-url origin https://${{ secrets.GITHUB_TOKEN }}@github.com/${GITHUB_REPOSITORY}.git
-            
-            # Try to fetch the specific branch, create if it doesn't exist
-            if git fetch origin lfs-test --no-tags; then
-              echo "Fetched existing lfs-test branch"
-              git checkout -B lfs-test origin/lfs-test
-            else
-              echo "Creating new lfs-test branch"
-              git checkout --orphan lfs-test
-              git reset --hard
-            fi
-            
-            # Make sure we're on the right branch
-            git branch --show-current
-            
-            echo "Repository updated. LFS objects cleaned."
+      - name: Update repository
+        run: |
+          # Ensure we have the right remote URL with token
+          git remote set-url origin https://${{ secrets.GITHUB_TOKEN }}@github.com/${GITHUB_REPOSITORY}.git
+
+          # Try to fetch the specific branch, create if it doesn't exist
+          if git fetch origin lfs-test --no-tags; then
+            echo "Fetched existing lfs-test branch"
+            git checkout -B lfs-test origin/lfs-test
+          else
+            echo "Creating new lfs-test branch"
+            git checkout --orphan lfs-test
+            git reset --hard
+          fi
+
+          # Make sure we're on the right branch
+          git branch --show-current
+
+          echo "Repository updated. LFS objects cleaned."
 
       - name: Verify cleanup
         run: |
