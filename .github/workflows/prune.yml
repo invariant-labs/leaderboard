@@ -1,5 +1,9 @@
 name: Git LFS Maintenance
 
+permissions:
+  contents: write
+  pull-requests: write
+
 on:
   push:
     branches:
@@ -84,5 +88,6 @@ jobs:
 
       - name: Push changes
         run: |
+          git remote set-url origin https://${{ secrets.GITHUB_TOKEN }}@github.com/${GITHUB_REPOSITORY}.git
           git remote set-url origin https://${{ secrets.GITHUB_TOKEN }}@github.com/${GITHUB_REPOSITORY}.git
           git push origin lfs-test --force
