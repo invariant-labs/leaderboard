@@ -16,42 +16,63 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v3
-        with:
-          fetch-depth: 0
-          lfs: true
-
-      - name: Set up Git LFS
+      - name: Shallow clone without LFS
         run: |
+          git clone --no-checkout --depth 1 https://${{ secrets.GITHUB_TOKEN }}@github.com/${GITHUB_REPOSITORY}.git .
+          git config lfs.fetchexclude "*"
+
+      - name: Configure Git
+        run: |
+          git config --global user.email "github-actions@github.com"
+          git config --global user.name "GitHub Actions"
+          git config --global http.https://github.com/.extraheader "AUTHORIZATION: basic ${{ secrets.GITHUB_TOKEN }}"
+
+      - name: Clean LFS objects
+        run: |
+          # Initialize LFS but don't download objects
+          git lfs install --skip-smudge
+
+          # Get list of LFS files
+          git lfs ls-files -l | tee lfs_files.txt
+
+          # Calculate total size
+          echo "Current LFS objects size:"
+          cat lfs_files.txt | awk '{total += $4} END {print total/1024/1024 " MB"}'
+
+          # Untrack LFS files temporarily
+          git lfs untrack "**/*"
+          git add .gitattributes
+
+          # Clean LFS objects from remote
+          git lfs prune --verify-remote
+
+      - name: Re-enable LFS tracking
+        run: |
+          # Re-track original LFS patterns
+          if [ -f .gitattributes.backup ]; then
+            mv .gitattributes.backup .gitattributes
+            git add .gitattributes
+          fi
+
+          # Re-initialize LFS properly
           git lfs install
 
-      - name: Check LFS objects size
+      - name: Update repository
         run: |
-          echo "Current LFS objects size:"
-          git lfs ls-files -l | awk '{total += $4} END {print total/1024/1024 " MB"}'
+          # Fetch lfs-test branch without LFS
+          git fetch origin lfs-test --no-tags
 
-      - name: List all LFS files
-        run: |
-          echo "Current LFS tracked files:"
-          git lfs ls-files
+          # Create/update lfs-test branch
+          git checkout -B lfs-test
 
-      - name: Prune old LFS objects
-        run: |
-          # Fetch all LFS objects first
-          git lfs fetch --all
-
-          # Remove local LFS objects
-          git lfs prune
-
-          # Force remove all LFS objects from remote
-          git lfs push --all origin --force
+          echo "Repository updated. LFS objects cleaned."
 
       - name: Verify cleanup
         run: |
-          echo "Remaining LFS objects size after cleanup:"
-          git lfs ls-files -l | awk '{total += $4} END {print total/1024/1024 " MB"}'
+          echo "Remaining LFS objects size:"
+          git lfs ls-files -l | awk '{total += $4} END {print total/1024/1024 " MB" }'
 
-      - name: Garbage collection
+      - name: Push changes
         run: |
-          git gc --aggressive --prune=now
+          git remote set-url origin https://${{ secrets.GITHUB_TOKEN }}@github.com/${GITHUB_REPOSITORY}.git
+          git push origin lfs-test --force
