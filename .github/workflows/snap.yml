@@ -86,7 +86,7 @@ jobs:
           git push origin master --force --no-verify
       - uses: actions/setup-node@v2
         with:
-          node-version: "16"
+          node-version: "20"
       - name: Deploy to Production
         uses: amondnet/vercel-action@v20
         id: deploy-vercel-production
