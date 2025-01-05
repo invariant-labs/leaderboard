@@ -367,23 +367,22 @@ export const createSnapshotForNetwork = async (network: Network) => {
         .concat(pointsForClosed)
         .reduce((sum, point) => sum.add(new BN(point, "hex")), new BN(0));
 
+      const diff = totalPoints.sub(previousTotalPoints);
+      const newEntry = {
+        diff,
+        timestamp: currentTimestamp,
+      };
+
+      const new24History = prev24HoursHistory
+        ? diff.eqn(0)
+          ? prev24HoursHistory
+          : [...prev24HoursHistory, newEntry]
+        : [newEntry];
+
       acc[curr] = {
         totalPoints,
         positionsAmount: eventsObject[curr].active.length,
-        points24HoursHistory: prev24HoursHistory
-          ? [
-              ...prev24HoursHistory,
-              {
-                diff: totalPoints.sub(previousTotalPoints),
-                timestamp: currentTimestamp,
-              },
-            ]
-          : [
-              {
-                diff: totalPoints.sub(previousTotalPoints),
-                timestamp: currentTimestamp,
-              },
-            ],
+        points24HoursHistory: new24History,
       };
       return acc;
     },
