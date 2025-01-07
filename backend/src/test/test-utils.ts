@@ -11,13 +11,7 @@ export const resetDatabase = async () => {
   const db = client.db("points");
   await db.dropDatabase();
 
-  let indexes = [
-    db.createIndex(
-      Collections.Referrals,
-      { referrer: 1, referee: 1, id: 1 },
-      { unique: true }
-    ),
-  ];
+  let indexes = [db.createIndex(Collections.Referrals, {}, { unique: true })];
 
   await Promise.all(indexes);
 };

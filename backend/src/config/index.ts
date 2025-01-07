@@ -1,3 +1,5 @@
+import { PublicKey } from "@solana/web3.js";
+
 export const CONFIG = {
   SERVER: {
     PORT: 3000,
@@ -6,6 +8,7 @@ export const CONFIG = {
   },
   DATABASE: {
     DATABASE_URL: "mongodb://localhost:27017/points",
+    DATABASE_NAME: "points",
   },
 };
 
@@ -15,4 +18,8 @@ export const { SERVER, DATABASE } = CONFIG;
 
 export const { PORT, HOST } = CONFIG.SERVER;
 
-export const { DATABASE_URL } = CONFIG.DATABASE;
+export const { DATABASE_URL, DATABASE_NAME } = CONFIG.DATABASE;
+
+export const randomPublickey = new PublicKey(
+  "S8LaENRyeYcE8XaiX8qFMSt1g8E3h7RpSMvLQWPVkr2"
+);

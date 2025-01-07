@@ -2,8 +2,8 @@ export enum Collections {
   Referrals = "referrals",
 }
 
-export interface LeaderboardEntry {
-  ranking: number;
-  shooter: string;
-  totalDamage: string;
+export interface IReferralCollectionItem {
+  address: string;
+  codeOwned: string;
+  codeUsed: string | null;
 }
