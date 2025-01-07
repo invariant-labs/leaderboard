@@ -6,6 +6,7 @@ export const CONFIG = {
   },
   DATABASE: {
     DATABASE_URL: "mongodb://localhost:27017/points",
+    DATABASE_NAME: "points",
   },
 };
 
@@ -15,4 +16,4 @@ export const { SERVER, DATABASE } = CONFIG;
 
 export const { PORT, HOST } = CONFIG.SERVER;
 
-export const { DATABASE_URL } = CONFIG.DATABASE;
+export const { DATABASE_URL, DATABASE_NAME } = CONFIG.DATABASE;

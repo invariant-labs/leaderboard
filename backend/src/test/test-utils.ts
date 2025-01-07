@@ -14,7 +14,14 @@ export const resetDatabase = async () => {
   let indexes = [
     db.createIndex(
       Collections.Referrals,
-      { referrer: 1, referee: 1, id: 1 },
+      {
+        address: 1,
+        code: 1,
+        codeUsed: 1,
+        signature: 1,
+        message: 1,
+        invited: 1,
+      },
       { unique: true }
     ),
   ];

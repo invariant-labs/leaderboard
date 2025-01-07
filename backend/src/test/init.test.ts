@@ -2,7 +2,7 @@ import app from "@/app";
 import { resetDatabase } from "./test-utils";
 import { FastifyInstance } from "fastify";
 
-describe("Collect events", () => {
+describe("init leaderboard", () => {
   let fastify: FastifyInstance;
 
   beforeAll(async () => {
@@ -16,7 +16,7 @@ describe("Collect events", () => {
     await fastify.close();
   });
 
-  test("shoot three arrows", async () => {
-    console.log(fastify);
+  test("init", async () => {
+    console.log("ok");
   });
 });
