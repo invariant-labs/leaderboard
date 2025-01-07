@@ -1,6 +1,8 @@
 import { Collections } from "@/models/collections";
 import { DATABASE_URL } from "@config/index";
+import { Keypair } from "@solana/web3.js";
 import { MongoClient } from "mongodb";
+import nacl from "tweetnacl";
 
 export const sleep = (ms: number) =>
   new Promise((resolve) => setTimeout(resolve, ms));
@@ -49,4 +51,9 @@ export const assertThrowsAsync = async (fn: Promise<any>, word?: string) => {
     return;
   }
   throw new Error("Function did not throw error");
+};
+
+export const signMessage = (signer: Keypair, message: Uint8Array) => {
+  const signature = nacl.sign.detached(message, signer.secretKey);
+  return signature;
 };

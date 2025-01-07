@@ -2,6 +2,9 @@ import { Keypair } from "@solana/web3.js";
 import app from "../app";
 import { FastifyInstance } from "fastify";
 import { Collections } from "@/models/collections";
+import { getMessagePayload } from "@invariant-labs/points-sdk//src/utils";
+import { signMessage } from "./test-utils";
+import { decodeUTF8 } from "tweetnacl-util";
 
 describe("Use code endpoint", () => {
   let fastify: FastifyInstance;
@@ -43,12 +46,19 @@ describe("Use code endpoint", () => {
       .collection(Collections.Referrals)
       .find({})
       .toArray();
+
+    const payload = getMessagePayload(address.publicKey, code);
+    const signature = signMessage(address, decodeUTF8(payload));
     const response = await fastify.inject({
       method: "POST",
       url: "/api/leaderboard/use-code",
-      payload: { address: address.publicKey.toString(), code },
+      payload: {
+        address: address.publicKey.toString(),
+        code,
+        signature: Buffer.from(signature).toString("base64"),
+      },
     });
-    console.log(response);
+
     const statusCode = response.statusCode;
     const allRecordsAfter = await fastify.db
       .collection(Collections.Referrals)
@@ -61,5 +71,33 @@ describe("Use code endpoint", () => {
     expect(lastElement.codeUsed).toBe(referrerElement.code);
     expect(allRecordsBefore.length).toBe(allRecordsAfter.length - 1);
     expect(statusCode).toBe(200);
+  });
+  test("Try to use code  with message signed by someone else - should return 400", async () => {
+    const signer = Keypair.generate();
+    const address = Keypair.generate();
+    const allRecordsBefore = await fastify.db
+      .collection(Collections.Referrals)
+      .find({})
+      .toArray();
+
+    const payload = getMessagePayload(signer.publicKey, code);
+    const signature = signMessage(signer, decodeUTF8(payload));
+    const response = await fastify.inject({
+      method: "POST",
+      url: "/api/leaderboard/use-code",
+      payload: {
+        address: address.publicKey.toString(),
+        code,
+        signature: Buffer.from(signature).toString("base64"),
+      },
+    });
+
+    const statusCode = response.statusCode;
+    const allRecordsAfter = await fastify.db
+      .collection(Collections.Referrals)
+      .find({})
+      .toArray();
+    expect(allRecordsBefore.length).toBe(allRecordsAfter.length);
+    expect(statusCode).toBe(400);
   });
 });

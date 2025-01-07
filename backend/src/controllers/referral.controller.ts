@@ -1,16 +1,15 @@
 import { Collections, IReferralCollectionItem } from "@/models/collections";
-import {
-  getRandomCode,
-  LeaderboardCollection,
-} from "@services/leaderboard.service";
+import { getMessagePayload } from "@invariant-labs/points-sdk/src/utils";
+import { Collection } from "@services/collection.service";
+import { verifyMessage, getRandomCode } from "@services/utils";
+import { PublicKey } from "@solana/web3.js";
 import { FastifyRequest, FastifyReply } from "fastify";
+import { decodeUTF8 } from "tweetnacl-util";
 
 interface IUseCodeBody {
   address: string;
   code: string;
-  // TODO: Remove null later
-  message: string | null;
-  signature: string | null;
+  signature: string;
 }
 interface IGetCodeParams {
   address: string;
@@ -20,7 +19,7 @@ export const getReferralCodes = async (
   req: FastifyRequest,
   res: FastifyReply
 ) => {
-  const collection = new LeaderboardCollection(Collections.Referrals);
+  const collection = new Collection(Collections.Referrals);
   const referrals = await collection.getAllElementsAsArray();
   res.send(referrals);
 };
@@ -29,8 +28,19 @@ export const useCode = async (
   req: FastifyRequest<{ Body: IUseCodeBody }>,
   res: FastifyReply
 ) => {
-  const collection = new LeaderboardCollection(Collections.Referrals);
-  const { address, code, message, signature } = req.body;
+  const collection = new Collection(Collections.Referrals);
+  const { address, code, signature } = req.body;
+  const pubkey = new PublicKey(address);
+  if (
+    !verifyMessage(
+      Buffer.from(signature, "base64"),
+      decodeUTF8(getMessagePayload(pubkey, code)),
+      pubkey
+    )
+  ) {
+    return res.status(400).send({ ok: false });
+  }
+
   const referrerEntry = await collection.findOne({
     code,
   });
@@ -54,7 +64,6 @@ export const useCode = async (
     address,
     code: codeOwned,
     codeUsed: code,
-    message,
     signature,
     invited: [],
   };
@@ -66,7 +75,7 @@ export const getCode = async (
   req: FastifyRequest<{ Params: IGetCodeParams }>,
   res: FastifyReply
 ) => {
-  const collection = new LeaderboardCollection(Collections.Referrals);
+  const collection = new Collection(Collections.Referrals);
   const { address } = req.params;
   const userEntry = await collection.findOne({ address });
   if (userEntry) {
@@ -77,7 +86,6 @@ export const getCode = async (
     address,
     code: codeOwned,
     codeUsed: null,
-    message: null,
     signature: null,
     invited: [],
   };

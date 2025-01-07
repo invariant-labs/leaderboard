@@ -2,7 +2,7 @@ import {
   getCode,
   useCode,
   getReferralCodes,
-} from "@controllers/leaderboard.controller";
+} from "@controllers/referral.controller";
 import { FastifyInstance, FastifyPluginAsync } from "fastify";
 import fp from "fastify-plugin";
 

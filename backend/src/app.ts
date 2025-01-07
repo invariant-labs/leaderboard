@@ -1,5 +1,5 @@
 import { connectDb } from "@plugins/db.plugin";
-import leaderboardRoutes from "@routes/leaderboard.routes";
+import leaderboardRoutes from "@routes/referral.routes";
 import Fastify from "fastify";
 import { Db } from "mongodb";
 import fastifySchedule from "@fastify/schedule";

@@ -1,14 +1,9 @@
 import { Collections } from "@/models/collections";
 import app from "@/app";
-import { Collection, Document } from "mongodb";
+import { Collection as MongoCollection, Document } from "mongodb";
 
-export const getRandomCode = (): string => {
-  const code = Math.random().toString(36).substring(2, 10);
-  return code;
-};
-
-export class LeaderboardCollection {
-  public db: Collection<Document>;
+export class Collection {
+  public db: MongoCollection<Document>;
 
   public constructor(collection: Collections) {
     this.db = app.db.collection(collection);
