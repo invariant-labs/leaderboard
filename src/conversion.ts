@@ -1,18 +1,6 @@
 import { PublicKey } from "@solana/web3.js";
 import { readFileSync, writeFileSync } from "fs";
-
-interface PointsHistory {
-  timestamp: string; // hex string
-  diff: string; // hex string
-}
-
-export interface PointsEntry {
-  totalPoints: string; // hex string
-  positionsAmount: number;
-  points24HoursHistory: PointsHistory[];
-}
-
-type PointsData = Record<string, PointsEntry>;
+import { IPointsHistory, PointsData, PointsEntry } from "./types";
 
 export class PointsBinaryConverter {
   private static readonly ADDRESS_SIZE = 32;
@@ -121,7 +109,7 @@ export class PointsBinaryConverter {
       offset += this.HISTORY_LENGTH_SIZE;
 
       // Read history entries
-      const points24HoursHistory: PointsHistory[] = [];
+      const points24HoursHistory: IPointsHistory[] = [];
       for (let j = 0; j < historyLength; j++) {
         const timestamp = view.getBigUint64(offset, true);
         offset += this.TIMESTAMP_SIZE;

@@ -30,18 +30,18 @@ import {
 } from "./utils";
 import {
   IActive,
-  IPoints,
-  IPointsJson,
+  IPointsHistory,
   IPoolAndTicks,
   IPositions,
   IPromotedPool,
+  PointsEntry,
 } from "./types";
 import {
   CreatePositionEvent,
   RemovePositionEvent,
 } from "@invariant-labs/sdk-eclipse/lib/market";
-import { getTimestampInSeconds, POINTS_DENOMINATOR } from "./math";
-import { PointsBinaryConverter, PointsEntry } from "./conversion";
+import { getTimestampInSeconds } from "./math";
+import { PointsBinaryConverter } from "./conversion";
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 require("dotenv").config();
