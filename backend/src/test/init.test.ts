@@ -17,6 +17,6 @@ describe("Collect events", () => {
   });
 
   test("shoot three arrows", async () => {
-    console.log(fastify);
+    console.log("ok");
   });
 });

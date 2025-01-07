@@ -8,7 +8,7 @@ interface IUseCodeBody {
   address: string;
   code: string;
 }
-interface IGetCodeBody {
+interface IGetCodeParams {
   address: string;
 }
 
@@ -63,10 +63,10 @@ export const useCode = async (
 };
 
 export const getCode = async (
-  req: FastifyRequest<{ Body: IGetCodeBody }>,
+  req: FastifyRequest<{ Params: IGetCodeParams }>,
   res: FastifyReply
 ) => {
-  const { address } = req.body;
+  const { address } = req.params;
   const userEntry = await app.db
     .collection(Collections.Referrals)
     .findOne({ address });

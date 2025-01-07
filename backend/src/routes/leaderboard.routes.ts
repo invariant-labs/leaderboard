@@ -9,7 +9,7 @@ import fp from "fastify-plugin";
 const leaderboardRoutes: FastifyPluginAsync = async (
   fastify: FastifyInstance
 ) => {
-  fastify.get("/api/leaderboard/get-code", getCode);
+  fastify.get("/api/leaderboard/get-code/:address", getCode);
   fastify.post("/api/leaderboard/use-code", useCode);
   fastify.get("/api/leaderboard/get-referral-codes", getReferralCodes);
 };

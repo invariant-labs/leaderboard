@@ -24,8 +24,7 @@ describe("Get code endpoint", () => {
       .toArray();
     const response = await fastify.inject({
       method: "GET",
-      url: "/api/leaderboard/get-code",
-      payload: { address: address.publicKey.toString() },
+      url: `/api/leaderboard/get-code/${address.publicKey.toString()}`,
     });
 
     const statusCode = response.statusCode;
@@ -35,11 +34,12 @@ describe("Get code endpoint", () => {
       .collection(Collections.Referrals)
       .find({})
       .toArray();
-    const lastElement = allRecordsAfter[allRecordsAfter.length - 1];
-    console.log(response);
-    expect(lastElement.address).toBe(address.publicKey.toString());
-    expect(lastElement.codeOwned).toBe(expectedCode);
-    expect(lastElement.codeUsed).toBe(null);
+    const userElement = allRecordsAfter.find(
+      (item) => item.address === address.publicKey.toString()
+    )!;
+    expect(userElement.address).toBe(address.publicKey.toString());
+    expect(userElement.codeOwned).toBe(expectedCode);
+    expect(userElement.codeUsed).toBe(null);
     expect(body.code).toBe(expectedCode);
     expect(allRecordsBefore.length).toBe(allRecordsAfter.length - 1);
     expect(statusCode).toBe(200);
