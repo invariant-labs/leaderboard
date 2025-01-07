@@ -4,6 +4,7 @@ import {
 } from "@invariant-labs/sdk-eclipse/lib/market";
 import { priceToTick } from "@invariant-labs/sdk-eclipse/lib/math";
 import { BN } from "@coral-xyz/anchor";
+import { PublicKey } from "@solana/web3.js";
 
 const ONE_DAY = new BN(86400);
 
@@ -60,4 +61,8 @@ export const estimatePointsForUserPositions = (
   } else {
     return liquidity.mul(points).div(pool.liquidity);
   }
+};
+
+export const getMessagePayload = (address: PublicKey, code: string) => {
+  return address.toString() + " is using referral " + code;
 };
