@@ -1,7 +1,6 @@
 import { Keypair } from "@solana/web3.js";
 import app from "../app";
 import { FastifyInstance } from "fastify";
-import { getCodeFromAddress } from "@controllers/leaderboard.controller";
 import { Collections } from "@/models/collections";
 
 describe("Use code endpoint", () => {
@@ -26,7 +25,6 @@ describe("Use code endpoint", () => {
     });
     const statusCode = response.statusCode;
     const body = JSON.parse(response.body);
-    const expectedCode = getCodeFromAddress(address.publicKey.toString());
     const allRecordsAfter = await fastify.db
       .collection(Collections.Referrals)
       .find({})
@@ -34,9 +32,8 @@ describe("Use code endpoint", () => {
     const lastElement = allRecordsAfter[allRecordsAfter.length - 1];
     code = body.code;
     expect(lastElement.address).toBe(address.publicKey.toString());
-    expect(lastElement.codeOwned).toBe(expectedCode);
     expect(lastElement.codeUsed).toBe(null);
-    expect(body.code).toBe(expectedCode);
+    expect(body.code).toBe(lastElement.code);
     expect(allRecordsBefore.length).toBe(allRecordsAfter.length - 1);
     expect(statusCode).toBe(200);
   });
@@ -51,8 +48,8 @@ describe("Use code endpoint", () => {
       url: "/api/leaderboard/use-code",
       payload: { address: address.publicKey.toString(), code },
     });
+    console.log(response);
     const statusCode = response.statusCode;
-    const expectedCode = getCodeFromAddress(address.publicKey.toString());
     const allRecordsAfter = await fastify.db
       .collection(Collections.Referrals)
       .find({})
@@ -60,9 +57,8 @@ describe("Use code endpoint", () => {
     const lastElement = allRecordsAfter[allRecordsAfter.length - 1];
     const referrerElement = allRecordsAfter[allRecordsAfter.length - 2];
     expect(lastElement.address).toBe(address.publicKey.toString());
-    expect(lastElement.codeOwned).toBe(expectedCode);
     expect(lastElement.codeUsed).toBe(code);
-    expect(lastElement.codeUsed).toBe(referrerElement.codeOwned);
+    expect(lastElement.codeUsed).toBe(referrerElement.code);
     expect(allRecordsBefore.length).toBe(allRecordsAfter.length - 1);
     expect(statusCode).toBe(200);
   });

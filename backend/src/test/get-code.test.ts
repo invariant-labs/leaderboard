@@ -1,7 +1,6 @@
 import { Keypair } from "@solana/web3.js";
 import app from "../app";
 import { FastifyInstance } from "fastify";
-import { getCodeFromAddress } from "@controllers/leaderboard.controller";
 import { Collections } from "@/models/collections";
 
 describe("Get code endpoint", () => {
@@ -29,7 +28,6 @@ describe("Get code endpoint", () => {
 
     const statusCode = response.statusCode;
     const body = JSON.parse(response.body);
-    const expectedCode = getCodeFromAddress(address.publicKey.toString());
     const allRecordsAfter = await fastify.db
       .collection(Collections.Referrals)
       .find({})
@@ -38,9 +36,8 @@ describe("Get code endpoint", () => {
       (item) => item.address === address.publicKey.toString()
     )!;
     expect(userElement.address).toBe(address.publicKey.toString());
-    expect(userElement.codeOwned).toBe(expectedCode);
     expect(userElement.codeUsed).toBe(null);
-    expect(body.code).toBe(expectedCode);
+    expect(body.code).toBe(userElement.code);
     expect(allRecordsBefore.length).toBe(allRecordsAfter.length - 1);
     expect(statusCode).toBe(200);
   });

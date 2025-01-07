@@ -19,7 +19,3 @@ export const { SERVER, DATABASE } = CONFIG;
 export const { PORT, HOST } = CONFIG.SERVER;
 
 export const { DATABASE_URL, DATABASE_NAME } = CONFIG.DATABASE;
-
-export const randomPublickey = new PublicKey(
-  "S8LaENRyeYcE8XaiX8qFMSt1g8E3h7RpSMvLQWPVkr2"
-);
