@@ -2,9 +2,9 @@ import { Network } from "@invariant-labs/sdk-eclipse";
 import fs from "fs";
 import path from "path";
 import { IPointsHistoryJson, IPointsJson } from "./types";
-// import ECLIPSE_TESTNET_POINTS from "../data/points_testnet.json";
-import ECLIPSE_MAINNET_POINTS from "../data/points_mainnet.json";
+
 import { BN } from "@coral-xyz/anchor";
+import { PointsBinaryConverter } from "./conversion";
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 require("dotenv").config();
@@ -12,10 +12,13 @@ require("dotenv").config();
 export const prepareFinalData = async (network: Network) => {
   let finalDataFile: string;
   let data: Record<string, IPointsJson>;
+
   switch (network) {
     case Network.MAIN:
       finalDataFile = path.join(__dirname, "../data/final_data_mainnet.json");
-      data = ECLIPSE_MAINNET_POINTS as Record<string, IPointsJson>;
+      data = PointsBinaryConverter.readBinaryFile(
+        path.join(__dirname, "../data/points_mainnet.bin")
+      );
       break;
     // case Network.TEST:
     //   finalDataFile = path.join(__dirname, "../data/final_data_testnet.json");
@@ -44,7 +47,7 @@ export const prepareFinalData = async (network: Network) => {
         address: key,
         rank: rank[key],
         last24hPoints: last24HoursPoints[key],
-        points: new BN(data[key].totalPoints, "hex"),
+        points: data[key].totalPoints,
         positions: data[key].positionsAmount,
       };
     })
