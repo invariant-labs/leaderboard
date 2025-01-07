@@ -1,15 +1,14 @@
-import app from "@/app";
 import { Collections, IReferralCollectionItem } from "@/models/collections";
 import {
   getRandomCode,
   LeaderboardCollection,
 } from "@services/leaderboard.service";
 import { FastifyRequest, FastifyReply } from "fastify";
-import { errorCodes } from "fastify";
-import { Document, WithId } from "mongodb";
+
 interface IUseCodeBody {
   address: string;
   code: string;
+  // TODO: Remove null later
   message: string | null;
   signature: string | null;
 }
@@ -21,7 +20,7 @@ export const getReferralCodes = async (
   req: FastifyRequest,
   res: FastifyReply
 ) => {
-  const collection = new LeaderboardCollection(Collections.Referrals, app);
+  const collection = new LeaderboardCollection(Collections.Referrals);
   const referrals = await collection.getAllElementsAsArray();
   res.send(referrals);
 };
@@ -30,7 +29,7 @@ export const useCode = async (
   req: FastifyRequest<{ Body: IUseCodeBody }>,
   res: FastifyReply
 ) => {
-  const collection = new LeaderboardCollection(Collections.Referrals, app);
+  const collection = new LeaderboardCollection(Collections.Referrals);
   const { address, code, message, signature } = req.body;
   const referrerEntry = await collection.findOne({
     code,
@@ -67,7 +66,7 @@ export const getCode = async (
   req: FastifyRequest<{ Params: IGetCodeParams }>,
   res: FastifyReply
 ) => {
-  const collection = new LeaderboardCollection(Collections.Referrals, app);
+  const collection = new LeaderboardCollection(Collections.Referrals);
   const { address } = req.params;
   const userEntry = await collection.findOne({ address });
   if (userEntry) {

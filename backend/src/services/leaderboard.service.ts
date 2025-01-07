@@ -1,5 +1,5 @@
 import { Collections } from "@/models/collections";
-import { FastifyInstance } from "fastify";
+import app from "@/app";
 import { Collection, Document } from "mongodb";
 
 export const getRandomCode = (): string => {
@@ -10,7 +10,7 @@ export const getRandomCode = (): string => {
 export class LeaderboardCollection {
   public db: Collection<Document>;
 
-  public constructor(collection: Collections, app: FastifyInstance) {
+  public constructor(collection: Collections) {
     this.db = app.db.collection(collection);
   }
 
