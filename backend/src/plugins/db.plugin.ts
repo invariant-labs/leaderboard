@@ -4,16 +4,9 @@ import { FastifyInstance } from "fastify";
 import fastifyPlugin from "fastify-plugin";
 import { MongoClient } from "mongodb";
 
-let _client: MongoClient;
-
-export const getDatabaseClient = () => {
-  return _client;
-};
-
 export const connectDb = fastifyPlugin(async (app: FastifyInstance) => {
   const client = new MongoClient(DATABASE_URL);
   await client.connect();
-  _client = client;
   const db = client.db(DATABASE_NAME);
   // TODO: Configure indexes
   // if index already exists this is just ignored
@@ -33,4 +26,5 @@ export const connectDb = fastifyPlugin(async (app: FastifyInstance) => {
   ];
   await Promise.all(indexes);
   app.decorate("db", db);
+  app.decorate("mongoClient", client);
 });

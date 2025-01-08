@@ -1,7 +1,6 @@
 import app from "@/app";
 import { Collections, IReferralCollectionItem } from "@/models/collections";
 import { getMessagePayload } from "@invariant-labs/points-sdk/src/utils";
-import { getDatabaseClient } from "@plugins/db.plugin";
 import { Collection } from "@services/collection.service";
 import { verifyMessage, getRandomCode } from "@services/utils";
 import { PublicKey } from "@solana/web3.js";
@@ -33,7 +32,7 @@ export const useCode = async (
   const collection = new Collection(Collections.Referrals);
   const { address, code, signature } = req.body;
   const pubkey = new PublicKey(address);
-  const dbClient = getDatabaseClient();
+  const dbClient = app.mongoClient;
   const session = dbClient.startSession();
   if (
     !verifyMessage(
@@ -56,7 +55,7 @@ export const useCode = async (
 
     await collection.addToInvitedList(code, address);
 
-    await collection.instertOrUpdateOne(
+    await collection.insertOrUpdateOne(
       address,
       getRandomCode(),
       code,

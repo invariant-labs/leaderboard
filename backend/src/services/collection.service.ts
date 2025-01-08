@@ -1,10 +1,6 @@
 import { Collections } from "@/models/collections";
 import app from "@/app";
-import {
-  Collection as MongoCollection,
-  Document,
-  ClientSession,
-} from "mongodb";
+import { Collection as MongoCollection, Document } from "mongodb";
 
 export class Collection {
   public db: MongoCollection<Document>;
@@ -33,14 +29,11 @@ export class Collection {
       },
       {
         $addToSet: { invited: address },
-      },
-      {
-        returnDocument: "after",
       }
     );
   }
 
-  async instertOrUpdateOne(
+  async insertOrUpdateOne(
     address: string,
     newCode: string,
     codeUsed: string,
@@ -53,13 +46,13 @@ export class Collection {
         $setOnInsert: {
           address,
           code: newCode,
+          codeUsed,
           invited: [],
           signature,
         },
       },
       {
         upsert: true,
-        returnDocument: "after",
       }
     );
   }
