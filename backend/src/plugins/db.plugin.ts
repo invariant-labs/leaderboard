@@ -26,4 +26,5 @@ export const connectDb = fastifyPlugin(async (app: FastifyInstance) => {
   ];
   await Promise.all(indexes);
   app.decorate("db", db);
+  app.decorate("mongoClient", client);
 });

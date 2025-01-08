@@ -1,13 +1,14 @@
 import { connectDb } from "@plugins/db.plugin";
 import leaderboardRoutes from "@routes/referral.routes";
 import Fastify from "fastify";
-import { Db } from "mongodb";
+import { Db, MongoClient } from "mongodb";
 import fastifySchedule from "@fastify/schedule";
 // import { fastifyRedis } from "@fastify/redis";
 
 declare module "fastify" {
   interface FastifyInstance {
     db: Db;
+    mongoClient: MongoClient;
   }
 }
 
