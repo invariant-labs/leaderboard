@@ -1,15 +1,17 @@
 import { Keypair } from "@solana/web3.js";
 import app from "../app";
 import { FastifyInstance } from "fastify";
-import { Collections } from "@/models/collections";
-// import { getMessagePayload } from "@invariant-labs/points-sdk//src/utils";
-import { signMessage, getMessagePayload } from "./test-utils";
+import { Collections } from "../models/collections";
+import { getMessagePayload } from "@invariant-labs/points-sdk//src/utils";
+import { signMessage } from "./test-utils";
 import { decodeUTF8 } from "tweetnacl-util";
 
 describe("Use code endpoint", () => {
   let fastify: FastifyInstance;
+
   beforeAll(async () => {
     fastify = app;
+
     await fastify.ready();
   });
   afterAll(async () => {

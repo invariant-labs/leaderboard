@@ -1,9 +1,10 @@
-import { Collections, IReferralCollectionItem } from "@/models/collections";
-import { Collection } from "@services/collection.service";
-import { verifyMessage, getRandomCode } from "@services/utils";
+import { Collections, IReferralCollectionItem } from "../models/collections";
+import { Collection } from "../services/collection.service";
+import { verifyMessage, getRandomCode } from "../services/utils";
 import { PublicKey } from "@solana/web3.js";
 import { FastifyRequest, FastifyReply } from "fastify";
-import { decodeUTF8 } from "tweetnacl-util";
+import tweetnacl from "tweetnacl-util";
+import { getMessagePayload } from "@invariant-labs/points-sdk/lib/utils";
 
 interface IUseCodeBody {
   address: string;
@@ -13,10 +14,6 @@ interface IUseCodeBody {
 interface IGetCodeParams {
   address: string;
 }
-
-export const getMessagePayload = (address: PublicKey, code: string) => {
-  return address.toString() + " is using referral " + code;
-};
 
 export const getReferralCodes = async (
   req: FastifyRequest,
@@ -37,7 +34,7 @@ export const useCode = async (
   if (
     !verifyMessage(
       Buffer.from(signature, "base64"),
-      decodeUTF8(getMessagePayload(pubkey, code)),
+      tweetnacl.decodeUTF8(getMessagePayload(pubkey, code)),
       pubkey
     )
   ) {

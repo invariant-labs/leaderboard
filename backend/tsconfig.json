@@ -1,15 +1,21 @@
 {
-  "extends": "./tsconfig.paths.json",
   "compilerOptions": {
-    "target": "ES6",
-    "module": "commonjs",
+    "target": "ES2022",
+    "module": "ESNext",
+    "moduleResolution": "bundler", // Change this from "node"
     "esModuleInterop": true,
     "strict": true,
     "allowJs": true,
     "skipLibCheck": true,
-    "moduleResolution": "node",
     "outDir": "./dist",
-    "types": ["jest", "chai"]
+    "types": ["jest", "chai"],
+    // "allowImportingTsExtensions": true, // Add this
+    "resolveJsonModule": true, // Add this
+    "isolatedModules": true // Add this
+  },
+  "ts-node": {
+    "esm": true,
+    "experimentalSpecifiers": true
   },
   "include": ["src/**/*.ts", "test/**/*.ts"],
   "exclude": ["coverage", "node_modules", "test-ledger"]
