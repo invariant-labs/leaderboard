@@ -1,6 +1,10 @@
 import { Collections } from "@/models/collections";
 import app from "@/app";
-import { Collection as MongoCollection, Document } from "mongodb";
+import {
+  Collection as MongoCollection,
+  Document,
+  ClientSession,
+} from "mongodb";
 
 export class Collection {
   public db: MongoCollection<Document>;
@@ -19,6 +23,45 @@ export class Collection {
 
   async findOne(searchFor: any) {
     return await this.db.findOne(searchFor);
+  }
+
+  async addToInvitedList(code: string, address: string) {
+    return await this.db.findOneAndUpdate(
+      {
+        code,
+        invited: { $nin: [address] },
+      },
+      {
+        $addToSet: { invited: address },
+      },
+      {
+        returnDocument: "after",
+      }
+    );
+  }
+
+  async instertOrUpdateOne(
+    address: string,
+    newCode: string,
+    codeUsed: string,
+    signature: string
+  ) {
+    return await this.db.findOneAndUpdate(
+      { address },
+      {
+        $set: { codeUsed },
+        $setOnInsert: {
+          address,
+          code: newCode,
+          invited: [],
+          signature,
+        },
+      },
+      {
+        upsert: true,
+        returnDocument: "after",
+      }
+    );
   }
 
   async insertOne(element: any) {

@@ -54,23 +54,14 @@ export const useCode = async (
       return;
     }
 
-    await collection.updateOne(
-      { code },
-      { invited: [...referrerEntry.invited, address] }
-    );
+    await collection.addToInvitedList(code, address);
 
-    const userEntry = await collection.findOne({ address });
-    if (userEntry) {
-      await collection.updateOne({ address }, { address, codeUsed: code });
-    } else {
-      await collection.insertOne({
-        address,
-        code: getRandomCode(),
-        codeUsed: code,
-        signature,
-        invited: [],
-      });
-    }
+    await collection.instertOrUpdateOne(
+      address,
+      getRandomCode(),
+      code,
+      signature
+    );
 
     await session.commitTransaction();
     res.status(200).send({ ok: true });
