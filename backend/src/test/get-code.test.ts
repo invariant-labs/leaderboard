@@ -1,7 +1,7 @@
 import { Keypair } from "@solana/web3.js";
 import app from "../app";
 import { FastifyInstance } from "fastify";
-import { Collections } from "@/models/collections";
+import { Collections } from "../models/collections";
 
 describe("Get code endpoint", () => {
   let fastify: FastifyInstance;

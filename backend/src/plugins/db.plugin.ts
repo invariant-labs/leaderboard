@@ -1,5 +1,5 @@
-import { Collections } from "@/models/collections";
-import { DATABASE_NAME, DATABASE_URL } from "@config/index";
+import { Collections } from "../models/collections";
+import { DATABASE_NAME, DATABASE_URL } from "../config/index";
 import { FastifyInstance } from "fastify";
 import fastifyPlugin from "fastify-plugin";
 import { MongoClient } from "mongodb";

@@ -1,5 +1,5 @@
-import { Collections } from "@/models/collections";
-import app from "@/app";
+import { Collections } from "../models/collections";
+import app from "../app";
 import { Collection as MongoCollection, Document } from "mongodb";
 
 export class Collection {

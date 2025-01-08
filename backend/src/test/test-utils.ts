@@ -1,5 +1,5 @@
-import { Collections } from "@/models/collections";
-import { DATABASE_URL } from "@config/index";
+import { Collections } from "../models/collections";
+import { DATABASE_URL } from "../config/index";
 import { Keypair } from "@solana/web3.js";
 import { MongoClient } from "mongodb";
 import nacl from "tweetnacl";

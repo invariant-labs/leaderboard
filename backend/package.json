@@ -5,7 +5,7 @@
   "main": "index.js",
   "type": "module",
   "scripts": {
-    "start": "ts-node src/server.ts",
+    "start": "node --experimental-specifier-resolution=node --loader ts-node/esm src/server.ts",
     "dev": "nodemon --exec ts-node -r tsconfig-paths/register src/server.ts",
     "test": "jest -i --config ./jest-config.json --forceExit"
   },
@@ -22,8 +22,7 @@
     "mongodb": "^6.9.0",
     "toad-scheduler": "^3.0.1",
     "tweetnacl": "^1.0.3",
-    "tweetnacl-util": "^0.15.1",
-    "@invariant-labs/points-sdk": "^0.0.4"
+    "tweetnacl-util": "^0.15.1"
   },
   "devDependencies": {
     "@types/chai": "^5.0.0",
