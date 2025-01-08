@@ -46,7 +46,6 @@ export class Collection {
         $setOnInsert: {
           address,
           code: newCode,
-          codeUsed,
           invited: [],
           signature,
         },
