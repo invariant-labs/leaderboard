@@ -52,16 +52,13 @@ export const useCode = async (
       res.status(400).send({ ok: false });
       return;
     }
-
     await collection.addToInvitedList(code, address);
-
     await collection.insertOrUpdateOne(
       address,
       getRandomCode(),
       code,
       signature
     );
-
     await session.commitTransaction();
     res.status(200).send({ ok: true });
   } catch (err) {
