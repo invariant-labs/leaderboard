@@ -2,16 +2,15 @@
   "compilerOptions": {
     "target": "ES2022",
     "module": "ESNext",
-    "moduleResolution": "bundler", // Change this from "node"
+    "moduleResolution": "bundler",
     "esModuleInterop": true,
     "strict": true,
     "allowJs": true,
     "skipLibCheck": true,
     "outDir": "./dist",
     "types": ["jest", "chai"],
-    // "allowImportingTsExtensions": true, // Add this
-    "resolveJsonModule": true, // Add this
-    "isolatedModules": true // Add this
+    "resolveJsonModule": true,
+    "isolatedModules": true
   },
   "ts-node": {
     "esm": true,
