@@ -47,11 +47,13 @@ export const useCode = async (
   try {
     session.startTransaction();
     const referrerEntry = await collection.findOne({ code });
-    if (!referrerEntry) {
+    const userEntry = await collection.findOne({ address });
+    if (!referrerEntry || (userEntry && !!userEntry.codeUsed)) {
       await session.abortTransaction();
       res.status(400).send({ ok: false });
       return;
     }
+
     await collection.addToInvitedList(code, address);
     await collection.insertOrUpdateOne(
       address,

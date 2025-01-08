@@ -16,6 +16,7 @@ describe("Use code endpoint", () => {
     await fastify.close();
   });
   let code: string;
+  let addr: Keypair;
   test("Get code for address", async () => {
     const address = Keypair.generate();
     const allRecordsBefore = await fastify.db
@@ -103,6 +104,7 @@ describe("Use code endpoint", () => {
   });
   test("Use code", async () => {
     const address = Keypair.generate();
+    addr = address;
     const allRecordsBefore = await fastify.db
       .collection(Collections.Referrals)
       .find({})
@@ -134,5 +136,36 @@ describe("Use code endpoint", () => {
     expect(lastElement.codeUsed).toBe(referrerElement.code);
     expect(allRecordsBefore.length).toBe(allRecordsAfter.length - 1);
     expect(statusCode).toBe(200);
+  });
+  test("Use same code twice from same addr", async () => {
+    const allRecordsBefore = await fastify.db
+      .collection(Collections.Referrals)
+      .find({})
+      .toArray();
+
+    const payload = getMessagePayload(addr.publicKey, code);
+    const signature = signMessage(addr, decodeUTF8(payload));
+    const response = await fastify.inject({
+      method: "POST",
+      url: "/api/leaderboard/use-code",
+      payload: {
+        address: addr.publicKey.toString(),
+        code,
+        signature: Buffer.from(signature).toString("base64"),
+      },
+    });
+
+    const statusCode = response.statusCode;
+    const allRecordsAfter = await fastify.db
+      .collection(Collections.Referrals)
+      .find({})
+      .toArray();
+    const referrerElementAfter = allRecordsAfter[allRecordsAfter.length - 3];
+    const referrerElementBefore = allRecordsBefore[allRecordsAfter.length - 3];
+    expect(referrerElementAfter.invited.length).toBe(
+      referrerElementBefore.invited.length
+    );
+    expect(allRecordsBefore.length).toBe(allRecordsAfter.length);
+    expect(statusCode).toBe(400);
   });
 });
