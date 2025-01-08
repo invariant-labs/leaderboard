@@ -5,6 +5,7 @@
     "module": "commonjs",
     "esModuleInterop": true,
     "strict": true,
+    "allowJs": true,
     "skipLibCheck": true,
     "moduleResolution": "node",
     "outDir": "./dist",

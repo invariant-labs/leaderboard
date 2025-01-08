@@ -82,7 +82,7 @@ export const getCode = async (
   const { address } = req.params;
   const userEntry = await collection.findOne({ address });
   if (userEntry) {
-    return res.status(200).send({ code: userEntry.codeOwned });
+    return res.status(200).send({ code: userEntry.code });
   }
   const codeOwned = getRandomCode();
   const newUserEntry: IReferralCollectionItem = {
