@@ -21,6 +21,41 @@ export class Collection {
     return await this.db.findOne(searchFor);
   }
 
+  async addToInvitedList(code: string, address: string) {
+    return await this.db.findOneAndUpdate(
+      {
+        code,
+        invited: { $nin: [address] },
+      },
+      {
+        $addToSet: { invited: address },
+      }
+    );
+  }
+
+  async insertOrUpdateOne(
+    address: string,
+    newCode: string,
+    codeUsed: string,
+    signature: string
+  ) {
+    return await this.db.findOneAndUpdate(
+      { address },
+      {
+        $set: { codeUsed },
+        $setOnInsert: {
+          address,
+          code: newCode,
+          invited: [],
+          signature,
+        },
+      },
+      {
+        upsert: true,
+      }
+    );
+  }
+
   async insertOne(element: any) {
     return await this.db.insertOne(element);
   }
