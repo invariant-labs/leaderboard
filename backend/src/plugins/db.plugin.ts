@@ -11,18 +11,9 @@ export const connectDb = fastifyPlugin(async (app: FastifyInstance) => {
   // TODO: Configure indexes
   // if index already exists this is just ignored
   const indexes = [
-    db.createIndex(
-      Collections.Referrals,
-      {
-        address: 1,
-        code: 1,
-        codeUsed: 1,
-        signature: 1,
-        message: 1,
-        invited: 1,
-      },
-      { unique: true }
-    ),
+    db.createIndex(Collections.Referrals, { address: 1 }, { unique: true }),
+    db.createIndex(Collections.Referrals, { code: 1, codeUsed: 1 }),
+    db.createIndex(Collections.Referrals, { invited: 1 }),
   ];
   await Promise.all(indexes);
   app.decorate("db", db);
