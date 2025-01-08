@@ -11,3 +11,7 @@ export const verifyMessage = (
   message: Uint8Array,
   address: PublicKey
 ) => nacl.sign.detached.verify(message, signature, address.toBytes());
+
+export const getMessagePayload = (address: PublicKey, code: string) => {
+  return address.toString() + " is using referral " + code;
+};

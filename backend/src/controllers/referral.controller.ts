@@ -1,11 +1,14 @@
-import app from "@/app";
-import { Collections, IReferralCollectionItem } from "@/models/collections";
-import { getMessagePayload } from "@invariant-labs/points-sdk/src/utils";
-import { Collection } from "@services/collection.service";
-import { verifyMessage, getRandomCode } from "@services/utils";
+import app from "../app";
+import { Collections, IReferralCollectionItem } from "../models/collections";
+import { Collection } from "../services/collection.service";
+import {
+  verifyMessage,
+  getRandomCode,
+  getMessagePayload,
+} from "../services/utils";
 import { PublicKey } from "@solana/web3.js";
 import { FastifyRequest, FastifyReply } from "fastify";
-import { decodeUTF8 } from "tweetnacl-util";
+import tweetnacl from "tweetnacl-util";
 
 interface IUseCodeBody {
   address: string;
@@ -37,7 +40,7 @@ export const useCode = async (
   if (
     !verifyMessage(
       Buffer.from(signature, "base64"),
-      decodeUTF8(getMessagePayload(pubkey, code)),
+      tweetnacl.decodeUTF8(getMessagePayload(pubkey, code)),
       pubkey
     )
   ) {
