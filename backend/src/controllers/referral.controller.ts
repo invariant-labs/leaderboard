@@ -1,5 +1,7 @@
+import app from "@/app";
 import { Collections, IReferralCollectionItem } from "@/models/collections";
 import { getMessagePayload } from "@invariant-labs/points-sdk/src/utils";
+import { getDatabaseClient } from "@plugins/db.plugin";
 import { Collection } from "@services/collection.service";
 import { verifyMessage, getRandomCode } from "@services/utils";
 import { PublicKey } from "@solana/web3.js";
@@ -31,6 +33,8 @@ export const useCode = async (
   const collection = new Collection(Collections.Referrals);
   const { address, code, signature } = req.body;
   const pubkey = new PublicKey(address);
+  const dbClient = getDatabaseClient();
+  const session = dbClient.startSession();
   if (
     !verifyMessage(
       Buffer.from(signature, "base64"),
@@ -41,34 +45,41 @@ export const useCode = async (
     return res.status(400).send({ ok: false });
   }
 
-  const referrerEntry = await collection.findOne({
-    code,
-  });
+  try {
+    session.startTransaction();
+    const referrerEntry = await collection.findOne({ code });
+    if (!referrerEntry) {
+      await session.abortTransaction();
+      res.status(400).send({ ok: false });
+      return;
+    }
 
-  if (!referrerEntry) {
-    return res.status(400).send({ ok: false });
+    await collection.updateOne(
+      { code },
+      { invited: [...referrerEntry.invited, address] }
+    );
+
+    const userEntry = await collection.findOne({ address });
+    if (userEntry) {
+      await collection.updateOne({ address }, { address, codeUsed: code });
+    } else {
+      await collection.insertOne({
+        address,
+        code: getRandomCode(),
+        codeUsed: code,
+        signature,
+        invited: [],
+      });
+    }
+
+    await session.commitTransaction();
+    res.status(200).send({ ok: true });
+  } catch (err) {
+    await session.abortTransaction();
+    res.status(400).send({ ok: false });
+  } finally {
+    await session.endSession();
   }
-
-  await collection.updateOne(
-    { code },
-    { invited: [...referrerEntry.invited, address] }
-  );
-  const userEntry = await collection.findOne({ address });
-
-  if (userEntry) {
-    await collection.updateOne({ address }, { address, codeUsed: code });
-    return res.status(200).send({ ok: true });
-  }
-  const codeOwned = getRandomCode();
-  const newUserEntry: IReferralCollectionItem = {
-    address,
-    code: codeOwned,
-    codeUsed: code,
-    signature,
-    invited: [],
-  };
-  await collection.insertOne(newUserEntry);
-  return res.status(200).send({ ok: true });
 };
 
 export const getCode = async (
