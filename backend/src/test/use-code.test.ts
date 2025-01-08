@@ -4,7 +4,7 @@ import { FastifyInstance } from "fastify";
 import { Collections } from "../models/collections";
 import { signMessage } from "./test-utils";
 import { decodeUTF8 } from "tweetnacl-util";
-import { getMessagePayload } from "@services/utils";
+import { getMessagePayload } from "../services/utils";
 
 describe("Use code endpoint", () => {
   let fastify: FastifyInstance;
