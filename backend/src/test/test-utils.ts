@@ -1,6 +1,6 @@
 import { Collections } from "@/models/collections";
 import { DATABASE_URL } from "@config/index";
-import { Keypair } from "@solana/web3.js";
+import { Keypair, PublicKey } from "@solana/web3.js";
 import { MongoClient } from "mongodb";
 import nacl from "tweetnacl";
 
@@ -56,4 +56,8 @@ export const assertThrowsAsync = async (fn: Promise<any>, word?: string) => {
 export const signMessage = (signer: Keypair, message: Uint8Array) => {
   const signature = nacl.sign.detached(message, signer.secretKey);
   return signature;
+};
+
+export const getMessagePayload = (address: PublicKey, code: string) => {
+  return address.toString() + " is using referral " + code;
 };

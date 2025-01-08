@@ -1,5 +1,4 @@
 import { Collections, IReferralCollectionItem } from "@/models/collections";
-import { getMessagePayload } from "@invariant-labs/points-sdk/src/utils";
 import { Collection } from "@services/collection.service";
 import { verifyMessage, getRandomCode } from "@services/utils";
 import { PublicKey } from "@solana/web3.js";
@@ -14,6 +13,10 @@ interface IUseCodeBody {
 interface IGetCodeParams {
   address: string;
 }
+
+export const getMessagePayload = (address: PublicKey, code: string) => {
+  return address.toString() + " is using referral " + code;
+};
 
 export const getReferralCodes = async (
   req: FastifyRequest,
