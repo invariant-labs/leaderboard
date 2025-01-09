@@ -24,7 +24,7 @@ export const getReferralCodes = async (
   res: FastifyReply
 ) => {
   const collection = new Collection(Collections.Referrals);
-  const referrals = await collection.getAllElementsAsArray();
+  const referrals = await collection.getReferrersAndReferred();
   const filteredReferrals = referrals.reduce(
     (
       acc: Record<
