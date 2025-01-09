@@ -9,6 +9,17 @@ export class Collection {
     this.db = app.db.collection(collection);
   }
 
+  async getReferrersAndReferred() {
+    return await this.db
+      .find({
+        $or: [
+          { invited: { $exists: true, $not: { $size: 0 } } },
+          { codeUsed: { $exists: true, $ne: null } },
+        ],
+      })
+      .toArray();
+  }
+
   async getAllElementsAsArray() {
     return await this.db.find({}).toArray();
   }
