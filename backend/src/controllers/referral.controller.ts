@@ -25,7 +25,10 @@ export const getReferralCodes = async (
 ) => {
   const collection = new Collection(Collections.Referrals);
   const referrals = await collection.getAllElementsAsArray();
-  res.send(referrals);
+  const filteredReferrals = referrals.filter(
+    (ref) => ref.invited.length > 0 || !!ref.codeUsed
+  );
+  res.send(filteredReferrals);
 };
 
 export const useCode = async (
