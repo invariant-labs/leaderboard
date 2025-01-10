@@ -13,7 +13,7 @@ wait_for_mongodb() {
 manage_collections() {
     echo "Creating/Clearing collections..."
     docker exec mongodb mongosh --eval '
-        db = db.getSiblingDB("myDatabase");
+        db = db.getSiblingDB("points");
         db.referrals.drop();
         db.createCollection("referrals");
         print("Collections have been reset successfully.");

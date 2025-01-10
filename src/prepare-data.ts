@@ -1,10 +1,13 @@
 import { Network } from "@invariant-labs/sdk-eclipse";
 import fs from "fs";
 import path from "path";
-import { IPointsHistoryJson, IPointsJson } from "./types";
+import { IPointsHistoryJson, IPointsJson, IReferral } from "./types";
 // import ECLIPSE_TESTNET_POINTS from "../data/points_testnet.json";
 import ECLIPSE_MAINNET_POINTS from "../data/points_mainnet.json";
 import { BN } from "@coral-xyz/anchor";
+import { getReferralCodes } from "./utils";
+import { REFERRER_CUT, USE_CODE_PERCENTAGE } from "./consts";
+import { PERCENTAGE_DENOMINATOR } from "./math";
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 require("dotenv").config();
@@ -37,6 +40,39 @@ export const prepareFinalData = async (network: Network) => {
       new BN(0)
     );
   });
+
+  const referrals: Record<string, IReferral> = await getReferralCodes();
+  const bonusPoints = {};
+
+  for (const [address, referral] of Object.entries(referrals)) {
+    let useCodeBonus = new BN(0);
+    let referrersBonus = new BN(0);
+
+    if (referral.codeUsed) {
+      // 5% boost for self generated points
+      useCodeBonus = new BN(data[address].totalPoints, "hex")
+        .mul(USE_CODE_PERCENTAGE)
+        .div(PERCENTAGE_DENOMINATOR);
+    }
+
+    if (referral.invited.length !== 0) {
+      for (const referred of referral.invited) {
+        if (data[referred]) {
+          // 10% of referred points
+          referrersBonus = referrersBonus.add(
+            new BN(data[referred].totalPoints, "hex")
+              .mul(REFERRER_CUT)
+              .div(PERCENTAGE_DENOMINATOR)
+          );
+        }
+      }
+    }
+
+    bonusPoints[address] = {
+      useCodeBonus,
+      referrersBonus,
+    };
+  }
 
   const finalData = Object.keys(data)
     .map((key) => {
