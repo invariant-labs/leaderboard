@@ -11,12 +11,40 @@ export class Collection {
 
   async getReferrersAndReferred() {
     return await this.db
-      .find({
-        $or: [
-          { invited: { $exists: true, $not: { $size: 0 } } },
-          { codeUsed: { $exists: true, $ne: null } },
-        ],
-      })
+      .aggregate([
+        {
+          $match: {
+            $or: [
+              { invited: { $exists: true, $not: { $size: 0 } } },
+              { codeUsed: { $exists: true, $ne: null } },
+            ],
+          },
+        },
+        {
+          $project: {
+            address: 1,
+            restOfData: {
+              signature: 1,
+              code: 1,
+              codeUsed: 1,
+              invited: 1,
+            },
+          },
+        },
+        {
+          $group: {
+            _id: "$address",
+            data: { $first: "$restOfData" },
+          },
+        },
+        {
+          $replaceRoot: {
+            newRoot: {
+              $mergeObjects: { k: "$_id", v: "$data" },
+            },
+          },
+        },
+      ])
       .toArray();
   }
 
