@@ -70,7 +70,14 @@ export const useCode = async (
     session.startTransaction();
     const referrerEntry = await collection.findOne({ code });
     const userEntry = await collection.findOne({ address });
-    if (!referrerEntry || (userEntry && !!userEntry.codeUsed)) {
+
+    if (!referrerEntry || (userEntry && userEntry.codeUsed)) {
+      await session.abortTransaction();
+      res.status(400).send({ ok: false });
+      return;
+    }
+
+    if (userEntry?.address === referrerEntry.address) {
       await session.abortTransaction();
       res.status(400).send({ ok: false });
       return;
@@ -101,7 +108,7 @@ export const getCode = async (
   const { address } = req.params;
   const userEntry = await collection.findOne({ address });
   if (userEntry) {
-    return res.status(200).send({ code: userEntry.codeOwned });
+    return res.status(200).send({ code: userEntry.code });
   }
   const codeOwned = getRandomCode();
   const newUserEntry: IReferralCollectionItem = {
