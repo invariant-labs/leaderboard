@@ -25,26 +25,7 @@ export const getReferralCodes = async (
 ) => {
   const collection = new Collection(Collections.Referrals);
   const referrals = await collection.getReferrersAndReferred();
-  const filteredReferrals = referrals.reduce(
-    (
-      acc: Record<
-        string,
-        {
-          signature: string | null;
-          code: string;
-          codeUsed: string | null;
-          invited: string[];
-        }
-      >,
-      curr
-    ) => {
-      const { address, signature, code, codeUsed, invited } = curr;
-      acc[address] = { signature, code, codeUsed, invited };
-      return acc;
-    },
-    {}
-  );
-  res.send(filteredReferrals);
+  res.send(referrals);
 };
 
 export const useCode = async (
