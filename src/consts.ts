@@ -63,14 +63,14 @@ export const PROMOTED_PAIRS_MAINNET: IPromotedPair[] = [
 
 export const PROMOTED_PAIRS_TESTNET: IPromotedPair[] = [
   {
-    tokenX: new PublicKey("5gFSyxjNsuQsZKn9g5L9Ky3cSUvJ6YXqWVuPzmSi8Trx"),
+    tokenX: new PublicKey("2F5TprcNBqj2hXVr9oTssabKdf8Zbsf9xStqWjPm8yLo"),
     xDecimal: 9,
     feedXId:
-      "0xeaa020c61cc479712813461ce153894a96a6c00b21ed0cfc2798d1f9a9e9c94a", //  USDC/USD
-    tokenY: new PublicKey("So11111111111111111111111111111111111111112"),
+      "0xe62df6c8b4a85fe1a67db44dc12de5db330f7ac66b72dc658afedf0f4a415b43", //  BTC/USD
+    tokenY: new PublicKey("5gFSyxjNsuQsZKn9g5L9Ky3cSUvJ6YXqWVuPzmSi8Trx"),
     yDecimal: 9,
     feedYId:
-      "0xff61491a931112ddf1bd8147cd1b641375f79f5825126d665480874634fd0ace", // ETH/USD
+      "0xeaa020c61cc479712813461ce153894a96a6c00b21ed0cfc2798d1f9a9e9c94a", // USDC/USD
     startTxHash:
       "5zYeULhNMbzQi1Fzr8QuhogFPZgX2G4hzB3neVqnNx7BaxERSN6wreJ6GvV46m6soijnvgD3wxDv1hFkHS9RiMzn",
   },

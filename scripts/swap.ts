@@ -14,7 +14,7 @@ const provider = AnchorProvider.local(
 );
 const connection = provider.connection;
 
-const POOL = new PublicKey("4xLSZJwLdkQHGqgyx1E9KHvdMnj7QVKa9Pwcnp1x2mDc"); // USDC/TTS 0.05%
+const POOL = new PublicKey("GmCRe13oLWSz7pWmqsnLxTxF8zXapWTQSRjmfbJ654XZ"); // BTC/USDC 1%
 const FOUNDER = Keypair.fromSecretKey(
   bs58.decode(process.env.FOUNDER_PRIVATE_KEY as string)
 );
@@ -42,11 +42,11 @@ const main = async () => {
     FOUNDER.publicKey
   );
 
-  const amount = new BN(25000);
+  const amount = new BN(100 * 10 ** 9);
   const swap: Swap = {
     pair,
     // USDC is tokenX, TTS is tokenY
-    xToY: true,
+    xToY: false,
     amount,
     estimatedPriceAfterSwap: poolState.sqrtPrice,
     slippage: toDecimal(5, 1),
