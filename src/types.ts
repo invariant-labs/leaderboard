@@ -51,3 +51,17 @@ export interface IPromotedPool {
   pointsPerSecond: BN;
   startCountTimestamp: BN;
 }
+
+export interface IPromotedPair {
+  tokenX: PublicKey;
+  xDecimal: number;
+  tokenY: PublicKey;
+  yDecimal: number;
+  startTxHash: string;
+  feedId: string;
+}
+
+export interface ISwapPoints {
+  points: BN;
+  points24HoursHistory: IPointsHistoryJson[];
+}

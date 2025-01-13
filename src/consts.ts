@@ -1,6 +1,6 @@
 import { BN } from "@coral-xyz/anchor";
 import { PublicKey } from "@solana/web3.js";
-import { IPromotedPool } from "./types";
+import { IPromotedPair, IPromotedPool } from "./types";
 
 export const MAX_SIGNATURES_PER_CALL = 100;
 export const PROMOTED_POOLS_TESTNET: IPromotedPool[] = [
@@ -32,6 +32,20 @@ export const PROMOTED_POOLS_MAINNET: IPromotedPool[] = [
     pointsPerSecond: new BN(10),
     startCountTimestamp: new BN(1735587867),
   }, // ETH/tETH 0.01%
+];
+
+export const POINTS_PER_USD = new BN(100);
+// Price feed IDS: https://www.pyth.network/developers/price-feed-ids
+export const PROMOTED_PAIRS_MAINNET: IPromotedPair[] = [
+  {
+    tokenX: new PublicKey("HRgVv1pyBLXdsAddq4ubSqo8xdQWRrYbvmXqEDtectce"),
+    xDecimal: 6,
+    tokenY: new PublicKey("HRgVv1pyBLXdsAddq4ubSqo8xdQWRrYbvmXqEDtectce"),
+    yDecimal: 6,
+    startTxHash: "",
+    feedId:
+      "0xff61491a931112ddf1bd8147cd1b641375f79f5825126d665480874634fd0ace", // ETH/USD
+  },
 ];
 
 export const DAY = new BN(86400);
