@@ -127,7 +127,9 @@ export const createSnapshotForNetwork = async (network: Network) => {
   ).parsed ?? fs.readFileSync(priceFeedsFileName, "utf-8")) as IPriceFeed[];
 
   if (!priceFeeds) {
-    throw new Error("IMPL: get previous price feeds or calculate from pool");
+    throw new Error(
+      "NOTE: Add events without price feeds to separate file and resolve them later"
+    );
   }
 
   const currentTimestamp = getTimestampInSeconds();
