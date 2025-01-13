@@ -1,0 +1,22 @@
+### Query Code
+GET http://localhost:3000/api/leaderboard/get-code/AMw74tWw61gxbvVrYTrKrPD5ZKtF5hgRt4hovBFumEtt
+
+
+### Get all codes
+GET http://localhost:3000/api/leaderboard/get-referral-codes
+
+
+### Insert mock codes
+POST http://localhost:3000/api/leaderboard/insert-mock-codes
+
+
+
+### Use code
+POST http://localhost:3000/api/leaderboard/use-code
+Content-Type: application/json
+
+{
+    "address": "AMw74tWw61gxbvVrYTrKrPD5ZKtF5hgRt4hovBFumEtt",
+    "code": "rtowulqn",
+    "signature": []
+}

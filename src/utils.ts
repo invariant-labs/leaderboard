@@ -10,7 +10,13 @@ import {
   RETRY_DELAY,
 } from "./consts";
 import { BN } from "@coral-xyz/anchor";
-import { IActive, IClosed, IPoolAndTicks, IPromotedPool } from "./types";
+import {
+  IActive,
+  IClosed,
+  IPoolAndTicks,
+  IPromotedPool,
+  IReferral,
+} from "./types";
 import {
   calculatePointsToDistribute,
   calculateReward,
@@ -361,4 +367,14 @@ export const fetchPoolsWithTicks = async (
   }
 
   return fetchPoolsWithTicks(retries + 1, market, connection, promotedPools);
+};
+
+export const getReferralCodes = async (): Promise<
+  Record<string, IReferral>
+> => {
+  const response = await fetch(
+    "http://localhost:3000/api/leaderboard/get-referral-codes"
+  );
+  const data = await response.json();
+  return data as Record<string, IReferral>;
 };

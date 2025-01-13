@@ -42,3 +42,6 @@ export const FULL_SNAP_START_TX_HASH_MAINNET =
   "zt4f4PYU2qKyvevjvED2Q9RSUJbiGSJns8NCQGAuLFgrTJ8irentnaEzc7uxxoi65vtmWxhwZh8HDg6NRsWjQxw";
 export const FULL_SNAP_START_TX_HASH_TESTNET =
   "AmjrAbNvGU8qK6xFTGpPCFPcYruZvH7gZ46YtxFyMp58x9UK3MXJ3CC3UojBvptxiAjip7fU4txZtQMoJ6Sc6kf";
+
+export const USE_CODE_PERCENTAGE = new BN(50000); // 5%
+export const REFERRER_CUT = new BN(100000); // 10%

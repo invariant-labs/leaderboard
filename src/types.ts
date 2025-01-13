@@ -51,3 +51,10 @@ export interface IPromotedPool {
   pointsPerSecond: BN;
   startCountTimestamp: BN;
 }
+
+export interface IReferral {
+  code: string;
+  codeUsed: string | null;
+  signature: string;
+  invited: string[];
+}

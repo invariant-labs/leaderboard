@@ -56,6 +56,17 @@ export class Collection {
     );
   }
 
+  async getReferrersAndReferred() {
+    return await this.db
+      .find({
+        $or: [
+          { invited: { $exists: true, $not: { $size: 0 } } },
+          { codeUsed: { $exists: true, $ne: null } },
+        ],
+      })
+      .toArray();
+  }
+
   async insertOne(element: any) {
     return await this.db.insertOne(element);
   }

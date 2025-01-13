@@ -40,6 +40,23 @@ describe("Use code endpoint", () => {
     expect(body.code).toBe(lastElement.code);
     expect(allRecordsBefore.length).toBe(allRecordsAfter.length - 1);
     expect(statusCode).toBe(200);
+
+    {
+      const payload = getMessagePayload(address.publicKey, code);
+      const signature = signMessage(address, decodeUTF8(payload));
+      const response = await fastify.inject({
+        method: "POST",
+        url: "/api/leaderboard/use-code",
+        payload: {
+          address: address.publicKey.toString(),
+          code,
+          signature: Buffer.from(signature).toString("base64"),
+        },
+      });
+
+      const statusCode = response.statusCode;
+      expect(statusCode).toBe(400);
+    }
   });
   test("Use code", async () => {
     const address = Keypair.generate();
