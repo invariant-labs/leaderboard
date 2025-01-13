@@ -66,3 +66,24 @@ export interface ISwapPoints {
   points: BN;
   points24HoursHistory: IPointsHistoryJson[];
 }
+
+export interface IPriceFeed {
+  ema_price: {
+    conf: string;
+    expo: number;
+    price: string;
+    publish_time: number;
+  };
+  id: string;
+  metadata: {
+    prev_publish_time: number;
+    proof_available_time: number;
+    slot: number;
+  };
+  price: {
+    conf: string;
+    expo: number;
+    price: string;
+    publish_time: number;
+  };
+}

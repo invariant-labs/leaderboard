@@ -16,7 +16,7 @@ import {
   fetchTransactionLogs,
   retryOperation,
 } from "./utils";
-import { IPromotedPair } from "./types";
+import { IPriceFeed, IPromotedPair } from "./types";
 import { SwapEvent } from "@invariant-labs/sdk-eclipse/lib/market";
 import { calculatePointsForSwap, getTimestampInSeconds } from "./math";
 import { HermesClient } from "@pythnetwork/hermes-client";
@@ -30,6 +30,8 @@ export const createSnapshotForNetwork = async (network: Network) => {
   let pointsFileName: string;
   let PROMOTED_PAIRS: IPromotedPair[];
   let pairsFileName: string;
+  let priceFeedsFileName: string;
+
   const hermesClient: HermesClient = new HermesClient(
     "https://hermes.pyth.network",
     {}
@@ -43,6 +45,10 @@ export const createSnapshotForNetwork = async (network: Network) => {
         __dirname,
         "../data/pairs_last_tx_hashes_mainnet.json"
       );
+      priceFeedsFileName = path.join(
+        __dirname,
+        "../data/last_price_feed_mainnet.json"
+      );
       PROMOTED_PAIRS = PROMOTED_PAIRS_MAINNET;
       break;
     case Network.TEST:
@@ -53,6 +59,10 @@ export const createSnapshotForNetwork = async (network: Network) => {
       pairsFileName = path.join(
         __dirname,
         "../data/pairs_last_tx_hashes_testnet.json"
+      );
+      priceFeedsFileName = path.join(
+        __dirname,
+        "../data/last_price_feed_testnet.json"
       );
       PROMOTED_PAIRS = PROMOTED_PAIRS_MAINNET;
       break;
@@ -104,14 +114,13 @@ export const createSnapshotForNetwork = async (network: Network) => {
     fetchTransactionLogs(connection, sigs, MAX_SIGNATURES_PER_CALL)
   );
 
-  const priceFeeds = (
+  const priceFeeds = ((
     await hermesClient.getLatestPriceUpdates(
       Array.from(
         new Set(PROMOTED_PAIRS.map((p) => [p.feedXId, p.feedYId]).flat())
       )
     )
-  ).parsed;
-  console.log(priceFeeds);
+  ).parsed ?? fs.readFileSync(priceFeedsFileName, "utf-8")) as IPriceFeed[];
 
   if (!priceFeeds) {
     throw new Error("IMPL: get previous price feeds or calculate from pool");
@@ -202,6 +211,7 @@ export const createSnapshotForNetwork = async (network: Network) => {
 
   fs.writeFileSync(pointsFileName, JSON.stringify(previousPoints));
   fs.writeFileSync(pairsFileName, JSON.stringify(newHashes));
+  fs.writeFileSync(priceFeedsFileName, JSON.stringify(priceFeeds));
 };
 
 // createSnapshotForNetwork(Network.TEST).then(

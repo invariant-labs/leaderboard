@@ -1,0 +1,42 @@
+[
+  {
+    "ema_price": {
+      "conf": "107738",
+      "expo": -8,
+      "price": "99994058",
+      "publish_time": 1736775742
+    },
+    "id": "eaa020c61cc479712813461ce153894a96a6c00b21ed0cfc2798d1f9a9e9c94a",
+    "metadata": {
+      "prev_publish_time": 1736775742,
+      "proof_available_time": 1736775743,
+      "slot": 191043241
+    },
+    "price": {
+      "conf": "105033",
+      "expo": -8,
+      "price": "99994538",
+      "publish_time": 1736775742
+    }
+  },
+  {
+    "ema_price": {
+      "conf": "287033560",
+      "expo": -8,
+      "price": "307291740000",
+      "publish_time": 1736775742
+    },
+    "id": "ff61491a931112ddf1bd8147cd1b641375f79f5825126d665480874634fd0ace",
+    "metadata": {
+      "prev_publish_time": 1736775742,
+      "proof_available_time": 1736775743,
+      "slot": 191043241
+    },
+    "price": {
+      "conf": "294227454",
+      "expo": -8,
+      "price": "306186000000",
+      "publish_time": 1736775742
+    }
+  }
+]
