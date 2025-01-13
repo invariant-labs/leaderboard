@@ -179,12 +179,14 @@ export const createSnapshotForNetwork = async (network: Network) => {
 
       const key = swapper.toString();
       if (previousPoints[key]) {
-        previousPoints[key].points = previousPoints[key].points.add(points);
+        previousPoints[key].points = new BN(previousPoints[key]).points.add(
+          points
+        );
       } else {
         previousPoints[key].points = points;
       }
 
-      pointsChange[key] = pointsChange[key].add(points);
+      pointsChange[key] = new BN(pointsChange[key]).add(points);
     });
 
   Object.keys(previousPoints).forEach((key) => {
