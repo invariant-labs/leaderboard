@@ -10,7 +10,7 @@ interface IData {
     last24hPoints: string;
     positions: number;
     referralPoints?: string;
-    referrers?: string;
+    referrers?: number;
   } | null;
   leaderboard: {
     rank: number;
@@ -19,7 +19,7 @@ interface IData {
     last24hPoints: string;
     positions: number;
     referralPoints?: string;
-    referrers?: string;
+    referrers?: number;
   }[];
   totalItems: number;
 }

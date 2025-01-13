@@ -87,7 +87,7 @@ export const prepareFinalData = async (network: Network) => {
           bonusPoints[key] ? bonusPoints[key].useCodeBonus : new BN(0)
         ),
         referralPoints: bonusPoints[key]?.referrersBonus,
-        referrers: referrals[key]?.invited,
+        referrers: referrals[key]?.invited.length,
         positions: data[key].positionsAmount,
       };
     })
