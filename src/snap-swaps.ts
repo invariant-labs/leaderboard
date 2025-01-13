@@ -10,7 +10,12 @@ import { AnchorProvider, BN } from "@coral-xyz/anchor";
 import { PublicKey } from "@solana/web3.js";
 import fs from "fs";
 import path from "path";
-import { DAY, MAX_SIGNATURES_PER_CALL, PROMOTED_PAIRS_MAINNET } from "./consts";
+import {
+  DAY,
+  MAX_SIGNATURES_PER_CALL,
+  PROMOTED_PAIRS_MAINNET,
+  PROMOTED_PAIRS_TESTNET,
+} from "./consts";
 import {
   fetchAllSignatures,
   fetchTransactionLogs,
@@ -63,7 +68,7 @@ export const createSnapshotForNetwork = async (network: Network) => {
         __dirname,
         "../data/last_price_feed_testnet.json"
       );
-      PROMOTED_PAIRS = PROMOTED_PAIRS_MAINNET;
+      PROMOTED_PAIRS = PROMOTED_PAIRS_TESTNET;
       break;
     default:
       throw new Error("Unknown network");
@@ -133,9 +138,7 @@ export const createSnapshotForNetwork = async (network: Network) => {
   finalLogs.map((log, index) => {
     if (
       log.startsWith("Program data:") &&
-      finalLogs[index + 1].startsWith(
-        `Program ${market.program.programId.toBase58()}`
-      )
+      finalLogs[index - 1].startsWith(`Program log: INVARIANT: SWAP`)
     )
       eventLogs.push(log.split("Program data: ")[1]);
   });
@@ -151,7 +154,7 @@ export const createSnapshotForNetwork = async (network: Network) => {
       const { swapper, fee, xToY, tokenX, tokenY } = event;
 
       const associatedPair = PROMOTED_PAIRS.find(
-        (p) => p.tokenX === tokenX && p.tokenY === tokenY
+        (p) => p.tokenX.equals(tokenX) && p.tokenY.equals(tokenY)
       );
 
       if (!associatedPair) {
@@ -160,7 +163,8 @@ export const createSnapshotForNetwork = async (network: Network) => {
 
       const feed = priceFeeds.find(
         (feed) =>
-          feed.id === (xToY ? associatedPair.feedXId : associatedPair.feedYId)
+          `0x${feed.id}` ===
+          (xToY ? associatedPair.feedXId : associatedPair.feedYId)
       );
 
       if (!feed) {
@@ -179,21 +183,23 @@ export const createSnapshotForNetwork = async (network: Network) => {
 
       const key = swapper.toString();
       if (previousPoints[key]) {
-        previousPoints[key].points = new BN(previousPoints[key]).points.add(
-          points
-        );
+        console.log(previousPoints[key]);
+        previousPoints[key].points = new BN(
+          previousPoints[key].points,
+          "hex"
+        ).add(points);
       } else {
-        previousPoints[key].points = points;
+        previousPoints[key] = { points, points24HoursHistory: [] };
       }
 
-      pointsChange[key] = new BN(pointsChange[key]).add(points);
+      pointsChange[key] = new BN(pointsChange[key], "hex").add(points);
     });
 
   Object.keys(previousPoints).forEach((key) => {
     if (previousPoints[key] && previousPoints[key].points24HoursHistory) {
       const prevHistory = previousPoints[key].points24HoursHistory;
       const recentHistory = prevHistory.filter((entry) =>
-        new BN(entry.timestamp, "hex").lt(currentTimestamp.sub(DAY))
+        new BN(entry.timestamp, "hex").gt(currentTimestamp.sub(DAY))
       );
       recentHistory.push({
         diff: pointsChange[key],
@@ -215,20 +221,20 @@ export const createSnapshotForNetwork = async (network: Network) => {
   fs.writeFileSync(priceFeedsFileName, JSON.stringify(priceFeeds));
 };
 
-// createSnapshotForNetwork(Network.TEST).then(
-//   () => {
-//     console.log("Eclipse: Testnet snapshot done!");
-//   },
-//   (err) => {
-//     console.log(err);
-//   }
-// );
-
-createSnapshotForNetwork(Network.MAIN).then(
+createSnapshotForNetwork(Network.TEST).then(
   () => {
-    console.log("Eclipse: Mainnet swap snapshot done!");
+    console.log("Eclipse: Testnet snapshot done!");
   },
   (err) => {
     console.log(err);
   }
 );
+
+// createSnapshotForNetwork(Network.MAIN).then(
+//   () => {
+//     console.log("Eclipse: Mainnet swap snapshot done!");
+//   },
+//   (err) => {
+//     console.log(err);
+//   }
+// );
