@@ -80,8 +80,8 @@ export const createSnapshotForNetwork = async (network: Network) => {
           new Pair(
             tokenX,
             tokenY,
-            // TODO: redundant
-            { fee: 0, tickSpacing: 1 }
+            // NOTE: redundant
+            { fee: new BN(0), tickSpacing: 1 }
           )
         ).address;
         const key = tokenX.toString() + tokenY.toString();
@@ -160,12 +160,24 @@ export const createSnapshotForNetwork = async (network: Network) => {
     });
 
   Object.keys(previousPoints).forEach((key) => {
-    const prevHistory = previousPoints[key].points24HoursHistory;
-    const recentHistory = prevHistory.filter((entry) =>
-      new BN(entry.timestamp, "hex").lt(currentTimestamp.sub(DAY))
-    );
-    recentHistory.push(pointsChange[key]);
-    previousPoints[key].points24HoursHistory = recentHistory;
+    if (previousPoints[key] && previousPoints[key].points24HoursHistory) {
+      const prevHistory = previousPoints[key].points24HoursHistory;
+      const recentHistory = prevHistory.filter((entry) =>
+        new BN(entry.timestamp, "hex").lt(currentTimestamp.sub(DAY))
+      );
+      recentHistory.push({
+        diff: pointsChange[key],
+        timestamp: currentTimestamp,
+      });
+      previousPoints[key].points24HoursHistory = recentHistory;
+    } else {
+      previousPoints[key].points24HoursHistory = [
+        {
+          diff: pointsChange[key],
+          timestamp: currentTimestamp,
+        },
+      ];
+    }
   });
 
   fs.writeFileSync(pointsFileName, JSON.stringify(previousPoints));
