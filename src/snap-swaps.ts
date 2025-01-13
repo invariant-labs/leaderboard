@@ -104,9 +104,11 @@ export const createSnapshotForNetwork = async (network: Network) => {
     fetchTransactionLogs(connection, sigs, MAX_SIGNATURES_PER_CALL)
   );
 
-  const priceFeedIds = await hermesClient.getLatestPriceUpdates(
-    PROMOTED_PAIRS.map((p) => p.feedId)
-  );
+  const priceFeeds: Record<string, any> = (
+    (await hermesClient.getLatestPriceUpdates(
+      PROMOTED_PAIRS.map((p) => p.feedId)
+    )) as any
+  ).map((f) => f.parsed);
 
   const currentTimestamp = getTimestampInSeconds();
   const finalLogs = txLogs.flat();
@@ -141,12 +143,15 @@ export const createSnapshotForNetwork = async (network: Network) => {
         throw new Error("Associated pair not found");
       }
 
-      const priceFeed = new BN(3500);
+      const feed = priceFeeds.find((feed) => feed.id === associatedPair.feedId);
+      const priceDecimals = Math.abs(feed.price.expo);
+      const priceFeed = feed.price.price;
 
       const points = calculatePointsForSwap(
         fee,
         xToY ? associatedPair.xDecimal : associatedPair.yDecimal,
-        priceFeed
+        priceFeed,
+        priceDecimals
       );
 
       const key = swapper.toString();

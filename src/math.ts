@@ -123,13 +123,15 @@ export const calculateSecondsPerLiquidityInside = (
 export const calculatePointsForSwap = (
   fee: BN,
   decimals: number,
-  priceFeed: BN
+  priceFeed: BN,
+  priceDecimals: number
 ) => {
   const nominator = fee
     .mul(priceFeed)
     .mul(POINTS_PER_USD)
     .mul(POINTS_DENOMINATOR);
-  const denominator = new BN(10).pow(new BN(decimals));
+
+  const denominator = new BN(10).pow(new BN(decimals + priceDecimals));
 
   return nominator.div(denominator);
 };
