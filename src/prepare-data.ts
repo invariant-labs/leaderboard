@@ -42,13 +42,14 @@ export const prepareFinalData = async (network: Network) => {
   });
 
   const referrals: Record<string, IReferral> = await getReferralCodes();
+
   const bonusPoints = {};
 
   for (const [address, referral] of Object.entries(referrals)) {
     let useCodeBonus = new BN(0);
     let referrersBonus = new BN(0);
 
-    if (referral.codeUsed) {
+    if (referral.codeUsed && data[address]) {
       // 5% boost for self generated points
       useCodeBonus = new BN(data[address].totalPoints, "hex")
         .mul(USE_CODE_PERCENTAGE)
@@ -74,19 +75,25 @@ export const prepareFinalData = async (network: Network) => {
     };
   }
 
+  console.log(bonusPoints);
+
   const finalData = Object.keys(data)
     .map((key) => {
       return {
         address: key,
         rank: rank[key],
         last24hPoints: last24HoursPoints[key],
-        points: new BN(data[key].totalPoints, "hex"),
+        points: new BN(data[key].totalPoints, "hex").add(
+          bonusPoints[key] ? bonusPoints[key].useCodeBonus : new BN(0)
+        ),
+        referralPoints: bonusPoints[key]?.referrersBonus,
+        referrers: referrals[key]?.invited,
         positions: data[key].positionsAmount,
       };
     })
     .sort((a, b) => a.rank - b.rank);
 
-  fs.writeFileSync(finalDataFile, JSON.stringify(finalData, null, 2));
+  fs.writeFileSync(finalDataFile, JSON.stringify(finalData));
 };
 
 // prepareFinalData(Network.TEST).then(
