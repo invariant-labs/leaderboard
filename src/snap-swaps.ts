@@ -20,7 +20,6 @@ import { IPriceFeed, IPromotedPair } from "./types";
 import { SwapEvent } from "@invariant-labs/sdk-eclipse/lib/market";
 import { calculatePointsForSwap, getTimestampInSeconds } from "./math";
 import { HermesClient } from "@pythnetwork/hermes-client";
-import { token } from "@coral-xyz/anchor/dist/cjs/utils";
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 require("dotenv").config();
@@ -149,10 +148,10 @@ export const createSnapshotForNetwork = async (network: Network) => {
     .filter((decodedEvent) => !!decodedEvent)
     .forEach((decodedEvent) => {
       const event = parseEvent(decodedEvent) as SwapEvent;
-      const { swapper, fee, xToY } = event;
+      const { swapper, fee, xToY, tokenX, tokenY } = event;
 
       const associatedPair = PROMOTED_PAIRS.find(
-        (p) => p.tokenX === event.tokenX && p.tokenY === event.tokenY
+        (p) => p.tokenX === tokenX && p.tokenY === tokenY
       );
 
       if (!associatedPair) {
@@ -225,7 +224,7 @@ export const createSnapshotForNetwork = async (network: Network) => {
 
 createSnapshotForNetwork(Network.MAIN).then(
   () => {
-    console.log("Eclipse: Mainnet snapshot done!");
+    console.log("Eclipse: Mainnet swap snapshot done!");
   },
   (err) => {
     console.log(err);
