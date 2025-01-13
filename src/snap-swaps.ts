@@ -84,7 +84,7 @@ export const createSnapshotForNetwork = async (network: Network) => {
             { fee: new BN(0), tickSpacing: 1 }
           )
         ).address;
-        const key = tokenX.toString() + tokenY.toString();
+        const key = tokenX.toString() + "-" + tokenY.toString();
         const previousTxHash = previousHashes[key] ?? startTxHash;
         return retryOperation(
           fetchAllSignatures(connection, refAddr, previousTxHash)
@@ -104,11 +104,18 @@ export const createSnapshotForNetwork = async (network: Network) => {
     fetchTransactionLogs(connection, sigs, MAX_SIGNATURES_PER_CALL)
   );
 
-  const priceFeeds: Record<string, any> = (
-    (await hermesClient.getLatestPriceUpdates(
-      PROMOTED_PAIRS.map((p) => p.feedId)
-    )) as any
-  ).map((f) => f.parsed);
+  const priceFeeds = (
+    await hermesClient.getLatestPriceUpdates(
+      Array.from(
+        new Set(PROMOTED_PAIRS.map((p) => [p.feedXId, p.feedYId]).flat())
+      )
+    )
+  ).parsed;
+  console.log(priceFeeds);
+
+  if (!priceFeeds) {
+    throw new Error("IMPL: get previous price feeds or calculate from pool");
+  }
 
   const currentTimestamp = getTimestampInSeconds();
   const finalLogs = txLogs.flat();
@@ -143,9 +150,17 @@ export const createSnapshotForNetwork = async (network: Network) => {
         throw new Error("Associated pair not found");
       }
 
-      const feed = priceFeeds.find((feed) => feed.id === associatedPair.feedId);
+      const feed = priceFeeds.find(
+        (feed) =>
+          feed.id === (xToY ? associatedPair.feedXId : associatedPair.feedYId)
+      );
+
+      if (!feed) {
+        throw new Error("Price feed not found");
+      }
+
       const priceDecimals = Math.abs(feed.price.expo);
-      const priceFeed = feed.price.price;
+      const priceFeed = new BN(feed.price.price);
 
       const points = calculatePointsForSwap(
         fee,

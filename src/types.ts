@@ -58,7 +58,8 @@ export interface IPromotedPair {
   tokenY: PublicKey;
   yDecimal: number;
   startTxHash: string;
-  feedId: string;
+  feedXId: string;
+  feedYId: string;
 }
 
 export interface ISwapPoints {
