@@ -27,8 +27,8 @@ export interface IPoolAndTicks {
   pointsPerSecond: BN;
 }
 export interface IPointsHistory {
-  diff: BN;
-  timestamp: BN;
+  diff: BN | string;
+  timestamp: BN | string;
 }
 export interface IPoints {
   totalPoints: BN;
@@ -87,3 +87,10 @@ export interface IPriceFeed {
     publish_time: number;
   };
 }
+export interface PointsEntry {
+  totalPoints: string; // hex string
+  positionsAmount: number;
+  points24HoursHistory: IPointsHistory[];
+}
+
+export type PointsData = Record<string, PointsEntry>;
