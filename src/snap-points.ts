@@ -30,18 +30,17 @@ import {
 } from "./utils";
 import {
   IActive,
-  IPointsHistory,
+  IPoints,
+  IPointsJson,
   IPoolAndTicks,
   IPositions,
   IPromotedPool,
-  PointsEntry,
 } from "./types";
 import {
   CreatePositionEvent,
   RemovePositionEvent,
 } from "@invariant-labs/sdk-eclipse/lib/market";
-import { getTimestampInSeconds } from "./math";
-import { PointsBinaryConverter } from "./conversion";
+import { getTimestampInSeconds, POINTS_DENOMINATOR } from "./math";
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 require("dotenv").config();
@@ -54,7 +53,6 @@ export const createSnapshotForNetwork = async (network: Network) => {
   let poolsFileName: string;
   let FULL_SNAP_START_TX_HASH: string;
   let lastSnapTimestampFileName: string;
-  let isBinary: boolean;
   switch (network) {
     case Network.MAIN:
       provider = AnchorProvider.local("https://eclipse.helius-rpc.com");
@@ -62,8 +60,7 @@ export const createSnapshotForNetwork = async (network: Network) => {
         __dirname,
         "../data/events_snap_mainnet.json"
       );
-      pointsFileName = path.join(__dirname, "../data/points_mainnet.bin");
-      isBinary = true;
+      pointsFileName = path.join(__dirname, "../data/points_mainnet.json");
       poolsFileName = path.join(
         __dirname,
         "../data/pools_last_tx_hashes_mainnet.json"
@@ -84,7 +81,6 @@ export const createSnapshotForNetwork = async (network: Network) => {
         "../data/events_snap_testnet.json"
       );
       pointsFileName = path.join(__dirname, "../data/points_testnet.json");
-      isBinary = false;
       poolsFileName = path.join(
         __dirname,
         "../data/pools_last_tx_hashes_testnet.json"
@@ -344,11 +340,10 @@ export const createSnapshotForNetwork = async (network: Network) => {
     eventsObject[ownerKey].closed.push(entry);
   });
 
-  const previousPoints = isBinary
-    ? PointsBinaryConverter.readBinaryFile(pointsFileName)
-    : JSON.parse(fs.readFileSync(pointsFileName, "utf-8"));
-
-  const points: Record<string, PointsEntry> = Object.keys(eventsObject).reduce(
+  const previousPoints: Record<string, IPointsJson> = JSON.parse(
+    fs.readFileSync(pointsFileName, "utf-8")
+  );
+  const points: Record<string, IPoints> = Object.keys(eventsObject).reduce(
     (acc, curr) => {
       const prev24HoursHistory = previousPoints[curr]?.points24HoursHistory;
       if (prev24HoursHistory) {
@@ -358,10 +353,8 @@ export const createSnapshotForNetwork = async (network: Network) => {
           }
         });
       }
-
       const previousTotalPoints: BN =
-        // NOTE: After first snapshot with binary points file, ensure the points are not casted with hex
-        new BN(previousPoints[curr]?.totalPoints) ?? new BN(0);
+        new BN(previousPoints[curr]?.totalPoints, "hex") ?? new BN(0);
 
       const pointsForOpen: BN[] = eventsObject[curr].active.map(
         (entry) => entry.points
@@ -431,11 +424,7 @@ export const createSnapshotForNetwork = async (network: Network) => {
   );
   fs.writeFileSync(poolsFileName, JSON.stringify(newPoolsFile));
   fs.writeFileSync(eventsSnapFilename, JSON.stringify(eventsObject));
-  if (isBinary) {
-    PointsBinaryConverter.writeBinaryFile(pointsFileName, points);
-  } else {
-    fs.writeFileSync(pointsFileName, JSON.stringify(points));
-  }
+  fs.writeFileSync(pointsFileName, JSON.stringify(points));
 };
 
 // createSnapshotForNetwork(Network.TEST).then(

@@ -27,8 +27,8 @@ export interface IPoolAndTicks {
   pointsPerSecond: BN;
 }
 export interface IPointsHistory {
-  diff: BN | string;
-  timestamp: BN | string;
+  diff: BN;
+  timestamp: BN;
 }
 export interface IPoints {
   totalPoints: BN;
@@ -51,11 +51,3 @@ export interface IPromotedPool {
   pointsPerSecond: BN;
   startCountTimestamp: BN;
 }
-
-export interface PointsEntry {
-  totalPoints: string; // hex string
-  positionsAmount: number;
-  points24HoursHistory: IPointsHistory[];
-}
-
-export type PointsData = Record<string, PointsEntry>;

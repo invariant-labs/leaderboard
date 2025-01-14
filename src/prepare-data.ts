@@ -2,9 +2,9 @@ import { Network } from "@invariant-labs/sdk-eclipse";
 import fs from "fs";
 import path from "path";
 import { IPointsHistoryJson, IPointsJson } from "./types";
-
+// import ECLIPSE_TESTNET_POINTS from "../data/points_testnet.json";
+import ECLIPSE_MAINNET_POINTS from "../data/points_mainnet.json";
 import { BN } from "@coral-xyz/anchor";
-import { PointsBinaryConverter } from "./conversion";
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 require("dotenv").config();
@@ -12,13 +12,10 @@ require("dotenv").config();
 export const prepareFinalData = async (network: Network) => {
   let finalDataFile: string;
   let data: Record<string, IPointsJson>;
-
   switch (network) {
     case Network.MAIN:
       finalDataFile = path.join(__dirname, "../data/final_data_mainnet.json");
-      data = PointsBinaryConverter.readBinaryFile(
-        path.join(__dirname, "../data/points_mainnet.bin")
-      );
+      data = ECLIPSE_MAINNET_POINTS as Record<string, IPointsJson>;
       break;
     // case Network.TEST:
     //   finalDataFile = path.join(__dirname, "../data/final_data_testnet.json");
@@ -36,14 +33,7 @@ export const prepareFinalData = async (network: Network) => {
   sortedKeys.forEach((key, index) => {
     rank[key] = index + 1;
     last24HoursPoints[key] = data[key].points24HoursHistory.reduce(
-      (acc: BN, curr: IPointsHistoryJson) => {
-        // TODO: User only decimal after 24h
-        try {
-          return acc.add(new BN(curr.diff));
-        } catch (e) {
-          return acc.add(new BN(curr.diff, "hex"));
-        }
-      },
+      (acc: BN, curr: IPointsHistoryJson) => acc.add(new BN(curr.diff, "hex")),
       new BN(0)
     );
   });
@@ -54,7 +44,7 @@ export const prepareFinalData = async (network: Network) => {
         address: key,
         rank: rank[key],
         last24hPoints: last24HoursPoints[key],
-        points: new BN(data[key].totalPoints),
+        points: new BN(data[key].totalPoints, "hex"),
         positions: data[key].positionsAmount,
       };
     })
