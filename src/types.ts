@@ -93,4 +93,10 @@ export interface PointsEntry {
   points24HoursHistory: IPointsHistory[];
 }
 
+export interface SwapPointsEntry {
+  totalPoints: string; // hex string
+  points24HoursHistory: IPointsHistory[];
+}
+
 export type PointsData = Record<string, PointsEntry>;
+export type SwapPointsData = Record<string, SwapPointsEntry>;

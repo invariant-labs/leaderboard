@@ -25,6 +25,7 @@ import { IPriceFeed, IPromotedPair } from "./types";
 import { SwapEvent } from "@invariant-labs/sdk-eclipse/lib/market";
 import { calculatePointsForSwap, getTimestampInSeconds } from "./math";
 import { HermesClient } from "@pythnetwork/hermes-client";
+import { SwapPointsBinaryConverter } from "./conversion";
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 require("dotenv").config();
@@ -44,7 +45,7 @@ export const createSnapshotForNetwork = async (network: Network) => {
   switch (network) {
     case Network.MAIN:
       provider = AnchorProvider.local("https://eclipse.helius-rpc.com");
-      pointsFileName = path.join(__dirname, "../data/points_swap_mainnet.json");
+      pointsFileName = path.join(__dirname, "../data/points_swap_mainnet.bin");
       pairsFileName = path.join(
         __dirname,
         "../data/pairs_last_tx_hashes_mainnet.json"
@@ -59,14 +60,14 @@ export const createSnapshotForNetwork = async (network: Network) => {
       provider = AnchorProvider.local(
         "https://testnet.dev2.eclipsenetwork.xyz"
       );
-      pointsFileName = path.join(__dirname, "../data/points_swap_testnet.json");
+      pointsFileName = path.join(__dirname, "../data/points_swap_testnet.bin");
       pairsFileName = path.join(
         __dirname,
         "../data/pairs_last_tx_hashes_testnet.json"
       );
       priceFeedsFileName = path.join(
         __dirname,
-        "../data/last_price_feed_testnet.json"
+        "../data/last_price_feed_mainnet.json"
       );
       PROMOTED_PAIRS = PROMOTED_PAIRS_TESTNET;
       break;
@@ -145,7 +146,8 @@ export const createSnapshotForNetwork = async (network: Network) => {
       eventLogs.push(log.split("Program data: ")[1]);
   });
 
-  const previousPoints = JSON.parse(fs.readFileSync(pointsFileName, "utf-8"));
+  const previousPoints =
+    SwapPointsBinaryConverter.readBinaryFile(pointsFileName);
 
   const pointsChange = {};
   eventLogs
@@ -185,13 +187,12 @@ export const createSnapshotForNetwork = async (network: Network) => {
 
       const key = swapper.toString();
       if (previousPoints[key]) {
-        console.log(previousPoints[key]);
-        previousPoints[key].points = new BN(
-          previousPoints[key].points,
+        previousPoints[key].totalPoints = new BN(
+          previousPoints[key].totalPoints,
           "hex"
         ).add(points);
       } else {
-        previousPoints[key] = { points, points24HoursHistory: [] };
+        previousPoints[key] = { totalPoints: points, points24HoursHistory: [] };
       }
 
       pointsChange[key] = new BN(pointsChange[key], "hex").add(points);
@@ -218,7 +219,7 @@ export const createSnapshotForNetwork = async (network: Network) => {
     }
   });
 
-  fs.writeFileSync(pointsFileName, JSON.stringify(previousPoints));
+  SwapPointsBinaryConverter.writeBinaryFile(pointsFileName, previousPoints);
   fs.writeFileSync(pairsFileName, JSON.stringify(newHashes));
   fs.writeFileSync(priceFeedsFileName, JSON.stringify(priceFeeds));
 };
