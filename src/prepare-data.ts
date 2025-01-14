@@ -36,7 +36,14 @@ export const prepareFinalData = async (network: Network) => {
   sortedKeys.forEach((key, index) => {
     rank[key] = index + 1;
     last24HoursPoints[key] = data[key].points24HoursHistory.reduce(
-      (acc: BN, curr: IPointsHistoryJson) => acc.add(new BN(curr.diff, "hex")),
+      (acc: BN, curr: IPointsHistoryJson) => {
+        // TODO: User only decimal after 24h
+        try {
+          return acc.add(new BN(curr.diff));
+        } catch (e) {
+          return acc.add(new BN(curr.diff, "hex"));
+        }
+      },
       new BN(0)
     );
   });
@@ -47,7 +54,7 @@ export const prepareFinalData = async (network: Network) => {
         address: key,
         rank: rank[key],
         last24hPoints: last24HoursPoints[key],
-        points: data[key].totalPoints,
+        points: new BN(data[key].totalPoints),
         positions: data[key].positionsAmount,
       };
     })
