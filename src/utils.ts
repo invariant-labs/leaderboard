@@ -370,31 +370,36 @@ export const fetchPoolsWithTicks = async (
   return fetchPoolsWithTicks(retries + 1, market, connection, promotedPools);
 };
 
-export const castPythIdtoAddress = (
+export const mapPythToAddress = (
   priceFeeds: IPriceFeed[],
   promotedPairs: IPromotedPair[]
 ) => {
-  const priceFeedsWithTokens = priceFeeds.map((priceFeed) => {
-    const token = promotedPairs.find(
-      (item) =>
-        `0x${priceFeed.id}` === item.feedXId ||
-        `0x${priceFeed.id}` === item.feedYId
-    );
-    const tokenAddress =
-      `0x${priceFeed.id}` === token?.feedXId
-        ? token.tokenX
-        : `0x${priceFeed.id}` === token?.feedXId
-        ? token.tokenY
-        : null;
-    return { ...priceFeed, token: tokenAddress };
+  const data = {};
+  promotedPairs.map((pair) => {
+    if (!data[pair.tokenX.toString()]) {
+      const xFeed = priceFeeds.find((feed) => `0x${feed.id}` === pair.feedXId);
+
+      if (xFeed) {
+        data[pair.tokenX.toString()] = {
+          pricePublishTime: xFeed.price.publish_time,
+          priceDecimals: Math.abs(xFeed.price.expo),
+          price: xFeed.price.price,
+        };
+      }
+    }
+
+    if (!data[pair.tokenY.toString()]) {
+      const yFeed = priceFeeds.find((feed) => `0x${feed.id}` === pair.feedYId);
+
+      if (yFeed) {
+        data[pair.tokenY.toString()] = {
+          pricePublishTime: yFeed.price.publish_time,
+          priceDecimals: Math.abs(yFeed.price.expo),
+          price: yFeed.price.price,
+        };
+      }
+    }
   });
-  return priceFeedsWithTokens.reduce((acc, curr) => {
-    if (!curr.token) return acc;
-    acc[curr.token.toString()] = {
-      pricePublishTime: curr.price.publish_time,
-      priceDecimals: curr.price.expo,
-      price: curr.price.price,
-    };
-    return acc;
-  }, {});
+
+  return data;
 };
