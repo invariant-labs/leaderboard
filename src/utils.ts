@@ -10,7 +10,14 @@ import {
   RETRY_DELAY,
 } from "./consts";
 import { BN } from "@coral-xyz/anchor";
-import { IActive, IClosed, IPoolAndTicks, IPromotedPool } from "./types";
+import {
+  IActive,
+  IClosed,
+  IPoolAndTicks,
+  IPriceFeed,
+  IPromotedPair,
+  IPromotedPool,
+} from "./types";
 import {
   calculatePointsToDistribute,
   calculateReward,
@@ -361,4 +368,33 @@ export const fetchPoolsWithTicks = async (
   }
 
   return fetchPoolsWithTicks(retries + 1, market, connection, promotedPools);
+};
+
+export const castPythIdtoAddress = (
+  priceFeeds: IPriceFeed[],
+  promotedPairs: IPromotedPair[]
+) => {
+  const priceFeedsWithTokens = priceFeeds.map((priceFeed) => {
+    const token = promotedPairs.find(
+      (item) =>
+        `0x${priceFeed.id}` === item.feedXId ||
+        `0x${priceFeed.id}` === item.feedYId
+    );
+    const tokenAddress =
+      `0x${priceFeed.id}` === token?.feedXId
+        ? token.tokenX
+        : `0x${priceFeed.id}` === token?.feedXId
+        ? token.tokenY
+        : null;
+    return { ...priceFeed, token: tokenAddress };
+  });
+  return priceFeedsWithTokens.reduce((acc, curr) => {
+    if (!curr.token) return acc;
+    acc[curr.token.toString()] = {
+      pricePublishTime: curr.price.publish_time,
+      priceDecimals: curr.price.expo,
+      price: curr.price.price,
+    };
+    return acc;
+  }, {});
 };
