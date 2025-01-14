@@ -54,6 +54,7 @@ jobs:
           name: eclipse-points-snapshot-${{ github.run_id }}
           path: |
             ./data/*.json
+            ./data/*.bin
   deploy:
     needs: [points-snap]
     if: ${{ always() }}
