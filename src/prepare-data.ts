@@ -1,11 +1,9 @@
 import { Network } from "@invariant-labs/sdk-eclipse";
 import fs from "fs";
 import path from "path";
-import { IPointsHistoryJson, IPointsJson, ISwapPoints } from "./types";
-// import ECLIPSE_TESTNET_POINTS from "../data/points_testnet.json";
-import ECLIPSE_MAINNET_POINTS from "../data/points_mainnet.json";
-import ECLIPSE_MAINNET_SWAP_POINTS from "../data/points_swap_mainnet.json";
+import { IPointsHistoryJson, IPointsJson, SwapPointsEntry } from "./types";
 import { BN } from "@coral-xyz/anchor";
+import { PointsBinaryConverter, SwapPointsBinaryConverter } from "./conversion";
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 require("dotenv").config();
@@ -13,17 +11,24 @@ require("dotenv").config();
 export const prepareFinalData = async (network: Network) => {
   let finalDataFile: string;
   let data: Record<string, IPointsJson>;
-  let swapData: Record<string, ISwapPoints>;
+  let swapData: Record<string, SwapPointsEntry>;
   switch (network) {
     case Network.MAIN:
       finalDataFile = path.join(__dirname, "../data/final_data_mainnet.json");
-      data = ECLIPSE_MAINNET_POINTS as Record<string, IPointsJson>;
-      swapData = ECLIPSE_MAINNET_SWAP_POINTS as Record<string, ISwapPoints>;
+      data = PointsBinaryConverter.readBinaryFile(
+        path.join(__dirname, "../data/points_mainnet.bin")
+      );
+      swapData = SwapPointsBinaryConverter.readBinaryFile(
+        path.join(__dirname, "../data/points_swap_mainnet.bin")
+      );
       break;
-    // case Network.TEST:
-    //   finalDataFile = path.join(__dirname, "../data/final_data_testnet.json");
-    //   data = ECLIPSE_TESTNET_POINTS as Record<string, IPointsJson>;
-    //   break;
+    case Network.TEST:
+      finalDataFile = path.join(__dirname, "../data/final_data_testnet.json");
+      data = {};
+      swapData = SwapPointsBinaryConverter.readBinaryFile(
+        path.join(__dirname, "../data/points_swap_testnet.bin")
+      );
+      break;
     default:
       throw new Error("Unknown network");
   }
@@ -31,56 +36,69 @@ export const prepareFinalData = async (network: Network) => {
     new Set([...Object.keys(data), ...Object.keys(swapData)])
   );
 
-  const mergedData = allAddresses
-    .map((addr) => {
-      const userLpData = data[addr];
-      const userSwapData = swapData[addr];
-      const points = userLpData ? userLpData.totalPoints : "00";
-      const swapPoints = userSwapData ? userSwapData.points : "00";
-      const totalPoints = new BN(points, "hex").add(new BN(swapPoints, "hex"));
-      const positions = userLpData ? userLpData.positionsAmount : 0;
-      const last24hPoints = userLpData
-        ? userLpData.points24HoursHistory.reduce(
-            (acc, history) => acc.add(new BN(history.diff, "hex")),
+  const finalData = allAddresses
+    .map((key) => {
+      const showLogs = key === "BtGH2WkM1oNyPVgzYT51xV2gJqHhVQ4QiGwWirBUW5xN";
+
+      const lp = data[key];
+      const swap = swapData[key];
+
+      const lpPoints = lp ? new BN(lp.totalPoints) : new BN(0);
+      const last24hLpPoints = lp
+        ? lp.points24HoursHistory.reduce(
+            (acc: BN, curr: IPointsHistoryJson) => {
+              try {
+                return acc.add(new BN(curr.diff));
+              } catch (e) {
+                return acc.add(new BN(curr.diff, "hex"));
+              }
+            },
             new BN(0)
           )
         : new BN(0);
 
-      const last24hPointsSwaps = userSwapData
-        ? userSwapData.points24HoursHistory.reduce(
-            (acc, history) => acc.add(new BN(history.diff, "hex")),
+      const swapPoints = swap ? new BN(swap.totalPoints) : new BN(0);
+      const last24hSwapPoints = swap
+        ? swap.points24HoursHistory.reduce(
+            (acc: BN, curr: IPointsHistoryJson) => acc.add(new BN(curr.diff)),
             new BN(0)
           )
         : new BN(0);
+
+      const last24hPoints = last24hLpPoints.add(last24hSwapPoints);
+      const totalPoints = lpPoints.add(swapPoints);
+      if (showLogs) {
+        console.log(totalPoints, last24hLpPoints);
+      }
+      const positions = lp ? lp.positionsAmount : 0;
 
       return {
-        address: addr,
-        points,
-        swapPoints,
-        totalPoints,
+        address: key,
+        points: totalPoints,
         last24hPoints,
-        last24hPointsSwaps,
+        lpPoints,
+        swapPoints,
+        last24hLpPoints,
+        last24hSwapPoints,
         positions,
       };
     })
-    .sort((a, b) =>
-      new BN(b.totalPoints, "hex").cmp(new BN(a.totalPoints, "hex"))
-    )
+    .sort((a, b) => b.points.cmp(a.points))
     .map((item, index) => {
       return { ...item, rank: index + 1 };
     });
 
-  fs.writeFileSync(finalDataFile, JSON.stringify(mergedData));
+  fs.writeFileSync(finalDataFile, JSON.stringify(finalData));
 };
 
-// prepareFinalData(Network.TEST).then(
-//   () => {
-//     console.log("Eclipse: Final data prepared!");
-//   },
-//   (err) => {
-//     console.log(err);
-//   }
-// );
+prepareFinalData(Network.TEST).then(
+  () => {
+    console.log("Eclipse: Final data prepared!");
+  },
+  (err) => {
+    console.log(err);
+  }
+);
 
 prepareFinalData(Network.MAIN).then(
   () => {
