@@ -1,6 +1,6 @@
 {
   "name": "@invariant-labs/points-sdk",
-  "version": "0.0.3",
+  "version": "0.0.4",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
   "scripts": {
@@ -9,6 +9,7 @@
   "dependencies": {
     "@invariant-labs/sdk-eclipse": "^0.0.63",
     "@coral-xyz/anchor": "^0.29.0",
+    "@solana/web3.js": "^1.95.4",
     "typescript": "^5.4.5"
   },
   "keywords": [],
