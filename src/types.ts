@@ -63,7 +63,7 @@ export interface IPromotedPair {
 }
 
 export interface ISwapPoints {
-  points: BN;
+  points: string;
   points24HoursHistory: IPointsHistoryJson[];
 }
 

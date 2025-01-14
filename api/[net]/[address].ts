@@ -7,14 +7,20 @@ interface IData {
     rank: number;
     address: string;
     points: string;
+    swapPoints: string;
+    totalPoints: string;
     last24hPoints: string;
+    last24hPointsSwaps: string;
     positions: number;
   } | null;
   leaderboard: {
     rank: number;
     address: string;
     points: string;
+    swapPoints: string;
+    totalPoints: string;
     last24hPoints: string;
+    last24hPointsSwaps: string;
     positions: number;
   }[];
   totalItems: number;
@@ -24,7 +30,10 @@ interface ICachedData {
   rank: number;
   address: string;
   points: string;
+  swapPoints: string;
+  totalPoints: string;
   last24hPoints: string;
+  last24hPointsSwaps: string;
   positions: number;
 }
 
