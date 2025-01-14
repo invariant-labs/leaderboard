@@ -2,30 +2,21 @@ import { VercelRequest, VercelResponse } from "@vercel/node";
 import ECLIPSE_TESTNET_DATA from "../../data/final_data_testnet.json";
 import ECLIPSE_MAINNET_DATA from "../../data/final_data_mainnet.json";
 
-interface IData {
-  user: {
-    rank: number;
-    address: string;
-    points: string;
-    last24hPoints: string;
-    positions: number;
-  } | null;
-  leaderboard: {
-    rank: number;
-    address: string;
-    points: string;
-    last24hPoints: string;
-    positions: number;
-  }[];
-  totalItems: number;
-}
-
-interface ICachedData {
+interface IEntry {
   rank: number;
   address: string;
   points: string;
+  swapPoints: string;
+  lpPoints: string;
   last24hPoints: string;
+  last24hSwapPoints: string;
+  last24hLpPoints: string;
   positions: number;
+}
+interface IData {
+  user: IEntry | null;
+  leaderboard: IEntry[];
+  totalItems: number;
 }
 
 export default function (req: VercelRequest, res: VercelResponse) {
@@ -45,13 +36,12 @@ export default function (req: VercelRequest, res: VercelResponse) {
   const { net, address } = req.query;
 
   const pubkey = address as string;
-  let currentData: ICachedData[];
+  let currentData: IEntry[];
 
   if (net === "eclipse-testnet") {
-    // currentData = ECLIPSE_TESTNET_DATA as ICachedData[];
-    currentData = ECLIPSE_MAINNET_DATA as ICachedData[];
+    currentData = ECLIPSE_MAINNET_DATA as IEntry[];
   } else if (net === "eclipse-mainnet") {
-    currentData = ECLIPSE_MAINNET_DATA as ICachedData[];
+    currentData = ECLIPSE_MAINNET_DATA as IEntry[];
   } else {
     return res.status(400).send("INVALID NETWORK");
   }
