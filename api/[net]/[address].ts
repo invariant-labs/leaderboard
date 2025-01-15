@@ -5,7 +5,11 @@ interface IEntry {
   rank: number;
   address: string;
   points: string;
+  swapPoints: string;
+  lpPoints: string;
   last24hPoints: string;
+  last24hLpPoints: string;
+  last24hSwapPoints: string;
   positions: number;
 }
 interface IData {

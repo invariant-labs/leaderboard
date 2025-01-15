@@ -120,6 +120,64 @@ export const prepareFinalData = async (network: Network) => {
     .sort((a, b) => a.rank - b.rank);
 
   fs.writeFileSync(finalDataFile, JSON.stringify(finalDataSwaps, null, 2));
+
+  const allAddresses = Array.from(
+    new Set([...Object.keys(data), ...Object.keys(swapData)])
+  );
+
+  const finalData = allAddresses
+    .map((key) => {
+      const showLogs = key === "BtGH2WkM1oNyPVgzYT51xV2gJqHhVQ4QiGwWirBUW5xN";
+
+      const lp = data[key];
+      const swap = swapData[key];
+
+      const lpPoints = lp ? new BN(lp.totalPoints) : new BN(0);
+      const last24hLpPoints = lp
+        ? lp.points24HoursHistory.reduce(
+            (acc: BN, curr: IPointsHistoryJson) => {
+              try {
+                return acc.add(new BN(curr.diff));
+              } catch (e) {
+                return acc.add(new BN(curr.diff, "hex"));
+              }
+            },
+            new BN(0)
+          )
+        : new BN(0);
+
+      const swapPoints = swap ? new BN(swap.totalPoints) : new BN(0);
+      const last24hSwapPoints = swap
+        ? swap.points24HoursHistory.reduce(
+            (acc: BN, curr: IPointsHistoryJson) => acc.add(new BN(curr.diff)),
+            new BN(0)
+          )
+        : new BN(0);
+
+      const last24hPoints = last24hLpPoints.add(last24hSwapPoints);
+      const totalPoints = lpPoints.add(swapPoints);
+      if (showLogs) {
+        console.log(totalPoints, last24hLpPoints);
+      }
+      const positions = lp ? lp.positionsAmount : 0;
+
+      return {
+        address: key,
+        points: totalPoints,
+        last24hPoints,
+        lpPoints,
+        swapPoints,
+        last24hLpPoints,
+        last24hSwapPoints,
+        positions,
+      };
+    })
+    .sort((a, b) => b.points.cmp(a.points))
+    .map((item, index) => {
+      return { ...item, rank: index + 1 };
+    });
+
+  fs.writeFileSync(finalDataFile, JSON.stringify(finalData));
 };
 
 prepareFinalData(Network.TEST).then(
