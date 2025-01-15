@@ -1,13 +1,1 @@
-[
-  {
-    "address": "Fp93x7oYTZftGN8jUPv9qE1dVPEASH33P33ew19JedDV",
-    "points": "04a8088c00",
-    "last24hPoints": "04a8088c00",
-    "lpPoints": "00",
-    "swapPoints": "04a8088c00",
-    "last24hLpPoints": "00",
-    "last24hSwapPoints": "04a8088c00",
-    "positions": 0,
-    "rank": 1
-  }
-]
+[{"address":"Fp93x7oYTZftGN8jUPv9qE1dVPEASH33P33ew19JedDV","points":"02540d577c","last24hPoints":"02540d577c","lpPoints":"00","swapPoints":"02540d577c","last24hLpPoints":"00","last24hSwapPoints":"02540d577c","positions":0,"swaps":1,"rank":1}]

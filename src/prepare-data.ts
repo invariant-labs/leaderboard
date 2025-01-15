@@ -38,8 +38,6 @@ export const prepareFinalData = async (network: Network) => {
 
   const finalData = allAddresses
     .map((key) => {
-      const showLogs = key === "BtGH2WkM1oNyPVgzYT51xV2gJqHhVQ4QiGwWirBUW5xN";
-
       const lp = data[key];
       const swap = swapData[key];
 
@@ -67,10 +65,9 @@ export const prepareFinalData = async (network: Network) => {
 
       const last24hPoints = last24hLpPoints.add(last24hSwapPoints);
       const totalPoints = lpPoints.add(swapPoints);
-      if (showLogs) {
-        console.log(totalPoints, last24hLpPoints);
-      }
+
       const positions = lp ? lp.positionsAmount : 0;
+      const swaps = swap ? swap.swapsAmount : 0;
 
       return {
         address: key,
@@ -81,6 +78,7 @@ export const prepareFinalData = async (network: Network) => {
         last24hLpPoints,
         last24hSwapPoints,
         positions,
+        swaps,
       };
     })
     .sort((a, b) => b.points.cmp(a.points))
@@ -100,11 +98,11 @@ prepareFinalData(Network.TEST).then(
   }
 );
 
-prepareFinalData(Network.MAIN).then(
-  () => {
-    console.log("Eclipse: Final data prepared!");
-  },
-  (err) => {
-    console.log(err);
-  }
-);
+// prepareFinalData(Network.MAIN).then(
+//   () => {
+//     console.log("Eclipse: Final data prepared!");
+//   },
+//   (err) => {
+//     console.log(err);
+//   }
+// );
