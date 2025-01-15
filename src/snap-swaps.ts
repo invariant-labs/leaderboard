@@ -75,6 +75,13 @@ export const createSnapshotForNetwork = async (network: Network) => {
       throw new Error("Unknown network");
   }
 
+  const blacklist: string[] = JSON.parse(
+    fs.readFileSync(
+      path.join(__dirname, "../data/swap_blacklist.json"),
+      "utf-8"
+    )
+  );
+
   const connection = provider.connection;
   const programId = new PublicKey(getMarketAddress(network));
 
@@ -156,7 +163,7 @@ export const createSnapshotForNetwork = async (network: Network) => {
     .forEach((decodedEvent) => {
       const event = parseEvent(decodedEvent) as SwapEvent;
       const { swapper, fee, xToY, tokenX, tokenY } = event;
-
+      if (blacklist.some((item) => item === swapper.toString())) return;
       const associatedPair = PROMOTED_PAIRS.find(
         (p) => p.tokenX.equals(tokenX) && p.tokenY.equals(tokenY)
       );
