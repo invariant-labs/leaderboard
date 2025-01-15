@@ -1,6 +1,6 @@
 import { BN } from "@coral-xyz/anchor";
 import path from "path";
-import { writeFileSync, readFileSync, read } from "fs";
+import { writeFileSync, readFileSync } from "fs";
 import { IPositions } from "../src/types";
 
 const main = () => {
