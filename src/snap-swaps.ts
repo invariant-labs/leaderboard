@@ -211,10 +211,12 @@ export const createSnapshotForNetwork = async (network: Network) => {
       const recentHistory = prevHistory.filter((entry) =>
         new BN(entry.timestamp, "hex").gt(currentTimestamp.sub(DAY))
       );
-      recentHistory.push({
-        diff: pointsChange[key],
-        timestamp: currentTimestamp,
-      });
+      if (pointsChange[key]) {
+        recentHistory.push({
+          diff: pointsChange[key],
+          timestamp: currentTimestamp,
+        });
+      }
       previousPoints[key].points24HoursHistory = recentHistory;
     } else {
       previousPoints[key].points24HoursHistory = [
