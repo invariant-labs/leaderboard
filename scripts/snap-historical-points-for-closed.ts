@@ -1,6 +1,6 @@
 import { BN } from "@coral-xyz/anchor";
 import path from "path";
-import { writeFileSync, readFileSync } from "fs";
+import { writeFileSync, readFileSync, read } from "fs";
 import { IPositions } from "../src/types";
 
 const main = () => {
@@ -13,7 +13,9 @@ const main = () => {
     "../data/events_snap_mainnet.json"
   );
 
-  const historical = {};
+  const historical: Record<string, string> = JSON.parse(
+    readFileSync(historicalFileName, "utf-8")
+  );
   const events: Record<string, IPositions> = {};
   const eventsObject: Record<string, IPositions> = JSON.parse(
     readFileSync(eventsFileName, "utf-8")
@@ -25,8 +27,15 @@ const main = () => {
       (acc, closed) => acc.add(new BN(closed.points, "hex")),
       new BN(0)
     );
+
     if (pointsForClosed.gt(new BN(0))) {
-      historical[address] = pointsForClosed;
+      if (historical[address]) {
+        historical[address] = new BN(historical[address], "hex").add(
+          pointsForClosed
+        );
+      } else {
+        historical[address] = pointsForClosed;
+      }
     }
 
     events[address] = {
