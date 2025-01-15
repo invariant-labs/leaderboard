@@ -54,6 +54,7 @@ export const createSnapshotForNetwork = async (network: Network) => {
   let poolsFileName: string;
   let FULL_SNAP_START_TX_HASH: string;
   let lastSnapTimestampFileName: string;
+  let historicalPointsForClosedFileName: string;
   let isBinary: boolean;
   switch (network) {
     case Network.MAIN:
@@ -67,6 +68,10 @@ export const createSnapshotForNetwork = async (network: Network) => {
       poolsFileName = path.join(
         __dirname,
         "../data/pools_last_tx_hashes_mainnet.json"
+      );
+      historicalPointsForClosedFileName = path.join(
+        __dirname,
+        "../data/historical_points_for_closed_mainnet.json"
       );
       PROMOTED_POOLS = PROMOTED_POOLS_MAINNET;
       FULL_SNAP_START_TX_HASH = FULL_SNAP_START_TX_HASH_MAINNET;
@@ -88,6 +93,10 @@ export const createSnapshotForNetwork = async (network: Network) => {
       poolsFileName = path.join(
         __dirname,
         "../data/pools_last_tx_hashes_testnet.json"
+      );
+      historicalPointsForClosedFileName = path.join(
+        __dirname,
+        "../data/historical_points_for_closed_testnet.json"
       );
       PROMOTED_POOLS = PROMOTED_POOLS_TESTNET;
       FULL_SNAP_START_TX_HASH = FULL_SNAP_START_TX_HASH_TESTNET;
@@ -116,6 +125,10 @@ export const createSnapshotForNetwork = async (network: Network) => {
 
   const eventsObject: Record<string, IPositions> = JSON.parse(
     fs.readFileSync(eventsSnapFilename, "utf-8")
+  );
+
+  const historicalPoints: Record<string, string> = JSON.parse(
+    fs.readFileSync(historicalPointsForClosedFileName, "utf-8")
   );
 
   const newPoolsFile = {};
@@ -370,9 +383,14 @@ export const createSnapshotForNetwork = async (network: Network) => {
         (entry) => entry.points
       );
 
+      const historicalClosedPoints = historicalPoints[curr]
+        ? new BN(historicalPoints[curr], "hex")
+        : new BN(0);
+
       const totalPoints = pointsForOpen
         .concat(pointsForClosed)
-        .reduce((sum, point) => sum.add(new BN(point, "hex")), new BN(0));
+        .reduce((sum, point) => sum.add(new BN(point, "hex")), new BN(0))
+        .add(historicalClosedPoints);
 
       const diff = totalPoints.sub(previousTotalPoints);
       const newEntry = {
