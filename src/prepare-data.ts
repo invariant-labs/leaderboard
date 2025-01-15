@@ -11,6 +11,7 @@ require("dotenv").config();
 export const prepareFinalData = async (network: Network) => {
   let finalDataFile: string;
   let finalDataSwapFile: string;
+  let finalDataLpFile: string;
   let data: Record<string, IPointsJson>;
   let swapData: Record<string, SwapPointsEntry>;
   switch (network) {
@@ -19,6 +20,10 @@ export const prepareFinalData = async (network: Network) => {
       finalDataSwapFile = path.join(
         __dirname,
         "../data/final_data_swap_mainnet.json"
+      );
+      finalDataLpFile = path.join(
+        __dirname,
+        "../data/final_data_lp_mainnet.json"
       );
       data = PointsBinaryConverter.readBinaryFile(
         path.join(__dirname, "../data/points_mainnet.bin")
@@ -33,6 +38,10 @@ export const prepareFinalData = async (network: Network) => {
         "../data/final_data_swap_testnet.json"
       );
       finalDataFile = path.join(__dirname, "../data/final_data_testnet.json");
+      finalDataLpFile = path.join(
+        __dirname,
+        "../data/final_data_lp_testnet.json"
+      );
       data = {};
       swapData = SwapPointsBinaryConverter.readBinaryFile(
         path.join(__dirname, "../data/points_swap_testnet.bin")
@@ -41,15 +50,15 @@ export const prepareFinalData = async (network: Network) => {
     default:
       throw new Error("Unknown network");
   }
-  const rank: Record<string, number> = {};
-  const last24HoursPoints: Record<string, BN> = {};
-  const sortedKeys = Object.keys(data).sort((a, b) =>
+  const rankLp: Record<string, number> = {};
+  const last24HoursPointsLp: Record<string, BN> = {};
+  const sortedKeysLp = Object.keys(data).sort((a, b) =>
     new BN(data[b].totalPoints, "hex").sub(new BN(data[a].totalPoints, "hex"))
   );
 
-  sortedKeys.forEach((key, index) => {
-    rank[key] = index + 1;
-    last24HoursPoints[key] = data[key].points24HoursHistory.reduce(
+  sortedKeysLp.forEach((key, index) => {
+    rankLp[key] = index + 1;
+    last24HoursPointsLp[key] = data[key].points24HoursHistory.reduce(
       (acc: BN, curr: IPointsHistoryJson) => {
         // TODO: User only decimal after 24h
         try {
@@ -62,19 +71,19 @@ export const prepareFinalData = async (network: Network) => {
     );
   });
 
-  const finalData = Object.keys(data)
+  const finalDataLp = Object.keys(data)
     .map((key) => {
       return {
         address: key,
-        rank: rank[key],
-        last24hPoints: last24HoursPoints[key],
+        rank: rankLp[key],
+        last24hPoints: last24HoursPointsLp[key],
         points: new BN(data[key].totalPoints),
         positions: data[key].positionsAmount,
       };
     })
     .sort((a, b) => a.rank - b.rank);
 
-  fs.writeFileSync(finalDataFile, JSON.stringify(finalData, null, 2));
+  fs.writeFileSync(finalDataFile, JSON.stringify(finalDataLp, null, 2));
 
   const rankSwap: Record<string, number> = {};
   const last24HoursPointsSwap: Record<string, BN> = {};
