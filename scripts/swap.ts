@@ -42,6 +42,7 @@ const main = async () => {
     FOUNDER.publicKey
   );
 
+  console.log(FOUNDER.publicKey.toBase58());
   const amount = new BN(100 * 10 ** 9);
   const swap: Swap = {
     pair,
