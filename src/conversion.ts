@@ -282,7 +282,7 @@ export class SwapPointsBinaryConverter {
       const totalPoints = view.getBigUint64(offset, true);
       offset += this.TOTAL_POINTS_SIZE;
 
-      // Read positions amount
+      // Read swaps amount
       const swapsAmount = view.getUint32(offset, true);
       offset += this.SWAPS_AMOUNT_SIZE;
 
