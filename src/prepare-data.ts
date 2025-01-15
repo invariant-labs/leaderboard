@@ -41,63 +41,76 @@ export const prepareFinalData = async (network: Network) => {
     default:
       throw new Error("Unknown network");
   }
-  const allAddresses = Array.from(
-    new Set([...Object.keys(data), ...Object.keys(swapData)])
+  const rank: Record<string, number> = {};
+  const last24HoursPoints: Record<string, BN> = {};
+  const sortedKeys = Object.keys(data).sort((a, b) =>
+    new BN(data[b].totalPoints, "hex").sub(new BN(data[a].totalPoints, "hex"))
   );
 
-  const finalData = allAddresses
+  sortedKeys.forEach((key, index) => {
+    rank[key] = index + 1;
+    last24HoursPoints[key] = data[key].points24HoursHistory.reduce(
+      (acc: BN, curr: IPointsHistoryJson) => {
+        // TODO: User only decimal after 24h
+        try {
+          return acc.add(new BN(curr.diff));
+        } catch (e) {
+          return acc.add(new BN(curr.diff, "hex"));
+        }
+      },
+      new BN(0)
+    );
+  });
+
+  const finalData = Object.keys(data)
     .map((key) => {
-      const showLogs = key === "BtGH2WkM1oNyPVgzYT51xV2gJqHhVQ4QiGwWirBUW5xN";
-
-      const lp = data[key];
-      const swap = swapData[key];
-
-      const lpPoints = lp ? new BN(lp.totalPoints) : new BN(0);
-      const last24hLpPoints = lp
-        ? lp.points24HoursHistory.reduce(
-            (acc: BN, curr: IPointsHistoryJson) => {
-              try {
-                return acc.add(new BN(curr.diff));
-              } catch (e) {
-                return acc.add(new BN(curr.diff, "hex"));
-              }
-            },
-            new BN(0)
-          )
-        : new BN(0);
-
-      const swapPoints = swap ? new BN(swap.totalPoints) : new BN(0);
-      const last24hSwapPoints = swap
-        ? swap.points24HoursHistory.reduce(
-            (acc: BN, curr: IPointsHistoryJson) => acc.add(new BN(curr.diff)),
-            new BN(0)
-          )
-        : new BN(0);
-
-      const last24hPoints = last24hLpPoints.add(last24hSwapPoints);
-      const totalPoints = lpPoints.add(swapPoints);
-      if (showLogs) {
-        console.log(totalPoints, last24hLpPoints);
-      }
-      const positions = lp ? lp.positionsAmount : 0;
-
       return {
         address: key,
-        points: totalPoints,
-        last24hPoints,
-        lpPoints,
-        swapPoints,
-        last24hLpPoints,
-        last24hSwapPoints,
-        positions,
+        rank: rank[key],
+        last24hPoints: last24HoursPoints[key],
+        points: new BN(data[key].totalPoints),
+        positions: data[key].positionsAmount,
       };
     })
-    .sort((a, b) => b.points.cmp(a.points))
-    .map((item, index) => {
-      return { ...item, rank: index + 1 };
-    });
+    .sort((a, b) => a.rank - b.rank);
 
-  fs.writeFileSync(finalDataFile, JSON.stringify(finalData));
+  fs.writeFileSync(finalDataFile, JSON.stringify(finalData, null, 2));
+
+  const rankSwap: Record<string, number> = {};
+  const last24HoursPointsSwap: Record<string, BN> = {};
+  const sortedKeysSwap = Object.keys(swapData).sort((a, b) =>
+    new BN(swapData[b].totalPoints, "hex").sub(
+      new BN(swapData[a].totalPoints, "hex")
+    )
+  );
+
+  sortedKeysSwap.forEach((key, index) => {
+    rankSwap[key] = index + 1;
+    last24HoursPointsSwap[key] = data[key].points24HoursHistory.reduce(
+      (acc: BN, curr: IPointsHistoryJson) => {
+        // TODO: User only decimal after 24h
+        try {
+          return acc.add(new BN(curr.diff));
+        } catch (e) {
+          return acc.add(new BN(curr.diff, "hex"));
+        }
+      },
+      new BN(0)
+    );
+  });
+
+  const finalDataSwaps = Object.keys(data)
+    .map((key) => {
+      return {
+        address: key,
+        rank: rankSwap[key],
+        last24hPoints: last24HoursPointsSwap[key],
+        points: new BN(swapData[key].totalPoints),
+      };
+    })
+    .sort((a, b) => a.rank - b.rank);
+
+  fs.writeFileSync(finalDataFile, JSON.stringify(finalDataSwaps, null, 2));
 };
 
 prepareFinalData(Network.TEST).then(
