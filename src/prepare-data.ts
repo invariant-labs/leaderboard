@@ -10,11 +10,16 @@ require("dotenv").config();
 
 export const prepareFinalData = async (network: Network) => {
   let finalDataFile: string;
+  let finalDataSwapFile: string;
   let data: Record<string, IPointsJson>;
   let swapData: Record<string, SwapPointsEntry>;
   switch (network) {
     case Network.MAIN:
       finalDataFile = path.join(__dirname, "../data/final_data_mainnet.json");
+      finalDataSwapFile = path.join(
+        __dirname,
+        "../data/final_data_swap_mainnet.json"
+      );
       data = PointsBinaryConverter.readBinaryFile(
         path.join(__dirname, "../data/points_mainnet.bin")
       );
@@ -23,6 +28,10 @@ export const prepareFinalData = async (network: Network) => {
       );
       break;
     case Network.TEST:
+      finalDataSwapFile = path.join(
+        __dirname,
+        "../data/final_data_swap_testnet.json"
+      );
       finalDataFile = path.join(__dirname, "../data/final_data_testnet.json");
       data = {};
       swapData = SwapPointsBinaryConverter.readBinaryFile(
