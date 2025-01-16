@@ -1,5 +1,5 @@
 import { VercelRequest, VercelResponse } from "@vercel/node";
-import ECLIPSE_MAINNET_DATA from "../../data/final_data_lp_mainnet.json";
+import ECLIPSE_MAINNET_DATA from "../../../data/final_data_lp_mainnet.json";
 
 interface ILpEntry {
   rank: number;
@@ -15,7 +15,6 @@ interface ILpData {
   totalItems: number;
 }
 
-// NOTE: Legacy endpoint
 export default function (req: VercelRequest, res: VercelResponse) {
   // @ts-expect-error
   res.setHeader("Access-Control-Allow-Credentials", true);

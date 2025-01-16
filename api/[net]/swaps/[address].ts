@@ -1,21 +1,20 @@
 import { VercelRequest, VercelResponse } from "@vercel/node";
-import ECLIPSE_MAINNET_DATA from "../../data/final_data_lp_mainnet.json";
+import ECLIPSE_MAINNET_DATA from "../../../data/final_data_swap_mainnet.json";
 
-interface ILpEntry {
+interface ISwapEntry {
   rank: number;
   address: string;
   points: string;
   last24hPoints: string;
-  positions: number;
+  swaps: number;
 }
 
-interface ILpData {
-  user: ILpEntry | null;
-  leaderboard: ILpEntry[];
+interface ISwapData {
+  user: ISwapEntry | null;
+  leaderboard: ISwapEntry[];
   totalItems: number;
 }
 
-// NOTE: Legacy endpoint
 export default function (req: VercelRequest, res: VercelResponse) {
   // @ts-expect-error
   res.setHeader("Access-Control-Allow-Credentials", true);
@@ -33,12 +32,12 @@ export default function (req: VercelRequest, res: VercelResponse) {
   const { net, address } = req.query;
 
   const pubkey = address as string;
-  let currentData: ILpEntry[];
+  let currentData: ISwapEntry[];
 
   if (net === "eclipse-testnet") {
-    currentData = ECLIPSE_MAINNET_DATA as ILpEntry[];
+    currentData = ECLIPSE_MAINNET_DATA as ISwapEntry[];
   } else if (net === "eclipse-mainnet") {
-    currentData = ECLIPSE_MAINNET_DATA as ILpEntry[];
+    currentData = ECLIPSE_MAINNET_DATA as ISwapEntry[];
   } else {
     return res.status(400).send("INVALID NETWORK");
   }
@@ -47,7 +46,7 @@ export default function (req: VercelRequest, res: VercelResponse) {
   const size = Number(req.query.size) || undefined;
   const userItem = currentData.find((item) => item.address === pubkey);
   const userData = address && userItem ? userItem : null;
-  const finalData: ILpData = {
+  const finalData: ISwapData = {
     user: userData ? { ...userData } : null,
     leaderboard: currentData.slice(
       offset,

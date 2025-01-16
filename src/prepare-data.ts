@@ -10,11 +10,21 @@ require("dotenv").config();
 
 export const prepareFinalData = async (network: Network) => {
   let finalDataFile: string;
+  let finalDataSwapFile: string;
+  let finalDataLpFile: string;
   let data: Record<string, IPointsJson>;
   let swapData: Record<string, SwapPointsEntry>;
   switch (network) {
     case Network.MAIN:
       finalDataFile = path.join(__dirname, "../data/final_data_mainnet.json");
+      finalDataSwapFile = path.join(
+        __dirname,
+        "../data/final_data_swap_mainnet.json"
+      );
+      finalDataLpFile = path.join(
+        __dirname,
+        "../data/final_data_lp_mainnet.json"
+      );
       data = PointsBinaryConverter.readBinaryFile(
         path.join(__dirname, "../data/points_mainnet.bin")
       );
@@ -23,7 +33,15 @@ export const prepareFinalData = async (network: Network) => {
       );
       break;
     case Network.TEST:
+      finalDataSwapFile = path.join(
+        __dirname,
+        "../data/final_data_swap_testnet.json"
+      );
       finalDataFile = path.join(__dirname, "../data/final_data_testnet.json");
+      finalDataLpFile = path.join(
+        __dirname,
+        "../data/final_data_lp_testnet.json"
+      );
       data = {};
       swapData = SwapPointsBinaryConverter.readBinaryFile(
         path.join(__dirname, "../data/points_swap_testnet.bin")
@@ -32,6 +50,78 @@ export const prepareFinalData = async (network: Network) => {
     default:
       throw new Error("Unknown network");
   }
+  const rankLp: Record<string, number> = {};
+  const last24HoursPointsLp: Record<string, BN> = {};
+  const sortedKeysLp = Object.keys(data).sort((a, b) =>
+    new BN(data[b].totalPoints, "hex").sub(new BN(data[a].totalPoints, "hex"))
+  );
+
+  sortedKeysLp.forEach((key, index) => {
+    rankLp[key] = index + 1;
+    last24HoursPointsLp[key] = data[key].points24HoursHistory.reduce(
+      (acc: BN, curr: IPointsHistoryJson) => {
+        // TODO: User only decimal after 24h
+        try {
+          return acc.add(new BN(curr.diff));
+        } catch (e) {
+          return acc.add(new BN(curr.diff, "hex"));
+        }
+      },
+      new BN(0)
+    );
+  });
+
+  const finalDataLp = Object.keys(data)
+    .map((key) => {
+      return {
+        address: key,
+        rank: rankLp[key],
+        last24hPoints: last24HoursPointsLp[key],
+        points: new BN(data[key].totalPoints),
+        positions: data[key].positionsAmount,
+      };
+    })
+    .sort((a, b) => a.rank - b.rank);
+
+  fs.writeFileSync(finalDataLpFile, JSON.stringify(finalDataLp));
+
+  const rankSwap: Record<string, number> = {};
+  const last24HoursPointsSwap: Record<string, BN> = {};
+  const sortedKeysSwap = Object.keys(swapData).sort((a, b) =>
+    new BN(swapData[b].totalPoints, "hex").sub(
+      new BN(swapData[a].totalPoints, "hex")
+    )
+  );
+
+  sortedKeysSwap.forEach((key, index) => {
+    rankSwap[key] = index + 1;
+    last24HoursPointsSwap[key] = swapData[key].points24HoursHistory.reduce(
+      (acc: BN, curr: IPointsHistoryJson) => {
+        // TODO: User only decimal after 24h
+        try {
+          return acc.add(new BN(curr.diff));
+        } catch (e) {
+          return acc.add(new BN(curr.diff, "hex"));
+        }
+      },
+      new BN(0)
+    );
+  });
+
+  const finalDataSwaps = Object.keys(swapData)
+    .map((key) => {
+      return {
+        address: key,
+        rank: rankSwap[key],
+        last24hPoints: last24HoursPointsSwap[key],
+        points: new BN(swapData[key].totalPoints),
+        swaps: swapData[key].swapsAmount,
+      };
+    })
+    .sort((a, b) => a.rank - b.rank);
+
+  fs.writeFileSync(finalDataSwapFile, JSON.stringify(finalDataSwaps));
+
   const allAddresses = Array.from(
     new Set([...Object.keys(data), ...Object.keys(swapData)])
   );
@@ -66,19 +156,12 @@ export const prepareFinalData = async (network: Network) => {
       const last24hPoints = last24hLpPoints.add(last24hSwapPoints);
       const totalPoints = lpPoints.add(swapPoints);
 
-      const positions = lp ? lp.positionsAmount : 0;
-      const swaps = swap ? swap.swapsAmount : 0;
-
       return {
         address: key,
         points: totalPoints,
         last24hPoints,
         lpPoints,
         swapPoints,
-        last24hLpPoints,
-        last24hSwapPoints,
-        positions,
-        swaps,
       };
     })
     .sort((a, b) => b.points.cmp(a.points))
