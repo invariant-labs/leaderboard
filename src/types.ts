@@ -52,10 +52,52 @@ export interface IPromotedPool {
   startCountTimestamp: BN;
 }
 
+export interface IPromotedPair {
+  tokenX: PublicKey;
+  xDecimal: number;
+  tokenY: PublicKey;
+  yDecimal: number;
+  startTxHash: string;
+  feedXId: string;
+  feedYId: string;
+}
+
+export interface ISwapPoints {
+  points: string;
+  points24HoursHistory: IPointsHistoryJson[];
+}
+
+export interface IPriceFeed {
+  ema_price: {
+    conf: string;
+    expo: number;
+    price: string;
+    publish_time: number;
+  };
+  id: string;
+  metadata: {
+    prev_publish_time: number;
+    proof_available_time: number;
+    slot: number;
+  };
+  price: {
+    conf: string;
+    expo: number;
+    price: string;
+    publish_time: number;
+  };
+}
 export interface PointsEntry {
   totalPoints: string; // hex string
   positionsAmount: number;
   points24HoursHistory: IPointsHistory[];
 }
 
+export interface SwapPointsEntry {
+  totalPoints: string; // hex string
+  swapsAmount: number;
+  points24HoursHistory: IPointsHistory[];
+}
+
 export type PointsData = Record<string, PointsEntry>;
+export type SwapPointsData = Record<string, SwapPointsEntry>;

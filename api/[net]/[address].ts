@@ -1,26 +1,7 @@
 import { VercelRequest, VercelResponse } from "@vercel/node";
-import ECLIPSE_TESTNET_DATA from "../../data/final_data_testnet.json";
-import ECLIPSE_MAINNET_DATA from "../../data/final_data_mainnet.json";
+import ECLIPSE_MAINNET_DATA from "../../data/final_data_lp_mainnet.json";
 
-interface IData {
-  user: {
-    rank: number;
-    address: string;
-    points: string;
-    last24hPoints: string;
-    positions: number;
-  } | null;
-  leaderboard: {
-    rank: number;
-    address: string;
-    points: string;
-    last24hPoints: string;
-    positions: number;
-  }[];
-  totalItems: number;
-}
-
-interface ICachedData {
+interface ILpEntry {
   rank: number;
   address: string;
   points: string;
@@ -28,6 +9,13 @@ interface ICachedData {
   positions: number;
 }
 
+interface ILpData {
+  user: ILpEntry | null;
+  leaderboard: ILpEntry[];
+  totalItems: number;
+}
+
+// NOTE: Legacy endpoint
 export default function (req: VercelRequest, res: VercelResponse) {
   // @ts-expect-error
   res.setHeader("Access-Control-Allow-Credentials", true);
@@ -45,13 +33,12 @@ export default function (req: VercelRequest, res: VercelResponse) {
   const { net, address } = req.query;
 
   const pubkey = address as string;
-  let currentData: ICachedData[];
+  let currentData: ILpEntry[];
 
   if (net === "eclipse-testnet") {
-    // currentData = ECLIPSE_TESTNET_DATA as ICachedData[];
-    currentData = ECLIPSE_MAINNET_DATA as ICachedData[];
+    currentData = ECLIPSE_MAINNET_DATA as ILpEntry[];
   } else if (net === "eclipse-mainnet") {
-    currentData = ECLIPSE_MAINNET_DATA as ICachedData[];
+    currentData = ECLIPSE_MAINNET_DATA as ILpEntry[];
   } else {
     return res.status(400).send("INVALID NETWORK");
   }
@@ -60,7 +47,7 @@ export default function (req: VercelRequest, res: VercelResponse) {
   const size = Number(req.query.size) || undefined;
   const userItem = currentData.find((item) => item.address === pubkey);
   const userData = address && userItem ? userItem : null;
-  const finalData: IData = {
+  const finalData: ILpData = {
     user: userData ? { ...userData } : null,
     leaderboard: currentData.slice(
       offset,

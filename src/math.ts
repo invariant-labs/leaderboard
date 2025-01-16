@@ -1,4 +1,6 @@
 import { BN } from "@coral-xyz/anchor";
+import { SwapEvent } from "@invariant-labs/sdk-eclipse/lib/market";
+import { POINTS_PER_USD } from "./consts";
 
 const MAX_U128 = new BN("340282366920938463463374607431768211455");
 const SECONDS_PER_LIQUIDITY_DECIMAL = 24;
@@ -116,6 +118,22 @@ export const calculateSecondsPerLiquidityInside = (
     wrappingSub(poolSecondsPerLiquidityGlobal, secondsPerLiquidityBelow),
     secondsPerLiquidityAbove
   );
+};
+
+export const calculatePointsForSwap = (
+  fee: BN,
+  decimals: number,
+  priceFeed: BN,
+  priceDecimals: number
+) => {
+  const nominator = fee
+    .mul(priceFeed)
+    .mul(POINTS_PER_USD)
+    .mul(POINTS_DENOMINATOR);
+
+  const denominator = new BN(10).pow(new BN(decimals + priceDecimals));
+
+  return nominator.div(denominator);
 };
 
 export const getTimestampInSeconds = (): BN => {

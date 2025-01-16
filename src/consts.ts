@@ -1,6 +1,6 @@
 import { BN } from "@coral-xyz/anchor";
 import { PublicKey } from "@solana/web3.js";
-import { IPromotedPool } from "./types";
+import { IPromotedPair, IPromotedPool } from "./types";
 
 export const MAX_SIGNATURES_PER_CALL = 100;
 export const PROMOTED_POOLS_TESTNET: IPromotedPool[] = [
@@ -42,3 +42,36 @@ export const FULL_SNAP_START_TX_HASH_MAINNET =
   "zt4f4PYU2qKyvevjvED2Q9RSUJbiGSJns8NCQGAuLFgrTJ8irentnaEzc7uxxoi65vtmWxhwZh8HDg6NRsWjQxw";
 export const FULL_SNAP_START_TX_HASH_TESTNET =
   "AmjrAbNvGU8qK6xFTGpPCFPcYruZvH7gZ46YtxFyMp58x9UK3MXJ3CC3UojBvptxiAjip7fU4txZtQMoJ6Sc6kf";
+
+// SWAPS
+export const POINTS_PER_USD = new BN(100);
+// Price feed IDS: https://www.pyth.network/developers/price-feed-ids
+export const PROMOTED_PAIRS_MAINNET: IPromotedPair[] = [
+  {
+    tokenX: new PublicKey("AKEWE7Bgh87GPp171b4cJPSSZfmZwQ3KaqYqXoKLNAEE"),
+    xDecimal: 6,
+    feedXId:
+      "0xeaa020c61cc479712813461ce153894a96a6c00b21ed0cfc2798d1f9a9e9c94a", //  USDC/USD
+    tokenY: new PublicKey("So11111111111111111111111111111111111111112"),
+    yDecimal: 9,
+    feedYId:
+      "0xff61491a931112ddf1bd8147cd1b641375f79f5825126d665480874634fd0ace", // ETH/USD
+    startTxHash:
+      "4xcjRGt25MFL3ffDTBeazQ7LSzp3HFrNLAnabnXAJxCcmWFdCwSJMTTrtCYZuTvearrHX3EsmVvA7Grqa9fU5vcT",
+  },
+];
+
+export const PROMOTED_PAIRS_TESTNET: IPromotedPair[] = [
+  {
+    tokenX: new PublicKey("2F5TprcNBqj2hXVr9oTssabKdf8Zbsf9xStqWjPm8yLo"),
+    xDecimal: 9,
+    feedXId:
+      "0xe62df6c8b4a85fe1a67db44dc12de5db330f7ac66b72dc658afedf0f4a415b43", //  BTC/USD
+    tokenY: new PublicKey("5gFSyxjNsuQsZKn9g5L9Ky3cSUvJ6YXqWVuPzmSi8Trx"),
+    yDecimal: 9,
+    feedYId:
+      "0xeaa020c61cc479712813461ce153894a96a6c00b21ed0cfc2798d1f9a9e9c94a", // USDC/USD
+    startTxHash:
+      "5zYeULhNMbzQi1Fzr8QuhogFPZgX2G4hzB3neVqnNx7BaxERSN6wreJ6GvV46m6soijnvgD3wxDv1hFkHS9RiMzn",
+  },
+];
