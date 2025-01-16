@@ -59,3 +59,8 @@ export interface PointsEntry {
 }
 
 export type PointsData = Record<string, PointsEntry>;
+
+export interface ITop100Domains {
+  timestamp: BN;
+  domains: Record<string, string | null>;
+}
