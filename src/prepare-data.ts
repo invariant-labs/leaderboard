@@ -83,7 +83,7 @@ export const prepareFinalData = async (network: Network) => {
     })
     .sort((a, b) => a.rank - b.rank);
 
-  fs.writeFileSync(finalDataFile, JSON.stringify(finalDataLp));
+  fs.writeFileSync(finalDataLpFile, JSON.stringify(finalDataLp));
 
   const rankSwap: Record<string, number> = {};
   const last24HoursPointsSwap: Record<string, BN> = {};
@@ -95,7 +95,7 @@ export const prepareFinalData = async (network: Network) => {
 
   sortedKeysSwap.forEach((key, index) => {
     rankSwap[key] = index + 1;
-    last24HoursPointsSwap[key] = data[key].points24HoursHistory.reduce(
+    last24HoursPointsSwap[key] = swapData[key].points24HoursHistory.reduce(
       (acc: BN, curr: IPointsHistoryJson) => {
         // TODO: User only decimal after 24h
         try {
@@ -108,7 +108,7 @@ export const prepareFinalData = async (network: Network) => {
     );
   });
 
-  const finalDataSwaps = Object.keys(data)
+  const finalDataSwaps = Object.keys(swapData)
     .map((key) => {
       return {
         address: key,
@@ -120,7 +120,7 @@ export const prepareFinalData = async (network: Network) => {
     })
     .sort((a, b) => a.rank - b.rank);
 
-  fs.writeFileSync(finalDataFile, JSON.stringify(finalDataSwaps));
+  fs.writeFileSync(finalDataSwapFile, JSON.stringify(finalDataSwaps));
 
   const allAddresses = Array.from(
     new Set([...Object.keys(data), ...Object.keys(swapData)])
