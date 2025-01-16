@@ -197,8 +197,13 @@ export const createSnapshotForNetwork = async (network: Network) => {
         previousPoints[key].totalPoints = new BN(
           previousPoints[key].totalPoints
         ).add(points);
+        previousPoints[key].swapsAmount += 1;
       } else {
-        previousPoints[key] = { totalPoints: points, points24HoursHistory: [] };
+        previousPoints[key] = {
+          totalPoints: points,
+          points24HoursHistory: [],
+          swapsAmount: 1,
+        };
       }
 
       pointsChange[key] = new BN(pointsChange[key]).add(points);

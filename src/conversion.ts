@@ -194,9 +194,13 @@ export class SwapPointsBinaryConverter {
     2 ** (8 * this.HISTORY_LENGTH_SIZE) - 1;
   private static readonly HISTORY_ENTRY_SIZE =
     this.TIMESTAMP_SIZE + this.DIFF_SIZE;
+  private static readonly SWAPS_AMOUNT_SIZE = 4;
 
   private static readonly ENTRY_HEADER_SIZE =
-    this.ADDRESS_SIZE + this.TOTAL_POINTS_SIZE + this.HISTORY_LENGTH_SIZE;
+    this.ADDRESS_SIZE +
+    this.TOTAL_POINTS_SIZE +
+    this.HISTORY_LENGTH_SIZE +
+    this.SWAPS_AMOUNT_SIZE;
 
   public static toBinary(data: SwapPointsData): Uint8Array {
     const entriesCount = Object.keys(data).length;
@@ -228,6 +232,10 @@ export class SwapPointsBinaryConverter {
       const totalPoints = BigInt(`0x${entry.totalPoints}`);
       view.setBigUint64(offset, totalPoints, true);
       offset += this.TOTAL_POINTS_SIZE;
+
+      // Write swaps amount (u32)
+      view.setUint32(offset, entry.swapsAmount, true);
+      offset += this.SWAPS_AMOUNT_SIZE;
 
       // Write history length (u8)
       if (entry.points24HoursHistory.length > this.MAX_HISTORY_SIZE) {
@@ -274,6 +282,10 @@ export class SwapPointsBinaryConverter {
       const totalPoints = view.getBigUint64(offset, true);
       offset += this.TOTAL_POINTS_SIZE;
 
+      // Read swaps amount
+      const swapsAmount = view.getUint32(offset, true);
+      offset += this.SWAPS_AMOUNT_SIZE;
+
       // Read history length
       const historyLength = view.getUint8(offset);
       offset += this.HISTORY_LENGTH_SIZE;
@@ -295,6 +307,7 @@ export class SwapPointsBinaryConverter {
 
       result[pubkey] = {
         totalPoints: totalPoints.toString(16).padStart(16, "0"),
+        swapsAmount,
         points24HoursHistory,
       };
     }
