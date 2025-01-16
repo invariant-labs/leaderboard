@@ -41,7 +41,7 @@ export const retryOperation = async (fn: Promise<any>, retires: number = 0) => {
       await delay(RETRY_DELAY);
       return retryOperation(fn, retires + 1);
     } else {
-      throw new Error("Failed to retry operation");
+      throw new Error("Failed to retry operation" + error);
     }
   }
 };

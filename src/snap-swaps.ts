@@ -26,6 +26,7 @@ import { SwapEvent } from "@invariant-labs/sdk-eclipse/lib/market";
 import { calculatePointsForSwap, getTimestampInSeconds } from "./math";
 import { HermesClient } from "@pythnetwork/hermes-client";
 import { SwapPointsBinaryConverter } from "./conversion";
+import { FEE_TIERS } from "@invariant-labs/sdk-eclipse/lib/utils";
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 require("dotenv").config();
@@ -95,32 +96,30 @@ export const createSnapshotForNetwork = async (network: Network) => {
   const previousHashes = JSON.parse(fs.readFileSync(pairsFileName, "utf-8"));
 
   const newHashes = {};
-  const sigs = (
-    await Promise.all(
-      PROMOTED_PAIRS.map(({ tokenX, tokenY, startTxHash }) => {
-        const refAddr = market.getEventOptAccountForSwap(
-          new Pair(
-            tokenX,
-            tokenY,
-            // NOTE: redundant
-            { fee: new BN(0), tickSpacing: 1 }
-          )
-        ).address;
-        const key = tokenX.toString() + "-" + tokenY.toString();
-        const previousTxHash = previousHashes[key] ?? startTxHash;
-        return retryOperation(
-          fetchAllSignatures(connection, refAddr, previousTxHash)
-        ).then((signatures) => {
-          if (signatures.length > 0) {
-            newHashes[key] = signatures[0];
-          } else {
-            newHashes[key] = previousTxHash;
-          }
-          return signatures;
-        });
-      })
-    )
-  ).flat();
+
+  const sigs: string[] = [];
+
+  for (const { tokenX, tokenY, startTxHash } of PROMOTED_PAIRS) {
+    for (const tier of FEE_TIERS) {
+      const refAddr = new Pair(tokenX, tokenY, tier).getAddress(
+        market.program.programId
+      );
+
+      const previousTxHash = previousHashes[refAddr.toBase58()] ?? startTxHash;
+
+      const signatures = await retryOperation(
+        fetchAllSignatures(connection, refAddr, previousTxHash)
+      );
+
+      if (signatures.length > 0) {
+        newHashes[refAddr.toBase58()] = signatures[0];
+      } else {
+        newHashes[refAddr.toBase58()] = previousTxHash;
+      }
+
+      sigs.push(...signatures);
+    }
+  }
 
   const txLogs = await retryOperation(
     fetchTransactionLogs(connection, sigs, MAX_SIGNATURES_PER_CALL)
