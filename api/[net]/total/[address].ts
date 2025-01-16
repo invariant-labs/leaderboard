@@ -8,6 +8,7 @@ interface IEntry {
   swapPoints: string;
   lpPoints: string;
   last24hPoints: string;
+  domain?: string;
 }
 interface IData {
   user: IEntry | null;

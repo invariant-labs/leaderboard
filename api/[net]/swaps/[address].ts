@@ -7,6 +7,7 @@ interface ISwapEntry {
   points: string;
   last24hPoints: string;
   swaps: number;
+  domain?: string;
 }
 
 interface ISwapData {
