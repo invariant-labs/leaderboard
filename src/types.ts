@@ -95,6 +95,7 @@ export interface PointsEntry {
 
 export interface SwapPointsEntry {
   totalPoints: string; // hex string
+  swapsAmount: number;
   points24HoursHistory: IPointsHistory[];
 }
 

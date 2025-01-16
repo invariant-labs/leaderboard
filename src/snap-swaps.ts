@@ -26,6 +26,7 @@ import { SwapEvent } from "@invariant-labs/sdk-eclipse/lib/market";
 import { calculatePointsForSwap, getTimestampInSeconds } from "./math";
 import { HermesClient } from "@pythnetwork/hermes-client";
 import { SwapPointsBinaryConverter } from "./conversion";
+import { FEE_TIERS } from "@invariant-labs/sdk-eclipse/lib/utils";
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 require("dotenv").config();
@@ -75,6 +76,13 @@ export const createSnapshotForNetwork = async (network: Network) => {
       throw new Error("Unknown network");
   }
 
+  const blacklist: string[] = JSON.parse(
+    fs.readFileSync(
+      path.join(__dirname, "../data/swap_blacklist.json"),
+      "utf-8"
+    )
+  );
+
   const connection = provider.connection;
   const programId = new PublicKey(getMarketAddress(network));
 
@@ -88,32 +96,30 @@ export const createSnapshotForNetwork = async (network: Network) => {
   const previousHashes = JSON.parse(fs.readFileSync(pairsFileName, "utf-8"));
 
   const newHashes = {};
-  const sigs = (
-    await Promise.all(
-      PROMOTED_PAIRS.map(({ tokenX, tokenY, startTxHash }) => {
-        const refAddr = market.getEventOptAccountForSwap(
-          new Pair(
-            tokenX,
-            tokenY,
-            // NOTE: redundant
-            { fee: new BN(0), tickSpacing: 1 }
-          )
-        ).address;
-        const key = tokenX.toString() + "-" + tokenY.toString();
-        const previousTxHash = previousHashes[key] ?? startTxHash;
-        return retryOperation(
-          fetchAllSignatures(connection, refAddr, previousTxHash)
-        ).then((signatures) => {
-          if (signatures.length > 0) {
-            newHashes[key] = signatures[0];
-          } else {
-            newHashes[key] = previousTxHash;
-          }
-          return signatures;
-        });
-      })
-    )
-  ).flat();
+
+  const sigs: string[] = [];
+
+  for (const { tokenX, tokenY, startTxHash } of PROMOTED_PAIRS) {
+    for (const tier of FEE_TIERS) {
+      const refAddr = new Pair(tokenX, tokenY, tier).getAddress(
+        market.program.programId
+      );
+
+      const previousTxHash = previousHashes[refAddr.toBase58()] ?? startTxHash;
+
+      const signatures = await retryOperation(
+        fetchAllSignatures(connection, refAddr, previousTxHash)
+      );
+
+      if (signatures.length > 0) {
+        newHashes[refAddr.toBase58()] = signatures[0];
+      } else {
+        newHashes[refAddr.toBase58()] = previousTxHash;
+      }
+
+      sigs.push(...signatures);
+    }
+  }
 
   const txLogs = await retryOperation(
     fetchTransactionLogs(connection, sigs, MAX_SIGNATURES_PER_CALL)
@@ -156,7 +162,7 @@ export const createSnapshotForNetwork = async (network: Network) => {
     .forEach((decodedEvent) => {
       const event = parseEvent(decodedEvent) as SwapEvent;
       const { swapper, fee, xToY, tokenX, tokenY } = event;
-
+      if (blacklist.some((item) => item === swapper.toString())) return;
       const associatedPair = PROMOTED_PAIRS.find(
         (p) => p.tokenX.equals(tokenX) && p.tokenY.equals(tokenY)
       );
@@ -188,14 +194,18 @@ export const createSnapshotForNetwork = async (network: Network) => {
       const key = swapper.toString();
       if (previousPoints[key]) {
         previousPoints[key].totalPoints = new BN(
-          previousPoints[key].totalPoints,
-          "hex"
+          previousPoints[key].totalPoints
         ).add(points);
+        previousPoints[key].swapsAmount += 1;
       } else {
-        previousPoints[key] = { totalPoints: points, points24HoursHistory: [] };
+        previousPoints[key] = {
+          totalPoints: points,
+          points24HoursHistory: [],
+          swapsAmount: 1,
+        };
       }
 
-      pointsChange[key] = new BN(pointsChange[key], "hex").add(points);
+      pointsChange[key] = new BN(pointsChange[key]).add(points);
     });
 
   Object.keys(previousPoints).forEach((key) => {
@@ -204,10 +214,12 @@ export const createSnapshotForNetwork = async (network: Network) => {
       const recentHistory = prevHistory.filter((entry) =>
         new BN(entry.timestamp, "hex").gt(currentTimestamp.sub(DAY))
       );
-      recentHistory.push({
-        diff: pointsChange[key],
-        timestamp: currentTimestamp,
-      });
+      if (pointsChange[key]) {
+        recentHistory.push({
+          diff: pointsChange[key],
+          timestamp: currentTimestamp,
+        });
+      }
       previousPoints[key].points24HoursHistory = recentHistory;
     } else {
       previousPoints[key].points24HoursHistory = [
@@ -224,20 +236,20 @@ export const createSnapshotForNetwork = async (network: Network) => {
   fs.writeFileSync(priceFeedsFileName, JSON.stringify(priceFeeds));
 };
 
-createSnapshotForNetwork(Network.TEST).then(
-  () => {
-    console.log("Eclipse: Testnet snapshot done!");
-  },
-  (err) => {
-    console.log(err);
-  }
-);
-
-// createSnapshotForNetwork(Network.MAIN).then(
+// createSnapshotForNetwork(Network.TEST).then(
 //   () => {
-//     console.log("Eclipse: Mainnet swap snapshot done!");
+//     console.log("Eclipse: Testnet snapshot done!");
 //   },
 //   (err) => {
 //     console.log(err);
 //   }
 // );
+
+createSnapshotForNetwork(Network.MAIN).then(
+  () => {
+    console.log("Eclipse: Mainnet swap snapshot done!");
+  },
+  (err) => {
+    console.log(err);
+  }
+);
