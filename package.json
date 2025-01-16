@@ -12,6 +12,7 @@
   "dependencies": {
     "@coral-xyz/anchor": "0.29.0",
     "@invariant-labs/sdk-eclipse": "^0.0.68",
+    "@onsol/tldparser": "^0.6.7",
     "@pythnetwork/hermes-client": "^1.3.0",
     "@solana/spl-token": "^0.4.9",
     "@solana/spl-token-registry": "^0.2.4484",

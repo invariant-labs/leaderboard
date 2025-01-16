@@ -34,6 +34,7 @@ export const PROMOTED_POOLS_MAINNET: IPromotedPool[] = [
   }, // ETH/tETH 0.01%
 ];
 
+export const DOMAIN_LIMIT = 100;
 export const DAY = new BN(86400);
 export const MAX_RETIRES = 3;
 export const MAX_RETRIES_FOR_STATE_INCONSISTENCY = 15;

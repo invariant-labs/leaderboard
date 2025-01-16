@@ -7,6 +7,7 @@ interface ILpEntry {
   points: string;
   last24hPoints: string;
   positions: number;
+  domain?: string;
 }
 
 interface ILpData {
