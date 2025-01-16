@@ -75,15 +75,6 @@ export const addDomains = async () => {
   fs.writeFileSync(finalDataLpFile, JSON.stringify(totalLpData));
 };
 
-// prepareFinalData(Network.TEST).then(
-//   () => {
-//     console.log("Eclipse: Final data prepared!");
-//   },
-//   (err) => {
-//     console.log(err);
-//   }
-// );
-
 addDomains().then(
   () => {
     console.log("Eclipse: domains added!");
