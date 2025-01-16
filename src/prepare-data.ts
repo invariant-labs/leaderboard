@@ -83,7 +83,7 @@ export const prepareFinalData = async (network: Network) => {
     })
     .sort((a, b) => a.rank - b.rank);
 
-  fs.writeFileSync(finalDataFile, JSON.stringify(finalDataLp, null, 2));
+  fs.writeFileSync(finalDataFile, JSON.stringify(finalDataLp));
 
   const rankSwap: Record<string, number> = {};
   const last24HoursPointsSwap: Record<string, BN> = {};
@@ -115,11 +115,12 @@ export const prepareFinalData = async (network: Network) => {
         rank: rankSwap[key],
         last24hPoints: last24HoursPointsSwap[key],
         points: new BN(swapData[key].totalPoints),
+        swaps: swapData[key].swapsAmount,
       };
     })
     .sort((a, b) => a.rank - b.rank);
 
-  fs.writeFileSync(finalDataFile, JSON.stringify(finalDataSwaps, null, 2));
+  fs.writeFileSync(finalDataFile, JSON.stringify(finalDataSwaps));
 
   const allAddresses = Array.from(
     new Set([...Object.keys(data), ...Object.keys(swapData)])
@@ -155,19 +156,12 @@ export const prepareFinalData = async (network: Network) => {
       const last24hPoints = last24hLpPoints.add(last24hSwapPoints);
       const totalPoints = lpPoints.add(swapPoints);
 
-      const positions = lp ? lp.positionsAmount : 0;
-      const swaps = swap ? swap.swapsAmount : 0;
-
       return {
         address: key,
         points: totalPoints,
         last24hPoints,
         lpPoints,
         swapPoints,
-        last24hLpPoints,
-        last24hSwapPoints,
-        positions,
-        swaps,
       };
     })
     .sort((a, b) => b.points.cmp(a.points))

@@ -1,17 +1,17 @@
 import { VercelRequest, VercelResponse } from "@vercel/node";
-import ECLIPSE_MAINNET_DATA from "../../../data/final_data_swap_mainnet.json";
+import ECLIPSE_MAINNET_DATA from "../../../data/final_data_mainnet.json";
 
-interface ISwapEntry {
+interface IEntry {
   rank: number;
   address: string;
   points: string;
+  swapPoints: string;
+  lpPoints: string;
   last24hPoints: string;
-  swaps: number;
 }
-
-interface ISwapData {
-  user: ISwapEntry | null;
-  leaderboard: ISwapEntry[];
+interface IData {
+  user: IEntry | null;
+  leaderboard: IEntry[];
   totalItems: number;
 }
 
@@ -32,12 +32,12 @@ export default function (req: VercelRequest, res: VercelResponse) {
   const { net, address } = req.query;
 
   const pubkey = address as string;
-  let currentData: ISwapEntry[];
+  let currentData: IEntry[];
 
   if (net === "eclipse-testnet") {
-    currentData = ECLIPSE_MAINNET_DATA as ISwapEntry[];
+    currentData = ECLIPSE_MAINNET_DATA as IEntry[];
   } else if (net === "eclipse-mainnet") {
-    currentData = ECLIPSE_MAINNET_DATA as ISwapEntry[];
+    currentData = ECLIPSE_MAINNET_DATA as IEntry[];
   } else {
     return res.status(400).send("INVALID NETWORK");
   }
@@ -46,7 +46,7 @@ export default function (req: VercelRequest, res: VercelResponse) {
   const size = Number(req.query.size) || undefined;
   const userItem = currentData.find((item) => item.address === pubkey);
   const userData = address && userItem ? userItem : null;
-  const finalData: ISwapData = {
+  const finalData: IData = {
     user: userData ? { ...userData } : null,
     leaderboard: currentData.slice(
       offset,
