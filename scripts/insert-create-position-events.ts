@@ -17,7 +17,7 @@ import { Network } from "@invariant-labs/sdk-eclipse";
 
 require("dotenv").config();
 
-const POOL = new PublicKey("FvVsbwsbGVo6PVfimkkPhpcRfBrRitiV946nMNNuz7f9");
+const POOL = new PublicKey("86vPh8ctgeQnnn8qPADy5BkzrqoH5XjMCWvkd4tYhhmM");
 const NETWORK = Network.MAIN;
 
 export const insertPreviousPositionsFromPool = async (
