@@ -57,7 +57,7 @@ export const PROMOTED_PAIRS_MAINNET: IPromotedPair[] = [
     feedYId:
       "0xff61491a931112ddf1bd8147cd1b641375f79f5825126d665480874634fd0ace", // ETH/USD
     startTxHash:
-      "2FnKZLHL3HZtC5suetr1QnfeEiF3RZrCbScb7uPEAvSYTvDsAb3gn7A6is4QfhKrgovgBLmyi2CHfR7jLMBfcgJK",
+      "4xcjRGt25MFL3ffDTBeazQ7LSzp3HFrNLAnabnXAJxCcmWFdCwSJMTTrtCYZuTvearrHX3EsmVvA7Grqa9fU5vcT",
   },
 ];
 

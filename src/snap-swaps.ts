@@ -236,20 +236,20 @@ export const createSnapshotForNetwork = async (network: Network) => {
   fs.writeFileSync(priceFeedsFileName, JSON.stringify(priceFeeds));
 };
 
-createSnapshotForNetwork(Network.TEST).then(
-  () => {
-    console.log("Eclipse: Testnet snapshot done!");
-  },
-  (err) => {
-    console.log(err);
-  }
-);
-
-// createSnapshotForNetwork(Network.MAIN).then(
+// createSnapshotForNetwork(Network.TEST).then(
 //   () => {
-//     console.log("Eclipse: Mainnet swap snapshot done!");
+//     console.log("Eclipse: Testnet snapshot done!");
 //   },
 //   (err) => {
 //     console.log(err);
 //   }
 // );
+
+createSnapshotForNetwork(Network.MAIN).then(
+  () => {
+    console.log("Eclipse: Mainnet swap snapshot done!");
+  },
+  (err) => {
+    console.log(err);
+  }
+);
