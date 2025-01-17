@@ -366,7 +366,7 @@ export const createSnapshotForNetwork = async (network: Network) => {
       const prev24HoursHistory = previousPoints[curr]?.points24HoursHistory;
       if (prev24HoursHistory) {
         prev24HoursHistory.forEach((item, idx) => {
-          if (new BN(item.timestamp, "hex").add(DAY).lt(currentTimestamp)) {
+          if (new BN(item.timestamp).add(DAY).lt(currentTimestamp)) {
             prev24HoursHistory.splice(idx, 1);
           }
         });

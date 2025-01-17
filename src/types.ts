@@ -94,7 +94,7 @@ export interface PointsEntry {
 }
 
 export interface SwapPointsEntry {
-  totalPoints: string; // hex string
+  totalPoints: BN | string; // hex string
   swapsAmount: number;
   points24HoursHistory: IPointsHistory[];
 }

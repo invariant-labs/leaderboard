@@ -187,7 +187,7 @@ export class PointsBinaryConverter {
 export class SwapPointsBinaryConverter {
   private static readonly ADDRESS_SIZE = 32;
   private static readonly TOTAL_POINTS_SIZE = 8;
-  private static readonly HISTORY_LENGTH_SIZE = 1;
+  private static readonly HISTORY_LENGTH_SIZE = 4;
   private static readonly TIMESTAMP_SIZE = 8;
   private static readonly DIFF_SIZE = 8;
   private static readonly MAX_HISTORY_SIZE =
