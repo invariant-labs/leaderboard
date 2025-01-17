@@ -1,6 +1,6 @@
 import { VercelRequest, VercelResponse } from "@vercel/node";
 import { POINTS_DECIMAL } from "../../src/math";
-import { PROMOTED_POOLS_MAINNET } from "../../src/consts";
+import { POINTS_PER_USD, PROMOTED_POOLS_MAINNET } from "../../src/consts";
 import LAST_SNAP_TIMESTAMP from "../../data/last_snap_timestamp_mainnet.json";
 
 export default function (req: VercelRequest, res: VercelResponse) {
@@ -22,6 +22,7 @@ export default function (req: VercelRequest, res: VercelResponse) {
     pointsDecimal: POINTS_DECIMAL,
     promotedPools: PROMOTED_POOLS_MAINNET,
     lastSnapTimestamp: lastSnapTimestamp,
+    pointsPerUSD: POINTS_PER_USD,
   };
 
   res.json(config);
