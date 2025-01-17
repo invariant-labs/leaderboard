@@ -212,7 +212,7 @@ export const createSnapshotForNetwork = async (network: Network) => {
     if (previousPoints[key] && previousPoints[key].points24HoursHistory) {
       const prevHistory = previousPoints[key].points24HoursHistory;
       const recentHistory = prevHistory.filter((entry) =>
-        new BN(entry.timestamp, "hex").gt(currentTimestamp.sub(DAY))
+        new BN(entry.timestamp).gt(currentTimestamp.sub(DAY))
       );
       if (pointsChange[key]) {
         recentHistory.push({
