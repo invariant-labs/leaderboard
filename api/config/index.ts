@@ -4,6 +4,7 @@ import {
   POINTS_PER_USD,
   PROMOTED_POOLS_MAINNET,
   PROMOTED_PAIRS_MAINNET,
+  SWAP_MULTIPLIER,
 } from "../../src/consts";
 import LAST_SNAP_TIMESTAMP from "../../data/last_snap_timestamp_mainnet.json";
 
@@ -27,6 +28,7 @@ export default function (req: VercelRequest, res: VercelResponse) {
     promotedPools: PROMOTED_POOLS_MAINNET,
     lastSnapTimestamp: lastSnapTimestamp,
     pointsPerUSD: POINTS_PER_USD,
+    swapMultiplier: SWAP_MULTIPLIER,
     swapPairs: PROMOTED_PAIRS_MAINNET.map((pair) => {
       return {
         tokenX: pair.tokenX.toString(),
