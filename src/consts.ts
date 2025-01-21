@@ -52,6 +52,7 @@ export const FULL_SNAP_START_TX_HASH_TESTNET =
 // SWAPS
 export const SWAP_MULTIPLIER = new BN(5);
 export const POINTS_PER_USD = new BN(100).mul(SWAP_MULTIPLIER);
+export const MAX_CONFIDENCE_PERCENTAGE = new BN(25000); // 2.5%
 // Price feed IDS: https://www.pyth.network/developers/price-feed-ids
 export const PROMOTED_PAIRS_MAINNET: IPromotedPair[] = [
   {

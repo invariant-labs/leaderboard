@@ -23,7 +23,11 @@ import {
 } from "./utils";
 import { IPriceFeed, IPromotedPair } from "./types";
 import { SwapEvent } from "@invariant-labs/sdk-eclipse/lib/market";
-import { calculatePointsForSwap, getTimestampInSeconds } from "./math";
+import {
+  calculatePointsForSwap,
+  getTimestampInSeconds,
+  isConfidenceAcceptable,
+} from "./math";
 import { HermesClient } from "@pythnetwork/hermes-client";
 import { SwapPointsBinaryConverter } from "./conversion";
 import { FEE_TIERS } from "@invariant-labs/sdk-eclipse/lib/utils";
@@ -125,18 +129,38 @@ export const createSnapshotForNetwork = async (network: Network) => {
     fetchTransactionLogs(connection, sigs, MAX_SIGNATURES_PER_CALL)
   );
 
-  const priceFeeds = ((
+  let priceFeeds: IPriceFeed[] = [];
+  const previousFeeds = JSON.parse(
+    fs.readFileSync(priceFeedsFileName, "utf-8")
+  ) as IPriceFeed[];
+
+  const pythFeeds = (
     await hermesClient.getLatestPriceUpdates(
       Array.from(
         new Set(PROMOTED_PAIRS.map((p) => [p.feedXId, p.feedYId]).flat())
       )
     )
-  ).parsed ?? fs.readFileSync(priceFeedsFileName, "utf-8")) as IPriceFeed[];
+  ).parsed;
 
-  if (!priceFeeds) {
-    throw new Error(
-      "NOTE: Add events without price feeds to separate file and resolve them later"
-    );
+  if (pythFeeds) {
+    priceFeeds = pythFeeds.map((feed) => {
+      const previousFeed = previousFeeds.find(
+        (f) => f.id === feed.id
+      ) as IPriceFeed;
+      if (!feed.price) {
+        return previousFeed;
+      }
+
+      const { price, conf } = feed.price;
+
+      if (isConfidenceAcceptable(new BN(price), new BN(conf))) {
+        return feed as IPriceFeed;
+      } else {
+        return previousFeed;
+      }
+    });
+  } else {
+    priceFeeds = previousFeeds;
   }
 
   const currentTimestamp = getTimestampInSeconds();
