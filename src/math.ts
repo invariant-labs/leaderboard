@@ -1,12 +1,13 @@
 import { BN } from "@coral-xyz/anchor";
-import { SwapEvent } from "@invariant-labs/sdk-eclipse/lib/market";
-import { POINTS_PER_USD } from "./consts";
+import { MAX_CONFIDENCE_PERCENTAGE, POINTS_PER_USD } from "./consts";
 
 const MAX_U128 = new BN("340282366920938463463374607431768211455");
 const SECONDS_PER_LIQUIDITY_DECIMAL = 24;
 const LIQUIDITY_DECIMAL = 6;
 export const POINTS_DECIMAL = 8;
 const SECONDS_INSIDE_DECIMAL = 2;
+const PERCENTAGE_DECIMAL = 6;
+const PERCENTAGE_DENOMINATOR = new BN(10).pow(new BN(PERCENTAGE_DECIMAL));
 const LIQUIDITY_DENOMINATOR = new BN(10).pow(new BN(LIQUIDITY_DECIMAL));
 const SECONDS_PER_LIQUIDITY_DENOMINATOR = new BN(10).pow(
   new BN(SECONDS_PER_LIQUIDITY_DECIMAL)
@@ -134,6 +135,14 @@ export const calculatePointsForSwap = (
   const denominator = new BN(10).pow(new BN(decimals + priceDecimals));
 
   return nominator.div(denominator);
+};
+
+export const isConfidenceAcceptable = (price: BN, confidence: BN) => {
+  const limit = price
+    .mul(MAX_CONFIDENCE_PERCENTAGE)
+    .div(PERCENTAGE_DENOMINATOR);
+
+  return confidence.lte(limit);
 };
 
 export const getTimestampInSeconds = (): BN => {
