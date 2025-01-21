@@ -66,6 +66,30 @@ export const PROMOTED_PAIRS_MAINNET: IPromotedPair[] = [
     startTxHash:
       "4xcjRGt25MFL3ffDTBeazQ7LSzp3HFrNLAnabnXAJxCcmWFdCwSJMTTrtCYZuTvearrHX3EsmVvA7Grqa9fU5vcT",
   },
+  {
+    tokenX: new PublicKey("GU7NS9xCwgNPiAdJ69iusFrRfawjDDPjeMBovhV1d4kn"),
+    xDecimal: 9,
+    feedXId:
+      "0xff61491a931112ddf1bd8147cd1b641375f79f5825126d665480874634fd0ace", //  ETH/USD because there is no tETH/USD
+    tokenY: new PublicKey("So11111111111111111111111111111111111111112"),
+    yDecimal: 9,
+    feedYId:
+      "0xff61491a931112ddf1bd8147cd1b641375f79f5825126d665480874634fd0ace", // ETH/USD
+    startTxHash:
+      "4X2aLE6gbWZwgDjnY69g9N7Hsfbw9BvqAtHninQRdir553z99HaQfdL6McVAzkwYTbbnAQMWpnLf36gQFuJmWgMX",
+  },
+  {
+    tokenX: new PublicKey("BeRUj3h7BqkbdfFU7FBNYbodgf8GCHodzKvF9aVjNNfL"),
+    xDecimal: 9,
+    feedXId:
+      "0xef0d8b6fda2ceba41da15d4095d1da392a0d2f8ed0c6c7bc0f4cfac8c280b56d", //  SOL/USD
+    tokenY: new PublicKey("So11111111111111111111111111111111111111112"),
+    yDecimal: 9,
+    feedYId:
+      "0xff61491a931112ddf1bd8147cd1b641375f79f5825126d665480874634fd0ace", // ETH/USD
+    startTxHash:
+      "4X2aLE6gbWZwgDjnY69g9N7Hsfbw9BvqAtHninQRdir553z99HaQfdL6McVAzkwYTbbnAQMWpnLf36gQFuJmWgMX",
+  },
 ];
 
 export const PROMOTED_PAIRS_TESTNET: IPromotedPair[] = [
