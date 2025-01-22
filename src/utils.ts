@@ -113,7 +113,10 @@ export const fetchTransactionLogs = async (
         );
         return processParsedTransactions(
           await retryOperation(
-            connection.getParsedTransactions(batchSignatures, "confirmed")
+            connection.getParsedTransactions(batchSignatures, {
+              commitment: "confirmed",
+              maxSupportedTransactionVersion: 0,
+            })
           )
         );
       })
