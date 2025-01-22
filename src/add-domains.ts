@@ -14,12 +14,6 @@ export const addDomains = async () => {
   const prevDomains = JSON.parse(fs.readFileSync(domainsFile, "utf-8"));
   const now = getTimestampInSeconds();
 
-  console.log(
-    new BN(prevDomains.timestamp, "hex").toString(),
-    DAY.toString(),
-    now.toString()
-  );
-
   const finalDataFile = path.join(__dirname, "../data/final_data_mainnet.json");
   const finalDataSwapFile = path.join(
     __dirname,
