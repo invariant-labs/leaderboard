@@ -14,11 +14,6 @@ export const addDomains = async () => {
   const prevDomains = JSON.parse(fs.readFileSync(domainsFile, "utf-8"));
   const now = getTimestampInSeconds();
 
-  if (new BN(prevDomains.timestamp, "hex").add(DAY).gt(now)) {
-    console.log("Eclipse: Domains are up to date");
-    return;
-  }
-
   const finalDataFile = path.join(__dirname, "../data/final_data_mainnet.json");
   const finalDataSwapFile = path.join(
     __dirname,
@@ -44,17 +39,22 @@ export const addDomains = async () => {
     addresses.add(new PublicKey(totalLpData[i].address));
   }
 
-  const domains = {};
-  const parser = new TldParser(connection);
-  for (const address of addresses) {
-    try {
-      const domain = await parser.getMainDomain(address);
-      const domainName = domain.domain.concat(domain.tld);
-      domains[address.toString()] = domainName;
-    } catch (e) {
-      console.log(
-        `Address ${address.toString()} does not have a primary domain`
-      );
+  let domains = {};
+  if (new BN(prevDomains.timestamp, "hex").add(DAY).gt(now)) {
+    console.log("Eclipse: Domains are up to date");
+    domains = prevDomains.domains;
+  } else {
+    const parser = new TldParser(connection);
+    for (const address of addresses) {
+      try {
+        const domain = await parser.getMainDomain(address);
+        const domainName = domain.domain.concat(domain.tld);
+        domains[address.toString()] = domainName;
+      } catch (e) {
+        console.log(
+          `Address ${address.toString()} does not have a primary domain`
+        );
+      }
     }
   }
 
