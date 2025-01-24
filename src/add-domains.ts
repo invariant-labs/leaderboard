@@ -35,7 +35,9 @@ export const addDomains = async () => {
 
   for (let i = 0; i < DOMAIN_LIMIT; i++) {
     addresses.add(new PublicKey(totalData[i].address));
-    addresses.add(new PublicKey(totalSwapData[i].address));
+    if (totalSwapData[i]) {
+      addresses.add(new PublicKey(totalSwapData[i].address));
+    }
     addresses.add(new PublicKey(totalLpData[i].address));
   }
 
@@ -65,7 +67,9 @@ export const addDomains = async () => {
 
   for (let i = 0; i < DOMAIN_LIMIT; i++) {
     totalData[i].domain = domains[totalData[i].address];
-    totalSwapData[i].domain = domains[totalSwapData[i].address];
+    if (totalSwapData[i]) {
+      totalSwapData[i].domain = domains[totalSwapData[i].address];
+    }
     totalLpData[i].domain = domains[totalLpData[i].address];
   }
 
