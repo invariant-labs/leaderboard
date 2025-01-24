@@ -1,3 +1,1 @@
-version https://git-lfs.github.com/spec/v1
-oid sha256:0c07489fcf6d2101ceb6eb338ae88926299eeb176842bf12a8d951bdcc43eb4c
-size 2114
+{"FA62Nzqaz2EEBFLdYK7QYCxqz8dgNCzPnHJmfb9zQNmR":{"active":[{"event":{"owner":"FA62Nzqaz2EEBFLdYK7QYCxqz8dgNCzPnHJmfb9zQNmR","pool":"3aK4ibSQamqLnB2yvCYLh1DjVDqYKBLyhT8vVs5u8cdo","id":"00","liquidity":"5af36b8e8185","lowerTick":-221790,"upperTick":221790,"currentTimestamp":"6793d965","secondsPerLiquidityInsideInitial":"014bd01608959f3a2c"},"points":"231441304300"}],"closed":[]},"3ZB2UBvE4QUTKNexk55TW4UwE85WNaVdmjqTenuGADV1":{"active":[{"event":{"owner":"3ZB2UBvE4QUTKNexk55TW4UwE85WNaVdmjqTenuGADV1","pool":"3aK4ibSQamqLnB2yvCYLh1DjVDqYKBLyhT8vVs5u8cdo","id":"00","liquidity":"5af36b8e8185","lowerTick":-221790,"upperTick":221790,"currentTimestamp":"6793d00e","secondsPerLiquidityInsideInitial":"00"},"points":"38d33c3ebf00"}],"closed":[]}}

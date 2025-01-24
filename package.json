@@ -11,7 +11,7 @@
   "license": "ISC",
   "dependencies": {
     "@coral-xyz/anchor": "0.29.0",
-    "@invariant-labs/sdk-eclipse": "^0.0.68",
+    "@invariant-labs/sdk-eclipse": "^0.0.71",
     "@onsol/tldparser": "^0.6.7",
     "@pythnetwork/hermes-client": "^1.3.0",
     "@solana/spl-token": "^0.4.9",

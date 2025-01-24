@@ -30,7 +30,6 @@ import {
 } from "./utils";
 import {
   IActive,
-  IPointsHistory,
   IPoolAndTicks,
   IPositions,
   IPromotedPool,
@@ -366,15 +365,27 @@ export const createSnapshotForNetwork = async (network: Network) => {
       const prev24HoursHistory = previousPoints[curr]?.points24HoursHistory;
       if (prev24HoursHistory) {
         prev24HoursHistory.forEach((item, idx) => {
-          if (new BN(item.timestamp).add(DAY).lt(currentTimestamp)) {
+          let timestamp: BN;
+          if (network === Network.TEST) {
+            timestamp = new BN(item.timestamp, "hex");
+          } else {
+            timestamp = new BN(item.timestamp);
+          }
+          if (timestamp.add(DAY).lt(currentTimestamp)) {
             prev24HoursHistory.splice(idx, 1);
           }
         });
       }
 
-      const previousTotalPoints: BN =
+      let previousTotal: BN;
+      if (network === Network.TEST) {
+        previousTotal = new BN(previousPoints[curr]?.totalPoints, "hex");
+      } else {
         // NOTE: After first snapshot with binary points file, ensure the points are not casted with hex
-        new BN(previousPoints[curr]?.totalPoints) ?? new BN(0);
+        previousTotal = new BN(previousPoints[curr]?.totalPoints);
+      }
+
+      const previousTotalPoints: BN = previousTotal ?? new BN(0);
 
       const pointsForOpen: BN[] = eventsObject[curr].active.map(
         (entry) => entry.points
@@ -456,20 +467,20 @@ export const createSnapshotForNetwork = async (network: Network) => {
   }
 };
 
-// createSnapshotForNetwork(Network.TEST).then(
-//   () => {
-//     console.log("Eclipse: Testnet snapshot done!");
-//   },
-//   (err) => {
-//     console.log(err);
-//   }
-// );
-
-createSnapshotForNetwork(Network.MAIN).then(
+createSnapshotForNetwork(Network.TEST).then(
   () => {
-    console.log("Eclipse: Mainnet snapshot done!");
+    console.log("Eclipse: Testnet snapshot done!");
   },
   (err) => {
     console.log(err);
   }
 );
+
+// createSnapshotForNetwork(Network.MAIN).then(
+//   () => {
+//     console.log("Eclipse: Mainnet snapshot done!");
+//   },
+//   (err) => {
+//     console.log(err);
+//   }
+// );
