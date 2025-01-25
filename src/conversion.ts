@@ -67,12 +67,7 @@ export class PointsBinaryConverter {
       // Write history entries
       for (const history of entry.points24HoursHistory) {
         const timestamp = BigInt(`0x${history.timestamp}`);
-        console.log(
-          history.diff,
-          history.timestamp,
-          pubkeyStr,
-          typeof history.diff
-        );
+
         let diff = BigInt(0);
 
         if (typeof history.diff === "string") {
