@@ -162,9 +162,12 @@ export const createSnapshotForNetwork = async (network: Network) => {
   finalLogs.map((log, index) => {
     if (
       log.startsWith("Program data:") &&
-      finalLogs[index + 1].startsWith(
+      (finalLogs[index + 1].startsWith(
         `Program ${market.program.programId.toBase58()}`
-      )
+      ) ||
+        finalLogs[index - 1].startsWith(
+          `Program log: INVARIANT: TRANSFER POSITION`
+        ))
     )
       eventLogs.push(log.split("Program data: ")[1]);
   });
@@ -262,6 +265,7 @@ export const createSnapshotForNetwork = async (network: Network) => {
     { newOpen: [], newClosed: [], newOpenClosed: [] }
   );
 
+  console.log(newOpen, newOpenClosed);
   const stillOpen: IActive[] = [];
 
   Object.values(eventsObject).forEach((positions) =>
@@ -454,17 +458,17 @@ export const createSnapshotForNetwork = async (network: Network) => {
     lastSnapTimestamp: currentTimestamp,
   };
 
-  fs.writeFileSync(
-    lastSnapTimestampFileName,
-    JSON.stringify(currentSnapTimestampData)
-  );
-  fs.writeFileSync(poolsFileName, JSON.stringify(newPoolsFile));
+  // fs.writeFileSync(
+  //   lastSnapTimestampFileName,
+  //   JSON.stringify(currentSnapTimestampData)
+  // );
+  // fs.writeFileSync(poolsFileName, JSON.stringify(newPoolsFile));
   fs.writeFileSync(eventsSnapFilename, JSON.stringify(eventsObject));
-  if (isBinary) {
-    PointsBinaryConverter.writeBinaryFile(pointsFileName, points);
-  } else {
-    fs.writeFileSync(pointsFileName, JSON.stringify(points));
-  }
+  // if (isBinary) {
+  //   PointsBinaryConverter.writeBinaryFile(pointsFileName, points);
+  // } else {
+  //   fs.writeFileSync(pointsFileName, JSON.stringify(points));
+  // }
 };
 
 createSnapshotForNetwork(Network.TEST).then(
