@@ -24,7 +24,7 @@ export const PROMOTED_POOLS_TESTNET: IPromotedPool[] = [
     address: new PublicKey("4dVFTDHiinwgHwe1HHgr787fsUtjN3Zw57YNAJmJYmhF"),
     pointsPerSecond: new BN(100),
     startCountTimestamp: new BN(1737979970),
-  }, //USDC/V2 0.09%
+  }, //USDC/V2 0.1%
 ];
 export const PROMOTED_POOLS_MAINNET: IPromotedPool[] = [
   {
