@@ -5,11 +5,11 @@ import { BN } from "@coral-xyz/anchor";
 
 async function main() {
   try {
-    const originalFile = path.join(__dirname, "../data/points_mainnet.json");
-    const binaryFile = path.join(__dirname, "../data/points_mainnet.bin");
+    const originalFile = path.join(__dirname, "../data/points_testnet.json");
+    const binaryFile = path.join(__dirname, "../data/points_testnet.bin");
     const restoredFile = path.join(
       __dirname,
-      "../data/restored_points_mainnet.json"
+      "../data/restored_points_testnet.json"
     );
 
     console.log("Converting JSON to binary...");

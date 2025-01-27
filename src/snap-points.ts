@@ -54,7 +54,6 @@ export const createSnapshotForNetwork = async (network: Network) => {
   let FULL_SNAP_START_TX_HASH: string;
   let lastSnapTimestampFileName: string;
   let historicalPointsForClosedFileName: string;
-  let isBinary: boolean;
   switch (network) {
     case Network.MAIN:
       provider = AnchorProvider.local("https://eclipse.helius-rpc.com");
@@ -63,7 +62,6 @@ export const createSnapshotForNetwork = async (network: Network) => {
         "../data/events_snap_mainnet.json"
       );
       pointsFileName = path.join(__dirname, "../data/points_mainnet.bin");
-      isBinary = true;
       poolsFileName = path.join(
         __dirname,
         "../data/pools_last_tx_hashes_mainnet.json"
@@ -88,7 +86,6 @@ export const createSnapshotForNetwork = async (network: Network) => {
         "../data/events_snap_testnet.json"
       );
       pointsFileName = path.join(__dirname, "../data/points_testnet.json");
-      isBinary = false;
       poolsFileName = path.join(
         __dirname,
         "../data/pools_last_tx_hashes_testnet.json"
@@ -190,14 +187,16 @@ export const createSnapshotForNetwork = async (network: Network) => {
           eventsObject[owner].active.some(
             (entry) =>
               entry.event.pool.toString() === event.pool.toString() &&
-              new BN(entry.event.id, "hex").eq(event.id)
+              new BN(entry.event.id, "hex").eq(event.id) &&
+              entry.event.owner.toString() === owner
           )
         )
           return acc;
         const correspondingItemIndex = acc.newOpenClosed.findIndex(
           (item) =>
             item[1].id.eq(event.id) &&
-            item[1].pool.toString() === event.pool.toString()
+            item[1].pool.toString() === event.pool.toString() &&
+            item[1].owner.toString() === owner
         );
         if (correspondingItemIndex >= 0) {
           const correspondingItem = acc.newOpenClosed[correspondingItemIndex];
@@ -217,7 +216,8 @@ export const createSnapshotForNetwork = async (network: Network) => {
         const correspondingItemIndex = acc.newOpen.findIndex(
           (item) =>
             item.id.eq(event.id) &&
-            item.pool.toString() === event.pool.toString()
+            item.pool.toString() === event.pool.toString() &&
+            item.owner.toString() === ownerKey
         );
         if (correspondingItemIndex >= 0) {
           const correspondingItem = acc.newOpen[correspondingItemIndex];
@@ -228,7 +228,8 @@ export const createSnapshotForNetwork = async (network: Network) => {
         const correspondingItemIndexPreviousData = ownerData.active.findIndex(
           (item) =>
             new BN(item.event.id, "hex").eq(event.id) &&
-            item.event.pool.toString() === event.pool.toString()
+            item.event.pool.toString() === event.pool.toString() &&
+            item.event.owner.toString() === ownerKey
         );
 
         if (correspondingItemIndexPreviousData >= 0) {
@@ -265,7 +266,6 @@ export const createSnapshotForNetwork = async (network: Network) => {
     { newOpen: [], newClosed: [], newOpenClosed: [] }
   );
 
-  console.log(newOpen, newOpenClosed);
   const stillOpen: IActive[] = [];
 
   Object.values(eventsObject).forEach((positions) =>
@@ -274,7 +274,9 @@ export const createSnapshotForNetwork = async (network: Network) => {
         (newClosedEntry) =>
           newClosedEntry[0].event.id.eq(new BN(activeEntry.event.id, "hex")) &&
           newClosedEntry[0].event.pool.toString() ===
-            activeEntry.event.pool.toString()
+            activeEntry.event.pool.toString() &&
+          newClosedEntry[0].event.owner.toString() ===
+            activeEntry.event.owner.toString()
       );
       if (!hasBeenClosed) {
         stillOpen.push({
@@ -360,9 +362,7 @@ export const createSnapshotForNetwork = async (network: Network) => {
     eventsObject[ownerKey].closed.push(entry);
   });
 
-  const previousPoints = isBinary
-    ? PointsBinaryConverter.readBinaryFile(pointsFileName)
-    : JSON.parse(fs.readFileSync(pointsFileName, "utf-8"));
+  const previousPoints = PointsBinaryConverter.readBinaryFile(pointsFileName);
 
   const points: Record<string, PointsEntry> = Object.keys(eventsObject).reduce(
     (acc, curr) => {
@@ -381,13 +381,8 @@ export const createSnapshotForNetwork = async (network: Network) => {
         });
       }
 
-      let previousTotal: BN;
-      if (network === Network.TEST) {
-        previousTotal = new BN(previousPoints[curr]?.totalPoints, "hex");
-      } else {
-        // NOTE: After first snapshot with binary points file, ensure the points are not casted with hex
-        previousTotal = new BN(previousPoints[curr]?.totalPoints);
-      }
+      // NOTE: After first snapshot with binary points file, ensure the points are not casted with hex
+      const previousTotal = new BN(previousPoints[curr]?.totalPoints);
 
       const previousTotalPoints: BN = previousTotal ?? new BN(0);
 
@@ -458,17 +453,13 @@ export const createSnapshotForNetwork = async (network: Network) => {
     lastSnapTimestamp: currentTimestamp,
   };
 
-  // fs.writeFileSync(
-  //   lastSnapTimestampFileName,
-  //   JSON.stringify(currentSnapTimestampData)
-  // );
-  // fs.writeFileSync(poolsFileName, JSON.stringify(newPoolsFile));
+  fs.writeFileSync(
+    lastSnapTimestampFileName,
+    JSON.stringify(currentSnapTimestampData)
+  );
+  fs.writeFileSync(poolsFileName, JSON.stringify(newPoolsFile));
   fs.writeFileSync(eventsSnapFilename, JSON.stringify(eventsObject));
-  // if (isBinary) {
-  //   PointsBinaryConverter.writeBinaryFile(pointsFileName, points);
-  // } else {
-  //   fs.writeFileSync(pointsFileName, JSON.stringify(points));
-  // }
+  PointsBinaryConverter.writeBinaryFile(pointsFileName, points);
 };
 
 createSnapshotForNetwork(Network.TEST).then(
