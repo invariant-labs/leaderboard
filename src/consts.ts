@@ -21,9 +21,9 @@ export const PROMOTED_POOLS_TESTNET: IPromotedPool[] = [
   //   startCountTimestamp: new BN(0),
   // }, // USDC/V2 0.02%
   {
-    address: new PublicKey("3aK4ibSQamqLnB2yvCYLh1DjVDqYKBLyhT8vVs5u8cdo"),
+    address: new PublicKey("Cgh4GuM9n61pSWMmEc9b7ntAjSALv53GCAoEo8JPJPBJ"),
     pointsPerSecond: new BN(100),
-    startCountTimestamp: new BN(1737740472),
+    startCountTimestamp: new BN(1737980314),
   }, //USDC/V2 0.03%
 ];
 export const PROMOTED_POOLS_MAINNET: IPromotedPool[] = [
@@ -52,7 +52,7 @@ export const RETRY_DELAY = 800;
 export const FULL_SNAP_START_TX_HASH_MAINNET =
   "zt4f4PYU2qKyvevjvED2Q9RSUJbiGSJns8NCQGAuLFgrTJ8irentnaEzc7uxxoi65vtmWxhwZh8HDg6NRsWjQxw";
 export const FULL_SNAP_START_TX_HASH_TESTNET =
-  "32voE8yoznSSBP3kExxeAbxjSeFYPUheS9LeDuZubyZubhu8goRTBvLASB4qzWbXsSoNG7NLQEqov1fP8eBL4Tjw";
+  "5GMGWSYMcoHZfCoLoaZxupP4hfwcmvqVCUY5ujcRMTQBNqzhbz7JcVX4VnaRjk35Zi6TJzRwmXcCdnuUmkFfxHB7";
 
 // SWAPS
 export const SWAP_MULTIPLIER = new BN(5);
