@@ -383,9 +383,9 @@ export const createSnapshotForNetwork = async (network: Network) => {
 
       // NOTE: After first snapshot with binary points file, ensure the points are not casted with hex
       const previousTotal = new BN(previousPoints[curr]?.totalPoints);
-
+      console.log(previousTotal);
       const previousTotalPoints: BN = previousTotal ?? new BN(0);
-
+      console.log(previousTotalPoints);
       const pointsForOpen: BN[] = eventsObject[curr].active.map(
         (entry) => entry.points
       );
@@ -397,12 +397,22 @@ export const createSnapshotForNetwork = async (network: Network) => {
         ? new BN(historicalPoints[curr], "hex")
         : new BN(0);
 
+      console.log(
+        "Open",
+        pointsForOpen,
+        "Closed",
+        pointsForClosed,
+        "Hist",
+        historicalClosedPoints
+      );
       const totalPoints = pointsForOpen
         .concat(pointsForClosed)
         .reduce((sum, point) => sum.add(new BN(point, "hex")), new BN(0))
         .add(historicalClosedPoints);
 
+      console.log("Total Points", totalPoints);
       const diff = totalPoints.sub(previousTotalPoints);
+      console.log(diff);
       const newEntry = {
         diff,
         timestamp: currentTimestamp,
