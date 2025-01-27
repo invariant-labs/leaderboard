@@ -85,7 +85,7 @@ export const createSnapshotForNetwork = async (network: Network) => {
         __dirname,
         "../data/events_snap_testnet.json"
       );
-      pointsFileName = path.join(__dirname, "../data/points_testnet.json");
+      pointsFileName = path.join(__dirname, "../data/points_testnet.bin");
       poolsFileName = path.join(
         __dirname,
         "../data/pools_last_tx_hashes_testnet.json"
@@ -369,12 +369,8 @@ export const createSnapshotForNetwork = async (network: Network) => {
       const prev24HoursHistory = previousPoints[curr]?.points24HoursHistory;
       if (prev24HoursHistory) {
         prev24HoursHistory.forEach((item, idx) => {
-          let timestamp: BN;
-          if (network === Network.TEST) {
-            timestamp = new BN(item.timestamp, "hex");
-          } else {
-            timestamp = new BN(item.timestamp);
-          }
+          const timestamp: BN = new BN(item.timestamp);
+
           if (timestamp.add(DAY).lt(currentTimestamp)) {
             prev24HoursHistory.splice(idx, 1);
           }
