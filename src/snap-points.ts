@@ -297,6 +297,7 @@ export const createSnapshotForNetwork = async (network: Network) => {
       }
     })
   );
+
   const poolsWithTicks: IPoolAndTicks[] | null = await fetchPoolsWithTicks(
     0,
     market,
@@ -329,6 +330,11 @@ export const createSnapshotForNetwork = async (network: Network) => {
     newOpenClosed,
     poolsWithTicks
   );
+
+  if (finalLogs.length >= 1) {
+    console.log(newClosed[0][0].event, newClosed[0][1], updatedNewClosed);
+    return;
+  }
 
   Object.keys(eventsObject).forEach((key) => {
     eventsObject[key].active = [];
