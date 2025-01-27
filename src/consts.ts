@@ -21,10 +21,10 @@ export const PROMOTED_POOLS_TESTNET: IPromotedPool[] = [
   //   startCountTimestamp: new BN(0),
   // }, // USDC/V2 0.02%
   {
-    address: new PublicKey("Cgh4GuM9n61pSWMmEc9b7ntAjSALv53GCAoEo8JPJPBJ"),
+    address: new PublicKey("4dVFTDHiinwgHwe1HHgr787fsUtjN3Zw57YNAJmJYmhF"),
     pointsPerSecond: new BN(100),
     startCountTimestamp: new BN(1737979970),
-  }, //USDC/V2 0.03%
+  }, //USDC/V2 0.09%
 ];
 export const PROMOTED_POOLS_MAINNET: IPromotedPool[] = [
   {
