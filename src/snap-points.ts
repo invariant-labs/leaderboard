@@ -331,11 +331,6 @@ export const createSnapshotForNetwork = async (network: Network) => {
     poolsWithTicks
   );
 
-  // if (finalLogs.length >= 1) {
-  //   console.log(newClosed[0][0].event, newClosed[0][1], updatedNewClosed);
-  //   return;
-  // }
-
   Object.keys(eventsObject).forEach((key) => {
     eventsObject[key].active = [];
   });
