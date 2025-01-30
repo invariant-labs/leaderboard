@@ -4,6 +4,7 @@ import path from "path";
 import { IPointsHistoryJson, IPointsJson, SwapPointsEntry } from "./types";
 import { BN } from "@coral-xyz/anchor";
 import { PointsBinaryConverter, SwapPointsBinaryConverter } from "./conversion";
+import { POINTS_DECIMAL } from "./math";
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 require("dotenv").config();
@@ -14,6 +15,8 @@ export const prepareFinalData = async (network: Network) => {
   let finalDataLpFile: string;
   let data: Record<string, IPointsJson>;
   let swapData: Record<string, SwapPointsEntry>;
+  let staticData: Record<string, number>;
+
   switch (network) {
     case Network.MAIN:
       finalDataFile = path.join(__dirname, "../data/final_data_mainnet.json");
@@ -31,6 +34,9 @@ export const prepareFinalData = async (network: Network) => {
       swapData = SwapPointsBinaryConverter.readBinaryFile(
         path.join(__dirname, "../data/points_swap_mainnet.bin")
       );
+      staticData = JSON.parse(
+        fs.readFileSync(path.join(__dirname, "../data/static.json"), "utf-8")
+      );
       break;
     case Network.TEST:
       finalDataSwapFile = path.join(
@@ -43,6 +49,7 @@ export const prepareFinalData = async (network: Network) => {
         "../data/final_data_lp_testnet.json"
       );
       data = {};
+      staticData = {};
       swapData = SwapPointsBinaryConverter.readBinaryFile(
         path.join(__dirname, "../data/points_swap_testnet.bin")
       );
@@ -50,10 +57,6 @@ export const prepareFinalData = async (network: Network) => {
     default:
       throw new Error("Unknown network");
   }
-
-  const staticPoints: Record<string, string> = JSON.parse(
-    fs.readFileSync(path.join(__dirname, "../data/static.json"), "utf-8")
-  );
 
   const rankLp: Record<string, number> = {};
   const last24HoursPointsLp: Record<string, BN> = {};
@@ -128,13 +131,20 @@ export const prepareFinalData = async (network: Network) => {
   fs.writeFileSync(finalDataSwapFile, JSON.stringify(finalDataSwaps));
 
   const allAddresses = Array.from(
-    new Set([...Object.keys(data), ...Object.keys(swapData)])
+    new Set([
+      ...Object.keys(data),
+      ...Object.keys(swapData),
+      ...Object.keys(staticData),
+    ])
   );
 
   const finalData = allAddresses
     .map((key) => {
       const lp = data[key];
       const swap = swapData[key];
+      const staticPoints = staticData[key]
+        ? new BN(staticData[key] * 10 ** POINTS_DECIMAL)
+        : new BN(0);
 
       const lpPoints = lp ? new BN(lp.totalPoints) : new BN(0);
       const last24hLpPoints = lp
@@ -160,8 +170,7 @@ export const prepareFinalData = async (network: Network) => {
 
       const last24hPoints = last24hLpPoints.add(last24hSwapPoints);
 
-      const userStaticPoints = new BN(staticPoints[key] ?? 0);
-      const totalPoints = lpPoints.add(swapPoints).add(userStaticPoints);
+      const totalPoints = lpPoints.add(swapPoints).add(staticPoints);
 
       return {
         address: key,
