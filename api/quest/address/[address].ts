@@ -1,6 +1,5 @@
 import { VercelRequest, VercelResponse } from "@vercel/node";
-import ECLIPSE_MAINNET_POINTS from "../../../data/points_mainnet.json";
-import { IPointsJson } from "../../../src/types";
+import ECLIPSE_MAINNET_POINTS from "../../../data/final_data_mainnet.json";
 import { BN } from "@coral-xyz/anchor";
 import { POINTS_DENOMINATOR } from "../../../src/math";
 
@@ -26,21 +25,33 @@ export default function (req: VercelRequest, res: VercelResponse) {
 
   const pubkey = address ? (address as string) : null;
 
-  const data: Record<string, IPointsJson> = ECLIPSE_MAINNET_POINTS as Record<
-    string,
-    IPointsJson
-  >;
+  const data: {
+    rank: number;
+    address: string;
+    points: string;
+    last24hPoints: string;
+    lpPoints: string;
+    swapPoints: string;
+  }[] = ECLIPSE_MAINNET_POINTS as {
+    rank: number;
+    address: string;
+    points: string;
+    last24hPoints: string;
+    lpPoints: string;
+    swapPoints: string;
+  }[];
 
   const defaultReturn = {
     totalPoints: new BN(0),
     completed: false,
   };
   const questTreshhold: BN = new BN(100000).mul(POINTS_DENOMINATOR);
+  const userItem = data.find((item) => item.address === pubkey);
   const userData: IQuestAddressData =
-    pubkey && data[pubkey]
+    pubkey && userItem
       ? {
-          totalPoints: data[pubkey].totalPoints,
-          completed: new BN(data[pubkey].totalPoints, "hex").gt(questTreshhold),
+          totalPoints: userItem.points,
+          completed: new BN(userItem.points, "hex").gt(questTreshhold),
         }
       : defaultReturn;
 
