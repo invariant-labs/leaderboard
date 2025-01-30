@@ -50,6 +50,11 @@ export const prepareFinalData = async (network: Network) => {
     default:
       throw new Error("Unknown network");
   }
+
+  const staticPoints: Record<string, string> = JSON.parse(
+    fs.readFileSync(path.join(__dirname, "../data/static.json"), "utf-8")
+  );
+
   const rankLp: Record<string, number> = {};
   const last24HoursPointsLp: Record<string, BN> = {};
   const sortedKeysLp = Object.keys(data).sort((a, b) =>
@@ -154,7 +159,9 @@ export const prepareFinalData = async (network: Network) => {
         : new BN(0);
 
       const last24hPoints = last24hLpPoints.add(last24hSwapPoints);
-      const totalPoints = lpPoints.add(swapPoints);
+
+      const userStaticPoints = new BN(staticPoints[key] ?? 0);
+      const totalPoints = lpPoints.add(swapPoints).add(userStaticPoints);
 
       return {
         address: key,
