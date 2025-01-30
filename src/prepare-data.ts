@@ -4,7 +4,7 @@ import path from "path";
 import { IPointsHistoryJson, IPointsJson, SwapPointsEntry } from "./types";
 import { BN } from "@coral-xyz/anchor";
 import { PointsBinaryConverter, SwapPointsBinaryConverter } from "./conversion";
-import { POINTS_DECIMAL } from "./math";
+import { POINTS_DENOMINATOR } from "./math";
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 require("dotenv").config();
@@ -142,8 +142,9 @@ export const prepareFinalData = async (network: Network) => {
     .map((key) => {
       const lp = data[key];
       const swap = swapData[key];
+
       const staticPoints = staticData[key]
-        ? new BN(staticData[key] * 10 ** POINTS_DECIMAL)
+        ? new BN(staticData[key]).mul(POINTS_DENOMINATOR)
         : new BN(0);
 
       const lpPoints = lp ? new BN(lp.totalPoints) : new BN(0);
