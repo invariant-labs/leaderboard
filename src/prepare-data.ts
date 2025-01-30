@@ -42,7 +42,9 @@ export const prepareFinalData = async (network: Network) => {
         __dirname,
         "../data/final_data_lp_testnet.json"
       );
-      data = {};
+      data = PointsBinaryConverter.readBinaryFile(
+        path.join(__dirname, "../data/points_testnet.bin")
+      );
       swapData = SwapPointsBinaryConverter.readBinaryFile(
         path.join(__dirname, "../data/points_swap_testnet.bin")
       );
