@@ -458,20 +458,20 @@ export const createSnapshotForNetwork = async (network: Network) => {
   PointsBinaryConverter.writeBinaryFile(pointsFileName, points);
 };
 
-createSnapshotForNetwork(Network.TEST).then(
-  () => {
-    console.log("Eclipse: Testnet snapshot done!");
-  },
-  (err) => {
-    console.log(err);
-  }
-);
-
-// createSnapshotForNetwork(Network.MAIN).then(
+// createSnapshotForNetwork(Network.TEST).then(
 //   () => {
-//     console.log("Eclipse: Mainnet snapshot done!");
+//     console.log("Eclipse: Testnet snapshot done!");
 //   },
 //   (err) => {
 //     console.log(err);
 //   }
 // );
+
+createSnapshotForNetwork(Network.MAIN).then(
+  () => {
+    console.log("Eclipse: Mainnet snapshot done!");
+  },
+  (err) => {
+    console.log(err);
+  }
+);
