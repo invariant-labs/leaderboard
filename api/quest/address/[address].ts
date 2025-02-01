@@ -45,7 +45,7 @@ export default function (req: VercelRequest, res: VercelResponse) {
     totalPoints: new BN(0),
     completed: false,
   };
-  const questTreshhold: BN = new BN(100000).mul(POINTS_DENOMINATOR);
+  const questTreshhold: BN = new BN(25000).mul(POINTS_DENOMINATOR);
   const userItem = data.find((item) => item.address === pubkey);
   const userData: IQuestAddressData =
     pubkey && userItem
