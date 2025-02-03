@@ -1,0 +1,15 @@
+{
+  "compilerOptions": {
+    "target": "ES2020",
+    "module": "ESNext",
+    "esModuleInterop": true,
+    "strict": true,
+    "skipLibCheck": true,
+    "allowJs": true,
+    "moduleResolution": "node",
+    "outDir": "./dist",
+    "types": ["jest", "chai"]
+  },
+  "include": ["src/**/*.ts", "test/**/*.ts"],
+  "exclude": ["coverage", "node_modules", "test-ledger"]
+}
