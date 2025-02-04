@@ -11,9 +11,10 @@ export const CONFIG = {
     DATABASE_NAME: "points",
   },
   JOBS: {
-    LIQUIDITY_POINTS: {
-      INTERVAL: 5,
-      ID: "LIQUIDITY_POINTS",
+    POINTS_UPDATE: {
+      INTERVAL: 60 * 3,
+      ID: "POINTS_UPDATE",
+      RUN_IMMEDIATELY: true,
     },
   },
   ECLIPSE: {
@@ -30,6 +31,6 @@ export const { PORT, HOST } = SERVER;
 
 export const { DATABASE_URL, DATABASE_NAME } = DATABASE;
 
-export const { LIQUIDITY_POINTS } = JOBS;
+export const { POINTS_UPDATE } = JOBS;
 
 export const { RPC_URL, NETWORK } = ECLIPSE;

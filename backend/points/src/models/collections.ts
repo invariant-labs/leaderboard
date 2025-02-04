@@ -1,18 +1,18 @@
 import { ObjectId } from "mongodb";
-import { IPointsHistory, IPositions } from "../services/types";
+import { IPointsHistory, IPositions, SwapPointsEntry } from "../services/types";
 
 export enum Collections {
   Config = "config",
 
   Events = "events",
   LiquidityPoints = "liquidityPoints",
+  HistoricalPoints = "historicalPoints",
 
   PriceFeed = "priceFeed",
   SwapPoints = "swapPoints",
 
   Domains = "domains",
   StaticPoints = "staticPoints",
-  HistoricalPoints = "historicalPoints",
 
   Leaderboard = "leaderboard",
 }
@@ -21,6 +21,7 @@ export interface IConfig extends MongoItem {
   lastSnapTimestamp: number;
   poolsHashes: Record<string, string>;
   swapHashes: Record<string, string>;
+  blacklist: string[];
 }
 
 export interface IEventItem extends IPositions, MongoItem {
@@ -42,4 +43,8 @@ export interface IUserPoints extends MongoItem {
 
 interface MongoItem {
   _id: ObjectId;
+}
+
+export interface ISwapPoints extends MongoItem, SwapPointsEntry {
+  address: string;
 }

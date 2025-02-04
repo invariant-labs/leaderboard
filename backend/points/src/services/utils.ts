@@ -32,7 +32,8 @@ import {
   RemovePositionEvent,
   Tick,
 } from "@invariant-labs/sdk-eclipse/lib/market";
-import { Pair } from "@invariant-labs/sdk-eclipse";
+import { Network, Pair } from "@invariant-labs/sdk-eclipse";
+import { NETWORK } from "../config";
 
 export const retryOperation = async (
   fn: Promise<any>,

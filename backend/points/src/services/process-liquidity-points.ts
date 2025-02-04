@@ -1,6 +1,3 @@
-import { AsyncTask, SimpleIntervalJob } from "toad-scheduler";
-import { FastifyInstance } from "fastify";
-import { LIQUIDITY_POINTS, NETWORK, RPC_URL } from "../config";
 import {
   clog,
   fetchAllSignatures,
@@ -11,69 +8,41 @@ import {
   processNewOpenClosed,
   processStillOpen,
   retryOperation,
-} from "../services/utils";
-import { AnchorProvider, BN } from "@coral-xyz/anchor";
-import { Keypair, PublicKey } from "@solana/web3.js";
+} from "./utils";
+import BN from "bn.js";
+import { Connection, PublicKey } from "@solana/web3.js";
 import {
-  getMarketAddress,
   InvariantEventNames,
-  IWallet,
   Market,
   parseEvent,
 } from "@invariant-labs/sdk-eclipse";
-import { Collections, IEventItem } from "../models/collections";
-import { ConfigCollection } from "../database/config";
+
 import {
   DAY,
   FULL_SNAP_START_TX_HASH_MAINNET,
   MAX_SIGNATURES_PER_CALL,
-  PROMOTED_PAIRS_MAINNET,
   PROMOTED_POOLS_MAINNET,
-} from "../services/consts";
+} from "./consts";
 import {
   CreatePositionEvent,
-  PoolStructure,
   RemovePositionEvent,
-  Tick,
 } from "@invariant-labs/sdk-eclipse/lib/market";
-import { IActive, IPoolAndTicks } from "../services/types";
+import { IActive, IPoolAndTicks } from "./types";
 import { EventsCollection } from "../database/lp-events";
-import { getTimestampInSeconds } from "../services/math";
+import { getTimestampInSeconds } from "./math";
 import { HistoricalPointsCollection } from "../database/historical-points";
 import { LpPointsCollection } from "../database/lp-points";
 
-const handleLiquidityPoints = (app: FastifyInstance) => async () => {
+export const processLiquidityPoints = async (
+  connection: Connection,
+  market: Market,
+  poolsHashes: Record<string, string>
+): Promise<Record<string, string>> => {
   clog("Handling liquidity points");
-  const provider = AnchorProvider.local(RPC_URL);
-  const connection = provider.connection;
-  const programId = new PublicKey(getMarketAddress(NETWORK));
-  const market = Market.build(
-    NETWORK,
-    provider.wallet as IWallet,
-    connection,
-    programId
-  );
 
-  const configCollection = new ConfigCollection();
   const eventsCollection = new EventsCollection();
   const historicalPointsCollection = new HistoricalPointsCollection();
   const lpPointsCollection = new LpPointsCollection();
-
-  const owner = "BtGH2WkM1oNyPVgzYT51xV2gJqHhVQ4QiGwWirBUW5xN";
-
-  const config = await configCollection.getConfig();
-
-  if (!config) {
-    throw new Error("Config not found");
-  }
-
-  console.log(config);
-
-  config.lastSnapTimestamp = Date.now();
-  const { poolsHashes } = config;
-
-  await configCollection.setConfig(config);
-  console.log(await eventsCollection.getUserEvents(owner));
 
   const sigs = (
     await Promise.all(
@@ -157,7 +126,7 @@ const handleLiquidityPoints = (app: FastifyInstance) => async () => {
     if (curr.name === InvariantEventNames.RemovePositionEvent) {
       const event = parseEvent(curr) as RemovePositionEvent;
       const ownerKey = event.owner.toString();
-      const ownerData = (await eventsCollection.getUserEvents(owner)) || {
+      const ownerData = (await eventsCollection.getUserEvents(ownerKey)) || {
         owner: ownerKey,
         active: [],
         closed: [],
@@ -289,7 +258,6 @@ const handleLiquidityPoints = (app: FastifyInstance) => async () => {
     ...updatedNewOpenClosed.map((entry) => entry.events[1].owner),
   ]);
 
-  // TODO: Add query to current leaderboard for users that points24Change is !== 0
   const additionalKeys: string[] = (
     await lpPointsCollection.getActivePointChanges()
   ).map((e) => e.owner);
@@ -315,8 +283,9 @@ const handleLiquidityPoints = (app: FastifyInstance) => async () => {
       continue;
     }
 
-    // TODO: Add querying from points collection
-    const previousTotalPoints = new BN(0);
+    const previousTotalPoints = userPointsEntry
+      ? new BN(userPointsEntry.totalPoints)
+      : new BN(0);
 
     const activePoints = userEvents.active.reduce(
       (acc, entry) => acc.add(entry.points),
@@ -354,21 +323,6 @@ const handleLiquidityPoints = (app: FastifyInstance) => async () => {
     await lpPointsCollection.updatePointsHistory(key.toString(), new24History);
   }
 
-  return Promise.resolve();
-};
-
-const handleLiquidityPointsError = (error: Error) => {
-  console.error("job failed", error);
-};
-
-export const createLiquidityPointsJob = (app: FastifyInstance) => {
-  const task = new AsyncTask(
-    LIQUIDITY_POINTS.ID,
-    handleLiquidityPoints(app),
-    handleLiquidityPointsError
-  );
-  return new SimpleIntervalJob(
-    { seconds: LIQUIDITY_POINTS.INTERVAL, runImmediately: false },
-    task
-  );
+  clog("Liquidity points handled");
+  return poolsHashes;
 };

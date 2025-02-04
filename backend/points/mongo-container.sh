@@ -13,16 +13,36 @@ wait_for_mongodb() {
 manage_collections() {
     echo "Creating/Clearing collections..."
     docker exec mongodb mongosh --eval '
-        db = db.getSiblingDB("myDatabase");
-        db.points.drop();
-        db.config.drop();
-        db.events.drop();
-        db.liquidityPoints.drop();
-        db.createCollection("points");
-        db.createCollection("config");
-        db.createCollection("events");
-        db.createCollection("liquidityPoints");
-        print("Collections have been reset successfully.");
+        try {
+            db = db.getSiblingDB("points");
+            
+            // Drop collections with error checking
+            const collections = ["points", "config", "events", "liquidityPoints", "priceFeed", "swapPoints"];
+            collections.forEach(collection => {
+                try {
+                    db[collection].drop();
+                    print(`Dropped ${collection} successfully`);
+                } catch (e) {
+                    print(`Error dropping ${collection}: ${e}`);
+                }
+            });
+            
+            // Create collections with error checking
+            collections.forEach(collection => {
+                try {
+                    db.createCollection(collection);
+                    print(`Created ${collection} successfully`);
+                    
+                    // Verify collection is empty
+                    const count = db[collection].count();
+                    print(`${collection} has ${count} documents`);
+                } catch (e) {
+                    print(`Error creating ${collection}: ${e}`);
+                }
+            });
+        } catch (e) {
+            print(`Fatal error: ${e}`);
+        }
     '
 }
 
