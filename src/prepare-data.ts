@@ -16,6 +16,7 @@ export const prepareFinalData = async (network: Network) => {
   let data: Record<string, IPointsJson>;
   let swapData: Record<string, SwapPointsEntry>;
   let staticData: Record<string, number>;
+  let staticSwap: Record<string, number>;
 
   switch (network) {
     case Network.MAIN:
@@ -37,6 +38,12 @@ export const prepareFinalData = async (network: Network) => {
       staticData = JSON.parse(
         fs.readFileSync(path.join(__dirname, "../data/static.json"), "utf-8")
       );
+      staticSwap = JSON.parse(
+        fs.readFileSync(
+          path.join(__dirname, "../data/static_swap.json"),
+          "utf-8"
+        )
+      );
       break;
     case Network.TEST:
       finalDataSwapFile = path.join(
@@ -50,9 +57,11 @@ export const prepareFinalData = async (network: Network) => {
       );
       data = {};
       staticData = {};
+      staticSwap = {};
       swapData = SwapPointsBinaryConverter.readBinaryFile(
         path.join(__dirname, "../data/points_swap_testnet.bin")
       );
+
       break;
     default:
       throw new Error("Unknown network");
@@ -92,6 +101,22 @@ export const prepareFinalData = async (network: Network) => {
     .sort((a, b) => a.rank - b.rank);
 
   fs.writeFileSync(finalDataLpFile, JSON.stringify(finalDataLp));
+
+  Object.keys(staticSwap).forEach((key) => {
+    if (swapData[key]) {
+      const v = swapData[key] as SwapPointsEntry;
+      v.totalPoints = new BN(v.totalPoints, "hex").add(
+        new BN(staticSwap[key]).mul(POINTS_DENOMINATOR)
+      );
+      swapData[key] = v;
+    } else {
+      swapData[key] = {
+        points24HoursHistory: [],
+        swapsAmount: 0,
+        totalPoints: new BN(staticSwap[key]).mul(POINTS_DENOMINATOR),
+      };
+    }
+  });
 
   const rankSwap: Record<string, number> = {};
   const last24HoursPointsSwap: Record<string, BN> = {};
