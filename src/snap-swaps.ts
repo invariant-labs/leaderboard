@@ -171,7 +171,10 @@ export const createSnapshotForNetwork = async (network: Network) => {
   finalLogs.map((log, index) => {
     if (
       log.startsWith("Program data:") &&
-      finalLogs[index - 1].startsWith(`Program log: INVARIANT: SWAP`)
+      (finalLogs[index - 1].startsWith(`Program log: INVARIANT: SWAP`) ||
+        finalLogs[index - 1].startsWith(
+          `Program log: INVARIANT: CROSSING TICK`
+        ))
     )
       eventLogs.push(log.split("Program data: ")[1]);
   });
