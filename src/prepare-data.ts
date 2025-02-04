@@ -105,15 +105,15 @@ export const prepareFinalData = async (network: Network) => {
   Object.keys(staticSwap).forEach((key) => {
     if (swapData[key]) {
       const v = swapData[key] as SwapPointsEntry;
-      v.totalPoints = new BN(v.totalPoints, "hex").add(
-        new BN(staticSwap[key]).mul(POINTS_DENOMINATOR)
-      );
+      v.totalPoints = new BN(v.totalPoints, "hex")
+        .add(new BN(staticSwap[key]).mul(POINTS_DENOMINATOR))
+        .toString();
       swapData[key] = v;
     } else {
       swapData[key] = {
         points24HoursHistory: [],
         swapsAmount: 0,
-        totalPoints: new BN(staticSwap[key]).mul(POINTS_DENOMINATOR),
+        totalPoints: new BN(staticSwap[key]).mul(POINTS_DENOMINATOR).toString(),
       };
     }
   });
@@ -121,9 +121,7 @@ export const prepareFinalData = async (network: Network) => {
   const rankSwap: Record<string, number> = {};
   const last24HoursPointsSwap: Record<string, BN> = {};
   const sortedKeysSwap = Object.keys(swapData).sort((a, b) =>
-    new BN(swapData[b].totalPoints, "hex").sub(
-      new BN(swapData[a].totalPoints, "hex")
-    )
+    new BN(swapData[b].totalPoints).sub(new BN(swapData[a].totalPoints))
   );
 
   sortedKeysSwap.forEach((key, index) => {
