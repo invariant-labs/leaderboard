@@ -1,53 +1,90 @@
 import { AsyncTask, SimpleIntervalJob } from "toad-scheduler";
 import { FastifyInstance } from "fastify";
-import { POINTS_UPDATE, NETWORK, RPC_URL } from "../config";
+import { POINTS_UPDATE } from "../config";
 import { clog } from "../services/utils";
 import { AnchorProvider } from "@coral-xyz/anchor";
 import { PublicKey } from "@solana/web3.js";
-import { getMarketAddress, IWallet, Market } from "@invariant-labs/sdk-eclipse";
+import {
+  getMarketAddress,
+  IWallet,
+  Market,
+  Network,
+} from "@invariant-labs/sdk-eclipse";
 import { ConfigCollection } from "../database/config";
 import { processLiquidityPoints } from "../services/process-liquidity-points";
 import { processSwapPoints } from "../services/process-swap-points";
+import { LeaderboardCollection } from "../database/leaderboard";
 
+const getConfigurationBasedOnNetwork = (network: Network) => {
+  switch (network) {
+    case Network.TEST:
+      const providerTest = AnchorProvider.local(
+        "https://testnet.dev2.eclipsenetwork.xyz"
+      );
+      return {
+        connection: providerTest.connection,
+        market: Market.build(
+          network,
+          providerTest.wallet as IWallet,
+          providerTest.connection,
+          new PublicKey(getMarketAddress(network))
+        ),
+        poolsHashes: {
+          "4xLSZJwLdkQHGqgyx1E9KHvdMnj7QVKa9Pwcnp1x2mDc":
+            "2Xmy5GYHMjeeQ3g34bcqo6HuS3c6NoeEjd8PkLFfNNGTkiESyfsApdAhfbRaU4JF68rgDU8QVutVzoYdecCaXw7m",
+        },
+        swapHashes: {},
+      };
+    default:
+      const provider = AnchorProvider.local("https://eclipse.helius-rpc.com");
+      return {
+        connection: provider.connection,
+        market: Market.build(
+          network,
+          provider.wallet as IWallet,
+          provider.connection,
+          new PublicKey(getMarketAddress(network))
+        ),
+        poolsHashes: {},
+        swapHashes: {},
+      };
+  }
+};
 const handlePointsUpdate = (app: FastifyInstance) => async () => {
   clog("Handling points update");
-  const provider = AnchorProvider.local(RPC_URL);
-  const connection = provider.connection;
-  const programId = new PublicKey(getMarketAddress(NETWORK));
-  const market = Market.build(
-    NETWORK,
-    provider.wallet as IWallet,
-    connection,
-    programId
-  );
 
-  const configCollection = new ConfigCollection();
+  const { connection, market, poolsHashes, swapHashes } =
+    getConfigurationBasedOnNetwork(Network.TEST);
 
-  const config = await configCollection.getConfig();
+  // const configCollection = new ConfigCollection();
 
-  if (!config) {
-    throw new Error("Config not found");
-  }
+  // const config = await configCollection.getConfig();
 
-  // try {
-  //   const updatedPoolsHashes = await processLiquidityPoints(
-  //     connection,
-  //     market,
-  //     config.poolsHashes
-  //   );
-  //   await configCollection.setConfig({
-  //     ...config,
-  //     poolsHashes: updatedPoolsHashes,
-  //   });
-  // } catch (e) {
-  //   console.error("Error processing liquidity points update", e);
+  // if (!config) {
+  //   throw new Error("Config not found");
   // }
+
+  try {
+    const updatedPoolsHashes = await processLiquidityPoints(
+      connection,
+      market,
+      // @ts-ignore
+      poolsHashes
+    );
+
+    // await configCollection.setConfig({
+    //   ...config,
+    //   poolsHashes: updatedPoolsHashes,
+    // });
+  } catch (e) {
+    console.error("Error processing liquidity points update", e);
+  }
 
   // try {
   //   const updatedSwapHashes = await processSwapPoints(
   //     connection,
   //     market,
-  //     config.swapHashes,
+  //     swapHashes,
   //     []
   //   );
   //   await configCollection.setConfig({
@@ -56,6 +93,15 @@ const handlePointsUpdate = (app: FastifyInstance) => async () => {
   //   });
   // } catch (e) {
   //   console.error("Error processing swap points update", e);
+  // }
+
+  // try {
+  //   const leaderboard = new LeaderboardCollection();
+  //   await leaderboard.updateLeaderboard();
+  //   const top100 = await leaderboard.getLeaderboard(1, 100);
+  //   console.log("Top 100", top100);
+  // } catch (e) {
+  //   console.error("Error constructing leaderboard", e);
   // }
 
   clog("Points update done");

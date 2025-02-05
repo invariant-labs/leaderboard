@@ -264,6 +264,7 @@ export const processLiquidityPoints = async (
 
   const entryKeysToUpdate = Array.from(new Set([...keys, ...additionalKeys]));
 
+  console.log("User entries to update", entryKeysToUpdate.length);
   for (const key of entryKeysToUpdate) {
     const userEvents = await eventsCollection.getUserEvents(key.toString());
     const userPointsEntry = await lpPointsCollection.getUserPoints(

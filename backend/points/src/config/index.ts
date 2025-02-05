@@ -17,20 +17,14 @@ export const CONFIG = {
       RUN_IMMEDIATELY: true,
     },
   },
-  ECLIPSE: {
-    RPC_URL: "https://eclipse.helius-rpc.com",
-    NETWORK: Network.MAIN,
-  },
 };
 
 export default CONFIG;
 
-export const { SERVER, DATABASE, JOBS, ECLIPSE } = CONFIG;
+export const { SERVER, DATABASE, JOBS } = CONFIG;
 
 export const { PORT, HOST } = SERVER;
 
 export const { DATABASE_URL, DATABASE_NAME } = DATABASE;
 
 export const { POINTS_UPDATE } = JOBS;
-
-export const { RPC_URL, NETWORK } = ECLIPSE;

@@ -33,7 +33,6 @@ import {
   Tick,
 } from "@invariant-labs/sdk-eclipse/lib/market";
 import { Network, Pair } from "@invariant-labs/sdk-eclipse";
-import { NETWORK } from "../config";
 
 export const retryOperation = async (
   fn: Promise<any>,

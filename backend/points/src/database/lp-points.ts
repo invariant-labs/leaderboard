@@ -15,6 +15,7 @@ export class LpPointsCollection extends BaseCollection<IUserPoints> {
     owner: string,
     pointsHistory: IPointsHistory[]
   ): Promise<void> {
+    console.log("Updating points history for", owner);
     await this.collection.updateOne(
       { owner },
       { $set: { points24HoursHistory: pointsHistory } }
