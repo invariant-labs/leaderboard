@@ -58,7 +58,9 @@ export const createSnapshotForNetwork = async (network: Network) => {
   let isBinary: boolean;
   switch (network) {
     case Network.MAIN:
-      provider = AnchorProvider.local("https://eclipse.helius-rpc.com");
+      provider = AnchorProvider.local(
+        process.env.GITHUB_SECRET_RPC_URL ?? "https://eclipse.helius-rpc.com"
+      );
       eventsSnapFilename = path.join(
         __dirname,
         "../data/events_snap_mainnet.json"

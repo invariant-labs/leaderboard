@@ -24,7 +24,9 @@ export const addDomains = async () => {
     "../data/final_data_lp_mainnet.json"
   );
 
-  const provider = AnchorProvider.local("https://eclipse.helius-rpc.com");
+  const provider = AnchorProvider.local(
+    process.env.GITHUB_SECRET_RPC_URL ?? "https://eclipse.helius-rpc.com"
+  );
   const connection = provider.connection;
 
   const totalData = JSON.parse(fs.readFileSync(finalDataFile, "utf-8"));
