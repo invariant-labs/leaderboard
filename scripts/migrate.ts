@@ -30,7 +30,7 @@ const main = async () => {
       lastSwapTimestamp: 0,
       lastDomainTimestamp: 0,
       poolsHashes: pools_last_tx_hashes_mainnet,
-      pairsHashes: pairs_last_tx_hashes_mainnet,
+      swapHashes: pairs_last_tx_hashes_mainnet,
       blacklist: swap_blacklist,
     };
 
@@ -61,8 +61,6 @@ const main = async () => {
     console.log("loaded all jsons");
 
     const docs = {};
-
-    const owner = "4mpsX6y2qKCgYNchy6bRPU6Ky2tq7VZLdrfYmvz2xhUB";
 
     for (const [key, value] of Object.entries(events)) {
       const activePositions = value.active.map((a) => {
@@ -99,8 +97,6 @@ const main = async () => {
       docs[key].address = key;
     }
 
-    // console.log("Events done", docs[owner]);
-
     for (const [key, value] of Object.entries(lpPoints)) {
       if (docs[key]?.lpPoints) {
         docs[key].lpPoints = new Long(
@@ -119,8 +115,6 @@ const main = async () => {
         };
       });
     }
-
-    // console.log("lp done", docs[owner]);
 
     for (const [key, value] of Object.entries(swapPoints)) {
       if (docs[key] === undefined) {
@@ -152,8 +146,6 @@ const main = async () => {
       docs[key].swapCounter = value.swapsAmount;
     }
 
-    // console.log("swap done", docs[owner]);
-
     for (const [key, value] of Object.entries(staticSwapPoints)) {
       if (docs[key] === undefined) {
         docs[key] = {
@@ -177,8 +169,6 @@ const main = async () => {
       );
     }
 
-    // console.log("static swap done", docs[owner]);
-
     for (const [key, value] of Object.entries(domain.domains)) {
       docs[key].domain = value;
     }
@@ -187,8 +177,6 @@ const main = async () => {
       const v = value as any;
       docs[key].totalPoints = v.lpPoints.add(v.swapPoints);
     }
-
-    // console.log("total summed done", docs[owner]);
 
     for (const [key, value] of Object.entries(staticPoints)) {
       if (docs[key] === undefined) {
@@ -212,8 +200,6 @@ const main = async () => {
         true
       );
     }
-
-    // console.log("static points done", docs[owner]);
 
     const migratedData = Object.values(docs);
     const finalDataFile = path.join(
