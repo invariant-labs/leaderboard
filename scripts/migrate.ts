@@ -53,12 +53,16 @@ const main = async () => {
       string,
       number
     > = require("../data/static_swap.json");
-    const staticPoints: Record<string, number> = require("../data/static.json");
+    const staticPoints: Record<string, number> = require(path.join(
+      "../data/static.json"
+    ));
     const domain = require("../data/domains.json");
 
     console.log("loaded all jsons");
 
     const docs = {};
+
+    const owner = "4mpsX6y2qKCgYNchy6bRPU6Ky2tq7VZLdrfYmvz2xhUB";
 
     for (const [key, value] of Object.entries(events)) {
       const activePositions = value.active.map((a) => {
@@ -95,6 +99,8 @@ const main = async () => {
       docs[key].address = key;
     }
 
+    // console.log("Events done", docs[owner]);
+
     for (const [key, value] of Object.entries(lpPoints)) {
       if (docs[key]?.lpPoints) {
         docs[key].lpPoints = new Long(
@@ -114,6 +120,8 @@ const main = async () => {
       });
     }
 
+    // console.log("lp done", docs[owner]);
+
     for (const [key, value] of Object.entries(swapPoints)) {
       if (docs[key] === undefined) {
         docs[key] = {
@@ -128,17 +136,13 @@ const main = async () => {
           updatedAt: new Date(),
         };
       }
+      docs[key].swapPoints = new Long(
+        new BN(docs[key].swapPoints.toString())
+          .add(new BN(value.totalPoints.toString()))
+          .toString(),
+        true
+      );
 
-      if (docs[key].swapPoints) {
-        docs[key].swapPoints = new Long(
-          new BN(docs[key].swapPoints.toString())
-            .add(new BN(value.totalPoints.toString()))
-            .toString(),
-          true
-        );
-      } else {
-        docs[key].swapPoints = new Long(value.totalPoints.toString(), true);
-      }
       docs[key].swapPointsHistory = value.points24HoursHistory.map((p) => {
         return {
           diff: new Long(p.diff, true),
@@ -147,6 +151,8 @@ const main = async () => {
       });
       docs[key].swapCounter = value.swapsAmount;
     }
+
+    // console.log("swap done", docs[owner]);
 
     for (const [key, value] of Object.entries(staticSwapPoints)) {
       if (docs[key] === undefined) {
@@ -164,12 +170,25 @@ const main = async () => {
       }
 
       docs[key].swapPoints = new Long(
-        new BN(docs[key].swapPoints.toString())
+        new BN(docs[key].swapPoints.toString(), "hex")
           .add(new BN(value).mul(POINTS_DENOMINATOR))
           .toString(),
         true
       );
     }
+
+    // console.log("static swap done", docs[owner]);
+
+    for (const [key, value] of Object.entries(domain.domains)) {
+      docs[key].domain = value;
+    }
+
+    for (const [key, value] of Object.entries(docs)) {
+      const v = value as any;
+      docs[key].totalPoints = v.lpPoints.add(v.swapPoints);
+    }
+
+    // console.log("total summed done", docs[owner]);
 
     for (const [key, value] of Object.entries(staticPoints)) {
       if (docs[key] === undefined) {
@@ -194,15 +213,80 @@ const main = async () => {
       );
     }
 
-    for (const [key, value] of Object.entries(domain.domains)) {
-      docs[key].domain = value;
+    // console.log("static points done", docs[owner]);
+
+    const migratedData = Object.values(docs);
+    const finalDataFile = path.join(
+      __dirname,
+      "../data/final_data_mainnet.json"
+    );
+    const finalData = require(finalDataFile);
+    if (migratedData.length !== finalData.length) {
+      console.log("Length mismatch", migratedData.length, finalData.length);
+      return;
     }
 
-    for (const [key, value] of Object.entries(docs)) {
-      const v = value as any;
-      docs[key].totalPoints = v.lpPoints.add(v.swapPoints);
+    for (const [index, entry] of finalData.entries()) {
+      const migratedEntry: any = migratedData.find(
+        (e: any) => e.address === entry.address
+      );
+
+      if (migratedEntry) {
+        if (
+          !new BN(migratedEntry.totalPoints.toString()).eq(
+            new BN(entry.points, "hex")
+          )
+        ) {
+          console.log(entry, migratedEntry);
+
+          console.log(
+            "Total points Mismatch",
+            entry.address,
+            migratedEntry.totalPoints.toString(),
+            new BN(entry.points, "hex").toString(),
+            "index",
+            index
+          );
+          break;
+        }
+        if (
+          !new BN(migratedEntry.lpPoints.toString()).eq(
+            new BN(entry.lpPoints, "hex")
+          )
+        ) {
+          console.log(entry, migratedEntry);
+
+          console.log(
+            "LP points Mismatch",
+            entry.address,
+            migratedEntry.lpPoints.toString(),
+            entry.lpPoints,
+            "index",
+            index
+          );
+        }
+        if (
+          !new BN(migratedEntry.swapPoints.toString()).eq(
+            new BN(entry.swapPoints, "hex")
+          )
+        ) {
+          console.log(entry, migratedEntry);
+
+          console.log(
+            "Swap points Mismatch",
+            entry.address,
+            migratedEntry.swapPoints.toString(),
+            entry.swapPoints,
+            "index",
+            index
+          );
+        }
+      } else {
+        console.log("Not found", entry.address);
+      }
     }
-    console.log(docs["BtGH2WkM1oNyPVgzYT51xV2gJqHhVQ4QiGwWirBUW5xN"]);
+
+    console.log("Data validated");
 
     const promises: any[] = [];
     const collection = db.collection(POINTS_COLLECTION);
@@ -219,9 +303,9 @@ const main = async () => {
 
     console.log("awaiting promises");
     await Promise.all(promises);
-
-    console.log("Data migrated successfully");
   }
+
+  console.log("Data migrated successfully");
 
   return;
 };
