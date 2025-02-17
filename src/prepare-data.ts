@@ -15,7 +15,10 @@ export const prepareFinalData = async (network: Network) => {
   let finalDataLpFile: string;
   let data: Record<string, IPointsJson>;
   let swapData: Record<string, SwapPointsEntry>;
-  let staticData: Record<string, number>;
+  let staticData: Record<
+    string,
+    { startTimestamp: number; endTimestamp: number; points: number }[]
+  >;
   let staticSwap: Record<string, number>;
 
   switch (network) {
@@ -167,7 +170,9 @@ export const prepareFinalData = async (network: Network) => {
       const swap = swapData[key];
 
       const staticPoints = staticData[key]
-        ? new BN(staticData[key]).mul(POINTS_DENOMINATOR)
+        ? new BN(staticData[key].reduce((acc, cur) => acc + cur.points, 0)).mul(
+            POINTS_DENOMINATOR
+          )
         : new BN(0);
 
       const lpPoints = lp ? new BN(lp.totalPoints) : new BN(0);
