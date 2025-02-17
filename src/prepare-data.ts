@@ -17,7 +17,6 @@ export const prepareFinalData = async (network: Network) => {
   let swapData: Record<string, SwapPointsEntry>;
   let staticData: Record<
     string,
-    // number
     { startTimestamp: number; endTimestamp: number; points: number }[]
   >;
   let staticSwap: Record<string, number>;
@@ -175,14 +174,6 @@ export const prepareFinalData = async (network: Network) => {
             POINTS_DENOMINATOR
           )
         : new BN(0);
-
-      // const staticPoints = staticData[key]
-      //   ? new BN(staticData[key]).mul(POINTS_DENOMINATOR)
-      //   : new BN(0);
-
-      // if (!staticPoints.eqn(0)) {
-      //   console.log(key, staticPoints.toString());
-      // }
 
       const lpPoints = lp ? new BN(lp.totalPoints) : new BN(0);
       const last24hLpPoints = lp
