@@ -1,5 +1,5 @@
 import { VercelRequest, VercelResponse } from "@vercel/node";
-import DATA from "../../data/static.json";
+import DATA from "../../data/content-program.json";
 
 export default function (req: VercelRequest, res: VercelResponse) {
   // @ts-expect-error
