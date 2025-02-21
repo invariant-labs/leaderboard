@@ -53,10 +53,11 @@ const main = async () => {
       string,
       number
     > = require("../data/static_swap.json");
-    const staticPoints: Record<
+    const contentProgramPoints: Record<
       string,
       { startTimestamp: number; endTimestamp: number; points: number }[]
-    > = require(path.join("../data/static.json"));
+    > = require(path.join("../data/content-program.json"));
+    const staticPoints: Record<string, number> = require("../data/static.json");
     const domain = require("../data/domains.json");
 
     console.log("loaded all jsons");
@@ -179,7 +180,7 @@ const main = async () => {
       docs[key].totalPoints = v.lpPoints.add(v.swapPoints);
     }
 
-    for (const [key, value] of Object.entries(staticPoints)) {
+    for (const [key, value] of Object.entries(contentProgramPoints)) {
       if (docs[key] === undefined) {
         docs[key] = {
           address: key,
@@ -201,6 +202,15 @@ const main = async () => {
               POINTS_DENOMINATOR
             )
           )
+          .toString(),
+        true
+      );
+    }
+
+    for (const [key, value] of Object.entries(staticPoints)) {
+      docs[key].totalPoints = new Long(
+        new BN(docs[key].totalPoints.toString())
+          .add(new BN(value).mul(POINTS_DENOMINATOR))
           .toString(),
         true
       );
