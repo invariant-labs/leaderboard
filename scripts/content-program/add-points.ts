@@ -2,7 +2,7 @@ import POINTS_TO_ADD from "./datas2.json";
 import fs from "fs";
 import path from "path";
 
-const OUTPUT_FILE = path.join(__dirname, "../../data/static.json");
+const OUTPUT_FILE = path.join(__dirname, "../../data/content-program.json");
 
 const main = async () => {
   const { startTimestamp, endTimestamp, data } = POINTS_TO_ADD;
