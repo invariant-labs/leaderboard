@@ -169,6 +169,7 @@ export const prepareFinalData = async (network: Network) => {
       ...Object.keys(data),
       ...Object.keys(swapData),
       ...Object.keys(staticData),
+      ...Object.keys(contentProgramData),
     ])
   );
 
