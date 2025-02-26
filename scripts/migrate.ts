@@ -208,12 +208,29 @@ const main = async () => {
     }
 
     for (const [key, value] of Object.entries(staticPoints)) {
-      docs[key].totalPoints = new Long(
-        new BN(docs[key].totalPoints.toString())
-          .add(new BN(value).mul(POINTS_DENOMINATOR))
-          .toString(),
-        true
-      );
+      if (docs[key]) {
+        docs[key].totalPoints = new Long(
+          new BN(docs[key].totalPoints.toString())
+            .add(new BN(value).mul(POINTS_DENOMINATOR))
+            .toString(),
+          true
+        );
+      } else {
+        docs[key] = {
+          address: key,
+          activePositions: [],
+          lpPoints: new Long("0", true),
+          lpPointsHistory: [],
+          swapPoints: new Long("0", true),
+          swapPointsHistory: [],
+          swapCounter: 0,
+          totalPoints: new Long(
+            new BN(value).mul(POINTS_DENOMINATOR).toString(),
+            true
+          ),
+          updatedAt: new Date(),
+        };
+      }
     }
 
     const migratedData = Object.values(docs);
