@@ -29,8 +29,8 @@ export const PROMOTED_POOLS_MAINNET: IPromotedPool[] = [
   }, // ETH/USDC 0.09%
   {
     address: new PublicKey("86vPh8ctgeQnnn8qPADy5BkzrqoH5XjMCWvkd4tYhhmM"),
-    pointsPerSecond: new BN(35),
-    startCountTimestamp: new BN(1737041362),
+    pointsPerSecond: new BN(30),
+    startCountTimestamp: new BN(1740652000),
   }, // SOL/ETH 0.09%
   {
     address: new PublicKey("FvVsbwsbGVo6PVfimkkPhpcRfBrRitiV946nMNNuz7f9"),
