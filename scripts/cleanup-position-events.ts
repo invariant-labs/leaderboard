@@ -61,8 +61,8 @@ const main = () => {
     }
   }
 
-  //   writeFileSync(historicalFileName, JSON.stringify(historical));
-  //   writeFileSync(eventsFileName, JSON.stringify(events));
+  writeFileSync(historicalFileName, JSON.stringify(historical));
+  writeFileSync(eventsFileName, JSON.stringify(events));
 };
 
 main();
