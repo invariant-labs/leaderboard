@@ -71,7 +71,7 @@ export const PROMOTED_PAIRS_MAINNET: IPromotedPair[] = [
     tokenX: new PublicKey("GU7NS9xCwgNPiAdJ69iusFrRfawjDDPjeMBovhV1d4kn"),
     xDecimal: 9,
     feedXId:
-      "0xff61491a931112ddf1bd8147cd1b641375f79f5825126d665480874634fd0ace", //  ETH/USD because there is no tETH/USD
+      "0x736999a0e4eb5f0971f3284ae492df38662f96f28c957f1417ec42f211a7f7eb", //  TETH/USD
     tokenY: new PublicKey("So11111111111111111111111111111111111111112"),
     yDecimal: 9,
     feedYId:
