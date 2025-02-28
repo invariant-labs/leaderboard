@@ -84,7 +84,7 @@ const main = async () => {
             calculatePriceSqrt(position.lowerTickIndex),
             poolState.sqrtPrice,
             position.liquidity,
-            true
+            false
           ) ?? new BN(0);
 
       const ownerKey = position.owner.toBase58();
