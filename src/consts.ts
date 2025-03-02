@@ -28,6 +28,11 @@ export const PROMOTED_POOLS_MAINNET: IPromotedPool[] = [
     startCountTimestamp: new BN(1734793434),
   }, // ETH/USDC 0.09%
   {
+    address: new PublicKey("E2B7KUFwjxrsy9cC17hmadPsxWHD1NufZXTyrtuz8YxC"),
+    pointsPerSecond: new BN(50),
+    startCountTimestamp: new BN(1740940185),
+  }, // SOL/USDC 0.09%
+  {
     address: new PublicKey("86vPh8ctgeQnnn8qPADy5BkzrqoH5XjMCWvkd4tYhhmM"),
     pointsPerSecond: new BN(30),
     startCountTimestamp: new BN(1740652000),
@@ -37,11 +42,6 @@ export const PROMOTED_POOLS_MAINNET: IPromotedPool[] = [
     pointsPerSecond: new BN(10),
     startCountTimestamp: new BN(1735587867),
   }, // ETH/tETH 0.01%
-  {
-    address: new PublicKey("E2B7KUFwjxrsy9cC17hmadPsxWHD1NufZXTyrtuz8YxC"),
-    pointsPerSecond: new BN(50),
-    startCountTimestamp: new BN(1740940185),
-  }, // SOL/USDC 0.09%
 ];
 
 export const DOMAIN_LIMIT = 1000;
