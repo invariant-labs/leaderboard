@@ -306,21 +306,22 @@ const main = async () => {
 
     console.log("Data validated");
 
-    const promises: any[] = [];
+    const bulkOps: any[] = [];
     const collection = db.collection(POINTS_COLLECTION);
 
     for (const [key, value] of Object.entries(docs)) {
-      promises.push(
-        collection.updateOne(
-          { address: key },
-          { $set: value as any },
-          { upsert: true }
-        )
-      );
+      bulkOps.push({
+        insertOne: {
+          document: {
+            address: key,
+            ...(value as any),
+          },
+        },
+      });
     }
 
-    console.log("awaiting promises");
-    await Promise.all(promises);
+    console.log("awaiting write");
+    await collection.bulkWrite(bulkOps);
   }
 
   console.log("Data migrated successfully");
