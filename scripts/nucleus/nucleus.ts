@@ -8,7 +8,9 @@ require("dotenv").config();
 const provider = AnchorProvider.local("https://eclipse.helius-rpc.com");
 const connection = provider.connection;
 
-const ADDRESSES: PublicKey[] = [];
+const ADDRESSES: PublicKey[] = [
+  // new PublicKey("6Wpj1RUs1hBwKuAzfFPGeHtgiQp5Fx4PVkDwfgzkLYCu"),
+];
 
 const main = async () => {
   const data = await getEffectiveTETHBalances(connection, ADDRESSES);

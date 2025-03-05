@@ -143,7 +143,7 @@ export const getEffectiveTETHBalances = async (
 
     for (const position of allPositions) {
       if (
-        position.lowerTickIndex > poolState.currentTickIndex &&
+        position.lowerTickIndex > poolState.currentTickIndex ||
         position.upperTickIndex <= poolState.currentTickIndex
       ) {
         continue;
@@ -226,8 +226,17 @@ const queryStates = async (
     throw new Error("State inconsistency, please try again");
   }
 
+  const parsedPositions =
+    addresses.length === 0
+      ? allPositions.map((p) => parsePosition(p.account))
+      : allPositions
+          .map((p) => parsePosition(p.account))
+          .filter((p) =>
+            NUCLEUS_WHITELISTED_POOLS.some((wp) => wp.equals(p.pool))
+          );
+
   return {
-    allPositions: allPositions.map((p) => parsePosition(p.account)),
+    allPositions: parsedPositions,
     poolState,
   };
 };
