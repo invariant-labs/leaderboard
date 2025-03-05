@@ -196,10 +196,7 @@ const queryStates = async (
   pool: PublicKey,
   addresses: PublicKey[] = []
 ): Promise<{ allPositions: Position[]; poolState: PoolStructure }> => {
-  const lastSignature = await getLatestTxHash(
-    market.program.programId,
-    connection
-  );
+  const lastSignature = await getLatestTxHash(pool, connection);
 
   const poolState = await market.getPoolByAddress(pool);
 
@@ -220,7 +217,7 @@ const queryStates = async (
     ]);
   }
 
-  const recentSig = await getLatestTxHash(market.program.programId, connection);
+  const recentSig = await getLatestTxHash(pool, connection);
 
   if (lastSignature !== recentSig) {
     throw new Error("State inconsistency, please try again");
