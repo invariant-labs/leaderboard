@@ -195,7 +195,8 @@ export const createSnapshotForNetwork = async (network: Network) => {
       );
 
       if (!associatedPair) {
-        throw new Error("Associated pair not found");
+        // throw new Error("Associated pair not found");
+        return;
       }
 
       const feed = priceFeeds.find(

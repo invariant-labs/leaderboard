@@ -15,7 +15,7 @@ const provider = AnchorProvider.local("https://eclipse.helius-rpc.com", {
 
 const connection = provider.connection;
 
-const POOL = new PublicKey("86vPh8ctgeQnnn8qPADy5BkzrqoH5XjMCWvkd4tYhhmM");
+const POOL = new PublicKey("E2B7KUFwjxrsy9cC17hmadPsxWHD1NufZXTyrtuz8YxC");
 
 const main = async () => {
   const market = Market.build(
