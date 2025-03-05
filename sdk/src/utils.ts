@@ -228,9 +228,7 @@ const queryStates = async (
       ? allPositions.map((p) => parsePosition(p.account))
       : allPositions
           .map((p) => parsePosition(p.account))
-          .filter((p) =>
-            NUCLEUS_WHITELISTED_POOLS.some((wp) => wp.equals(p.pool))
-          );
+          .filter((p) => p.pool.equals(pool));
 
   return {
     allPositions: parsedPositions,
