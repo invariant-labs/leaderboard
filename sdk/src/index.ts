@@ -3,6 +3,8 @@ import {
   estimatePointsForUserPositions,
   isPositionActive,
   isPriceWithinPositionRange,
+  NUCLEUS_WHITELISTED_POOLS,
+  getEffectiveTETHBalances,
 } from "./utils";
 
 export {
@@ -10,4 +12,6 @@ export {
   estimatePointsForUserPositions,
   isPositionActive,
   isPriceWithinPositionRange,
+  NUCLEUS_WHITELISTED_POOLS,
+  getEffectiveTETHBalances,
 };
