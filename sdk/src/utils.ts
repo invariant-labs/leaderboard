@@ -203,11 +203,17 @@ const queryStates = async (
   let allPositions: any[] = [];
 
   if (addresses.length !== 0) {
-    const promises = addresses.map((a: PublicKey) =>
-      market.program.account.position.all([
+    const promises = addresses.map((a: PublicKey) => {
+      return market.program.account.position.all([
         { memcmp: { bytes: bs58.encode(a.toBuffer()), offset: 8 } },
-      ])
-    );
+        {
+          memcmp: {
+            bytes: bs58.encode(pool.toBuffer()),
+            offset: 40,
+          },
+        },
+      ]);
+    });
     allPositions = (await Promise.all(promises)).flat();
   } else {
     allPositions = await market.program.account.position.all([
