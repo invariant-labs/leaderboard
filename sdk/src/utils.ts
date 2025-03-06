@@ -1,11 +1,12 @@
 import { priceToTick } from "@invariant-labs/sdk-eclipse/lib/math";
-import { AnchorProvider, BN } from "@coral-xyz/anchor";
+import { BN } from "@coral-xyz/anchor";
 import { bs58 } from "@coral-xyz/anchor/dist/cjs/utils/bytes";
-import { IWallet, Market, Network } from "@invariant-labs/sdk-eclipse";
+import { Market, Network } from "@invariant-labs/sdk-eclipse";
 import {
   parsePosition,
   PoolStructure,
   Position,
+  RawPosition,
 } from "@invariant-labs/sdk-eclipse/lib/market";
 import {
   calculatePriceSqrt,
@@ -18,7 +19,7 @@ import {
   Transaction,
   VersionedTransaction,
 } from "@solana/web3.js";
-import fs from "fs";
+import { isActive } from "@invariant-labs/sdk-eclipse/lib/utils";
 
 const ONE_DAY = new BN(86400);
 
@@ -143,8 +144,11 @@ export const getEffectiveTETHBalances = async (
 
     for (const position of allPositions) {
       if (
-        position.lowerTickIndex > poolState.currentTickIndex ||
-        position.upperTickIndex <= poolState.currentTickIndex
+        !isActive(
+          position.lowerTickIndex,
+          position.upperTickIndex,
+          poolState.currentTickIndex
+        )
       ) {
         continue;
       }
@@ -200,7 +204,7 @@ const queryStates = async (
 
   const poolState = await market.getPoolByAddress(pool);
 
-  let allPositions: any[] = [];
+  let allPositions: { publicKey: PublicKey; account: RawPosition }[] = [];
 
   if (addresses.length !== 0) {
     const promises = addresses.map((a: PublicKey) => {
@@ -229,15 +233,8 @@ const queryStates = async (
     throw new Error("State inconsistency, please try again");
   }
 
-  const parsedPositions =
-    addresses.length === 0
-      ? allPositions.map((p) => parsePosition(p.account))
-      : allPositions
-          .map((p) => parsePosition(p.account))
-          .filter((p) => p.pool.equals(pool));
-
   return {
-    allPositions: parsedPositions,
+    allPositions: allPositions.map((p) => parsePosition(p.account)),
     poolState,
   };
 };

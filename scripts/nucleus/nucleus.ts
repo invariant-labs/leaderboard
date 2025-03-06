@@ -14,7 +14,6 @@ const ADDRESSES: PublicKey[] = [
 
 const main = async () => {
   const data = await getEffectiveTETHBalances(connection, ADDRESSES);
-  console.log(data);
   fs.writeFileSync(
     `./scripts/nucleus/data/${new Date().getTime()}.json`,
     JSON.stringify(data, null, 2)
