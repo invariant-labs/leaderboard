@@ -28,15 +28,15 @@ export const PROMOTED_POOLS_MAINNET: IPromotedPool[] = [
     startCountTimestamp: new BN(1734793434),
   }, // ETH/USDC 0.09%
   {
-    address: new PublicKey("E2B7KUFwjxrsy9cC17hmadPsxWHD1NufZXTyrtuz8YxC"),
-    pointsPerSecond: new BN(50),
-    startCountTimestamp: new BN(1740940185),
-  }, // SOL/USDC 0.09%
-  {
     address: new PublicKey("86vPh8ctgeQnnn8qPADy5BkzrqoH5XjMCWvkd4tYhhmM"),
     pointsPerSecond: new BN(30),
     startCountTimestamp: new BN(1740652000),
   }, // SOL/ETH 0.09%
+  {
+    address: new PublicKey("E2B7KUFwjxrsy9cC17hmadPsxWHD1NufZXTyrtuz8YxC"),
+    pointsPerSecond: new BN(25),
+    startCountTimestamp: new BN(1741554051),
+  }, // SOL/USDC 0.09%
   {
     address: new PublicKey("FvVsbwsbGVo6PVfimkkPhpcRfBrRitiV946nMNNuz7f9"),
     pointsPerSecond: new BN(10),

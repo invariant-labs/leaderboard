@@ -4,7 +4,7 @@ import { writeFileSync, readFileSync } from "fs";
 import { IActive, IPositions } from "../src/types";
 import { PublicKey } from "@solana/web3.js";
 
-const POOL = new PublicKey("86vPh8ctgeQnnn8qPADy5BkzrqoH5XjMCWvkd4tYhhmM");
+const POOL = new PublicKey("E2B7KUFwjxrsy9cC17hmadPsxWHD1NufZXTyrtuz8YxC");
 
 const main = () => {
   const historicalFileName = path.join(
