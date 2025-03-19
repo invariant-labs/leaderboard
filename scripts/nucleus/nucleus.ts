@@ -2,6 +2,12 @@ import { AnchorProvider } from "@coral-xyz/anchor";
 import { PublicKey } from "@solana/web3.js";
 import fs from "fs";
 import { getEffectiveTETHBalances } from "../../sdk/src";
+import {
+  getReservePubkeys,
+  validateEffectiveBalance,
+} from "../../sdk/src/utils";
+import { getBalance } from "@invariant-labs/sdk-eclipse/lib/utils";
+import assert from "assert";
 
 require("dotenv").config();
 
@@ -13,10 +19,24 @@ const ADDRESSES: PublicKey[] = [
 ];
 
 const main = async () => {
-  const data = await getEffectiveTETHBalances(connection, ADDRESSES);
-  fs.writeFileSync(
-    `./scripts/nucleus/data/${new Date().getTime()}.json`,
-    JSON.stringify(data, null, 2)
-  );
+  const addresses = await getReservePubkeys(connection);
+  let b = 0;
+  for (const address of addresses) {
+    const balance = await getBalance(
+      connection,
+      address,
+      new PublicKey("TokenzQdBNbLqP5VEhdkAS6EPFLC1PHnBqCXEpPxuEb")
+    );
+    b += balance.toNumber() / 1e9;
+  }
+
+  const isOk = await validateEffectiveBalance(connection, b);
+  assert(isOk, "Balance equation failed");
+
+  // const data = await getEffectiveTETHBalances(connection, ADDRESSES);
+  // fs.writeFileSync(
+  //   `./scripts/nucleus/data/${new Date().getTime()}.json`,
+  //   JSON.stringify(data, null, 2)
+  // );
 };
 main();
