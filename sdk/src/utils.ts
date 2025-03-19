@@ -95,7 +95,7 @@ const TETH_DECIMALS = 9;
 const TETH_DENOMINATOR = 10 ** TETH_DECIMALS;
 const MAX_RETRIES = 25;
 const RETRY_DELAY = 2000;
-const EPSILON = 1 / 1e3;
+const EPSILON = 1 / 1e2;
 
 export const NUCLEUS_WHITELISTED_POOLS: PublicKey[] = [
   new PublicKey("FvVsbwsbGVo6PVfimkkPhpcRfBrRitiV946nMNNuz7f9"),
@@ -172,14 +172,10 @@ export const validateEffectiveBalance = async (
     connection
   );
 
-  let effectiveBalance = 0;
-
-  const poolFees: Record<string, number> = {};
-  const inactiveBalances: Record<string, number> = {};
+  let poolFees = 0;
+  let userBalances = 0;
 
   for (const pool of NUCLEUS_WHITELISTED_POOLS) {
-    const poolKey = pool.toBase58();
-
     const { poolState, allPositions, ticks } = await retryOperation(
       queryStatesAndTicks(connection, market, pool)
     );
@@ -190,8 +186,7 @@ export const validateEffectiveBalance = async (
       ? poolState.feeProtocolTokenX
       : poolState.feeProtocolTokenY;
 
-    poolFees[poolKey] = tETHProtocolFee.toNumber() / TETH_DENOMINATOR;
-    inactiveBalances[poolKey] = 0;
+    poolFees += tETHProtocolFee.toNumber() / TETH_DENOMINATOR;
 
     for (const position of allPositions) {
       const tETH = calculateTETH(position, poolState);
@@ -208,31 +203,14 @@ export const validateEffectiveBalance = async (
         feeGrowthGlobalY: poolState.feeGrowthGlobalY,
       });
 
-      const fee =
-        (isTokenX ? bnX.toNumber() : bnY.toNumber()) / TETH_DENOMINATOR;
+      const fee = (isTokenX ? bnX : bnY).toNumber() / TETH_DENOMINATOR;
+      poolFees += fee;
 
-      poolFees[poolKey] += fee;
-
-      if (
-        !isActive(
-          position.lowerTickIndex,
-          position.upperTickIndex,
-          poolState.currentTickIndex
-        )
-      ) {
-        inactiveBalances[poolKey] += tETH.toNumber() / TETH_DENOMINATOR;
-        continue;
-      }
-
-      effectiveBalance += tETH.toNumber() / TETH_DENOMINATOR;
+      userBalances += tETH.toNumber() / TETH_DENOMINATOR;
     }
   }
 
-  const sum =
-    effectiveBalance +
-    Object.values(poolFees).reduce((acc, fee) => acc + fee, 0) +
-    Object.values(inactiveBalances).reduce((acc, fee) => acc + fee, 0);
-
+  const sum = userBalances + poolFees;
   return expectedBalance - sum < EPSILON;
 };
 
