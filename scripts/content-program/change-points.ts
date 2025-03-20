@@ -1,11 +1,11 @@
-import POINTS_TO_ADD from "./datas4-part3.json";
+import POINTS_TO_CHANGE from "./to-change.json";
 import fs from "fs";
 import path from "path";
 
 const OUTPUT_FILE = path.join(__dirname, "../../data/content-program.json");
 
 const main = async () => {
-  const { startTimestamp, endTimestamp, data } = POINTS_TO_ADD;
+  const { startTimestamp, endTimestamp, data } = POINTS_TO_CHANGE;
 
   if (endTimestamp < startTimestamp) {
     throw new Error("End timestamp must be greater than start timestamp");
@@ -19,14 +19,14 @@ const main = async () => {
       endTimestamp,
       points: value,
     };
-    if (outputData[key]) {
-      const entries = outputData[key];
-      entries.push(entry);
-      entries.sort((a, b) => a.startTimestamp - b.startTimestamp);
-      outputData[key] = entries;
-    } else {
-      outputData[key] = [entry];
-    }
+
+    const existingEntries = outputData[key] || [];
+    const filtered = existingEntries.filter(
+      (e) =>
+        e.startTimestamp !== startTimestamp && e.endTimestamp !== endTimestamp
+    );
+
+    outputData[key] = [...filtered, entry];
   }
 
   fs.writeFileSync(OUTPUT_FILE, JSON.stringify(outputData, null, 2));
