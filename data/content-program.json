@@ -39,6 +39,11 @@
       "startTimestamp": 1734649200,
       "endTimestamp": 1738278000,
       "points": 250000
+    },
+    {
+      "startTimestamp": 1740787201,
+      "endTimestamp": 1741910401,
+      "points": 50000
     }
   ],
   "8hQENN1HiWpZcVhnREorH7DzpqvEreVfpUWnMXDq81qg": [
@@ -96,6 +101,11 @@
       "startTimestamp": 1739491200,
       "endTimestamp": 1740700800,
       "points": 100000
+    },
+    {
+      "startTimestamp": 1740787201,
+      "endTimestamp": 1741910401,
+      "points": 50000
     }
   ],
   "BXr4dPEArN23Dny9s6c6xyCqor96CkXHExWuzoEqQvL2": [
@@ -1379,6 +1389,11 @@
       "startTimestamp": 1739491200,
       "endTimestamp": 1740700800,
       "points": 2500
+    },
+    {
+      "startTimestamp": 1740787201,
+      "endTimestamp": 1741910401,
+      "points": 7500
     }
   ],
   "DF3iDv6zxHDNdmPByNddneRJLSzHz9zggHBMpg4VJXUf": [
@@ -1429,6 +1444,11 @@
       "startTimestamp": 1739491200,
       "endTimestamp": 1740700800,
       "points": 2500
+    },
+    {
+      "startTimestamp": 1740787201,
+      "endTimestamp": 1741910401,
+      "points": 7500
     }
   ],
   "3iAEgjbmoKxHTa2Jxjynxr272CT3hZhLM7inMx2K6bkH": [
@@ -1709,6 +1729,11 @@
       "startTimestamp": 1739491200,
       "endTimestamp": 1740700800,
       "points": 15000
+    },
+    {
+      "startTimestamp": 1740787201,
+      "endTimestamp": 1741910401,
+      "points": 15000
     }
   ],
   "C1TAXVfmni7ykv62JxYKsu5yDV7p43HtmfKEC7peynLM": [
@@ -1735,6 +1760,11 @@
       "startTimestamp": 1739491200,
       "endTimestamp": 1740700800,
       "points": 15000
+    },
+    {
+      "startTimestamp": 1740787201,
+      "endTimestamp": 1741910401,
+      "points": 50000
     }
   ],
   "H3rrFA6n1v2PFgTKpK3c1DJcvmMogCpBg9uZSiQezMKK": [
@@ -1974,6 +2004,11 @@
       "startTimestamp": 1739491200,
       "endTimestamp": 1740700800,
       "points": 7500
+    },
+    {
+      "startTimestamp": 1740787201,
+      "endTimestamp": 1741910401,
+      "points": 50000
     }
   ],
   "7Px4QTW54rKqSNzh7EX2aEZYjBJ2h28vdG67Ajb8Ern3": [
@@ -2385,6 +2420,11 @@
       "startTimestamp": 1740787201,
       "endTimestamp": 1741910401,
       "points": 7500
+    },
+    {
+      "startTimestamp": 1740787201,
+      "endTimestamp": 1741910401,
+      "points": 15000
     }
   ],
   "5vuVPxrnreVYYj9XuF8mwzRf13Cm5nEJE9pxZe3CFWFo": [
@@ -2674,6 +2714,11 @@
     }
   ],
   "Ffd5bfJKuLWzoqbf4Scwt638EKG2FAPArkuYCkWxn9Qo": [
+    {
+      "startTimestamp": 1734649200,
+      "endTimestamp": 1738278000,
+      "points": 250000
+    },
     {
       "startTimestamp": 1740787201,
       "endTimestamp": 1741910401,
@@ -3173,6 +3218,20 @@
       "startTimestamp": 1740787201,
       "endTimestamp": 1741910401,
       "points": 2500
+    }
+  ],
+  "AhgyS8Prkd6qGaiUUjLFW3pX8Z4QEoPnsgEo7osoznma": [
+    {
+      "startTimestamp": 1740787201,
+      "endTimestamp": 1741910401,
+      "points": 7500
+    }
+  ],
+  "YF5LjiadUaxS1Ucq92FzcJxf1bvXuq8HqTeGDKcCu6i": [
+    {
+      "startTimestamp": 1740787201,
+      "endTimestamp": 1741910401,
+      "points": 7500
     }
   ]
 }
