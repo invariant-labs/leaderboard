@@ -1,12 +1,17 @@
-import { priceToTick } from "@invariant-labs/sdk-eclipse/lib/math";
+import { getX, getY, priceToTick } from "@invariant-labs/sdk-eclipse/lib/math";
 import { BN } from "@coral-xyz/anchor";
 import { bs58 } from "@coral-xyz/anchor/dist/cjs/utils/bytes";
-import { Market, Network } from "@invariant-labs/sdk-eclipse";
+import { Market, Network, Pair } from "@invariant-labs/sdk-eclipse";
 import {
+  parsePool,
   parsePosition,
+  parseTick,
   PoolStructure,
   Position,
+  PositionStructure,
   RawPosition,
+  RawTick,
+  Tick,
 } from "@invariant-labs/sdk-eclipse/lib/market";
 import {
   calculatePriceSqrt,
@@ -19,7 +24,12 @@ import {
   Transaction,
   VersionedTransaction,
 } from "@solana/web3.js";
-import { isActive } from "@invariant-labs/sdk-eclipse/lib/utils";
+import {
+  calculateClaimAmount,
+  calculateTokensOwed,
+  DENOMINATOR,
+  isActive,
+} from "@invariant-labs/sdk-eclipse/lib/utils";
 
 const ONE_DAY = new BN(86400);
 
@@ -86,6 +96,7 @@ const TETH_DECIMALS = 9;
 const TETH_DENOMINATOR = 10 ** TETH_DECIMALS;
 const MAX_RETRIES = 25;
 const RETRY_DELAY = 2000;
+const EPSILON = 1 / 1e2;
 
 export const NUCLEUS_WHITELISTED_POOLS: PublicKey[] = [
   new PublicKey("FvVsbwsbGVo6PVfimkkPhpcRfBrRitiV946nMNNuz7f9"),
@@ -101,29 +112,78 @@ interface ResultEntry {
   vault_token_address: string;
 }
 
+export const getReservePubkeys = async (
+  connection: Connection
+): Promise<PublicKey[]> => {
+  const market = await Market.buildWithoutProvider(Network.MAIN, connection);
+  const addresses: PublicKey[] = [];
+
+  const pools = await market.program.account.pool.fetchMultiple(
+    NUCLEUS_WHITELISTED_POOLS
+  );
+
+  for (const rawPool of pools) {
+    const pool = parsePool(rawPool as any);
+    const isTokenX = pool.tokenX.equals(TETH_PUBKEY);
+    addresses.push(isTokenX ? pool.tokenXReserve : pool.tokenYReserve);
+  }
+
+  return addresses;
+};
+
+export const validateEffectiveBalance = async (
+  connection: Connection,
+  expectedBalance: number
+): Promise<boolean> => {
+  const market = await Market.buildWithoutProvider(Network.MAIN, connection);
+
+  let poolFees = 0;
+  let userBalances = 0;
+
+  for (const pool of NUCLEUS_WHITELISTED_POOLS) {
+    const { poolState, allPositions, ticks } = await retryOperation(
+      queryStatesAndTicks(connection, market, pool)
+    );
+
+    const isTokenX = poolState.tokenX.equals(TETH_PUBKEY);
+
+    const tETHProtocolFee = isTokenX
+      ? poolState.feeProtocolTokenX
+      : poolState.feeProtocolTokenY;
+
+    poolFees += tETHProtocolFee.toNumber() / TETH_DENOMINATOR;
+
+    for (const position of allPositions) {
+      const tETH = calculateTETH(position, poolState);
+
+      const lowerTick = ticks[position.lowerTickIndex];
+      const upperTick = ticks[position.upperTickIndex];
+
+      const [bnX, bnY] = calculateClaimAmount({
+        position,
+        tickLower: lowerTick,
+        tickUpper: upperTick,
+        tickCurrent: poolState.currentTickIndex,
+        feeGrowthGlobalX: poolState.feeGrowthGlobalX,
+        feeGrowthGlobalY: poolState.feeGrowthGlobalY,
+      });
+
+      const fee = (isTokenX ? bnX : bnY).toNumber() / TETH_DENOMINATOR;
+      poolFees += fee;
+
+      userBalances += tETH.toNumber() / TETH_DENOMINATOR;
+    }
+  }
+
+  const sum = userBalances + poolFees;
+  return expectedBalance - sum < EPSILON;
+};
+
 export const getEffectiveTETHBalances = async (
   connection: Connection,
   addresses?: PublicKey[]
 ): Promise<ResultEntry[]> => {
-  const market = Market.build(
-    Network.MAIN,
-    {
-      async signTransaction<T extends Transaction | VersionedTransaction>(
-        tx: T
-      ): Promise<T> {
-        return tx;
-      },
-
-      async signAllTransactions<T extends Transaction | VersionedTransaction>(
-        txs: T[]
-      ): Promise<T[]> {
-        return txs;
-      },
-
-      publicKey: PublicKey.default,
-    },
-    connection
-  );
+  const market = await Market.buildWithoutProvider(Network.MAIN, connection);
 
   const userEntries: Record<
     string,
@@ -153,19 +213,7 @@ export const getEffectiveTETHBalances = async (
         continue;
       }
 
-      const tETH = isTokenX
-        ? getDeltaX(
-            poolState.sqrtPrice,
-            calculatePriceSqrt(position.upperTickIndex),
-            position.liquidity,
-            false
-          ) ?? new BN(0)
-        : getDeltaY(
-            calculatePriceSqrt(position.lowerTickIndex),
-            poolState.sqrtPrice,
-            position.liquidity,
-            false
-          ) ?? new BN(0);
+      const tETH = calculateTETH(position, poolState);
 
       const ownerKey = position.owner.toBase58();
 
@@ -192,6 +240,76 @@ export const getEffectiveTETHBalances = async (
   }
 
   return data;
+};
+
+const calculateTETH = (position: Position, pool: PoolStructure): BN => {
+  const isTokenX = pool.tokenX.equals(TETH_PUBKEY);
+
+  return isTokenX
+    ? getX(
+        position.liquidity,
+        calculatePriceSqrt(position.upperTickIndex),
+        pool.sqrtPrice,
+        calculatePriceSqrt(position.lowerTickIndex)
+      ) ?? new BN(0)
+    : getY(
+        position.liquidity,
+        calculatePriceSqrt(position.upperTickIndex),
+        pool.sqrtPrice,
+        calculatePriceSqrt(position.lowerTickIndex)
+      ) ?? new BN(0);
+};
+
+const queryStatesAndTicks = async (
+  connection: Connection,
+  market: Market,
+  pool: PublicKey
+): Promise<{
+  allPositions: Position[];
+  poolState: PoolStructure;
+  ticks: Record<number, Tick>;
+}> => {
+  const lastSignature = await getLatestTxHash(pool, connection);
+
+  const poolState = await market.getPoolByAddress(pool);
+
+  const allPositions = (
+    await market.program.account.position.all([
+      {
+        memcmp: { bytes: bs58.encode(pool.toBuffer()), offset: 40 },
+      },
+    ])
+  ).map((p) => parsePosition(p.account));
+
+  const tickStates = (await market.program.account.tick.all([
+    {
+      memcmp: { bytes: bs58.encode(pool.toBuffer()), offset: 8 },
+    },
+  ])) as { publicKey: PublicKey; account: RawTick }[];
+
+  const ticks = tickStates.reduce(
+    (
+      acc: Record<number, Tick>,
+      rawTick: { publicKey: PublicKey; account: RawTick }
+    ) => {
+      const tick = parseTick(rawTick.account);
+      acc[tick.index] = tick;
+      return acc;
+    },
+    {}
+  );
+
+  const recentSig = await getLatestTxHash(pool, connection);
+
+  if (lastSignature !== recentSig) {
+    throw new Error("State inconsistency, please try again");
+  }
+
+  return {
+    allPositions,
+    poolState,
+    ticks,
+  };
 };
 
 const queryStates = async (
