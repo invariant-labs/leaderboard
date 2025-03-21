@@ -10,6 +10,7 @@ import {
   Position,
   PositionStructure,
   RawPosition,
+  RawTick,
   Tick,
 } from "@invariant-labs/sdk-eclipse/lib/market";
 import {
@@ -114,33 +115,15 @@ interface ResultEntry {
 export const getReservePubkeys = async (
   connection: Connection
 ): Promise<PublicKey[]> => {
-  const market = Market.build(
-    Network.MAIN,
-    {
-      async signTransaction<T extends Transaction | VersionedTransaction>(
-        tx: T
-      ): Promise<T> {
-        return tx;
-      },
-
-      async signAllTransactions<T extends Transaction | VersionedTransaction>(
-        txs: T[]
-      ): Promise<T[]> {
-        return txs;
-      },
-
-      publicKey: PublicKey.default,
-    },
-    connection
-  );
-
+  const market = await Market.buildWithoutProvider(Network.MAIN, connection);
   const addresses: PublicKey[] = [];
 
-  const pools = (
-    await market.program.account.pool.fetchMultiple(NUCLEUS_WHITELISTED_POOLS)
-  ).map((p) => parsePool(p as any));
+  const pools = await market.program.account.pool.fetchMultiple(
+    NUCLEUS_WHITELISTED_POOLS
+  );
 
-  for (const pool of pools) {
+  for (const rawPool of pools) {
+    const pool = parsePool(rawPool as any);
     const isTokenX = pool.tokenX.equals(TETH_PUBKEY);
     addresses.push(isTokenX ? pool.tokenXReserve : pool.tokenYReserve);
   }
@@ -152,25 +135,7 @@ export const validateEffectiveBalance = async (
   connection: Connection,
   expectedBalance: number
 ): Promise<boolean> => {
-  const market = Market.build(
-    Network.MAIN,
-    {
-      async signTransaction<T extends Transaction | VersionedTransaction>(
-        tx: T
-      ): Promise<T> {
-        return tx;
-      },
-
-      async signAllTransactions<T extends Transaction | VersionedTransaction>(
-        txs: T[]
-      ): Promise<T[]> {
-        return txs;
-      },
-
-      publicKey: PublicKey.default,
-    },
-    connection
-  );
+  const market = await Market.buildWithoutProvider(Network.MAIN, connection);
 
   let poolFees = 0;
   let userBalances = 0;
@@ -218,25 +183,7 @@ export const getEffectiveTETHBalances = async (
   connection: Connection,
   addresses?: PublicKey[]
 ): Promise<ResultEntry[]> => {
-  const market = Market.build(
-    Network.MAIN,
-    {
-      async signTransaction<T extends Transaction | VersionedTransaction>(
-        tx: T
-      ): Promise<T> {
-        return tx;
-      },
-
-      async signAllTransactions<T extends Transaction | VersionedTransaction>(
-        txs: T[]
-      ): Promise<T[]> {
-        return txs;
-      },
-
-      publicKey: PublicKey.default,
-    },
-    connection
-  );
+  const market = await Market.buildWithoutProvider(Network.MAIN, connection);
 
   const userEntries: Record<
     string,
@@ -334,28 +281,19 @@ const queryStatesAndTicks = async (
     ])
   ).map((p) => parsePosition(p.account));
 
-  const pair = new Pair(poolState.tokenX, poolState.tokenY, {
-    fee: poolState.fee,
-    tickSpacing: poolState.tickSpacing,
-  });
-
-  const tickIndexes = Array.from(
-    new Set(
-      allPositions.map((p) => [p.lowerTickIndex, p.upperTickIndex]).flat()
-    )
-  );
-
-  const tickAddresses = tickIndexes.map(
-    (t: number) => market.getTickAddress(pair, t).tickAddress
-  );
-
-  const tickStates = (
-    await market.program.account.tick.fetchMultiple(tickAddresses)
-  ).map((t) => parseTick(t as any));
+  const tickStates = (await market.program.account.tick.all([
+    {
+      memcmp: { bytes: bs58.encode(pool.toBuffer()), offset: 8 },
+    },
+  ])) as { publicKey: PublicKey; account: RawTick }[];
 
   const ticks = tickStates.reduce(
-    (acc: Record<number, Tick>, tick: Tick, index: number) => {
-      acc[tickIndexes[index]] = tick;
+    (
+      acc: Record<number, Tick>,
+      rawTick: { publicKey: PublicKey; account: RawTick }
+    ) => {
+      const tick = parseTick(rawTick.account);
+      acc[tick.index] = tick;
       return acc;
     },
     {}
