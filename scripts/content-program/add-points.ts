@@ -1,4 +1,4 @@
-import POINTS_TO_ADD from "./datas4-part3.json";
+import POINTS_TO_ADD from "./datas4-part4.json";
 import fs from "fs";
 import path from "path";
 
