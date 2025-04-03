@@ -34,13 +34,13 @@ const provider = AnchorProvider.local(
 );
 const connection = provider.connection;
 
-const POOL = new PublicKey("4xLSZJwLdkQHGqgyx1E9KHvdMnj7QVKa9Pwcnp1x2mDc"); // USDC/TTS 0.05%
+const POOL = new PublicKey("3aK4ibSQamqLnB2yvCYLh1DjVDqYKBLyhT8vVs5u8cdo"); // USDC/V2 0.03%
 const FOUNDER = Keypair.fromSecretKey(
   bs58.decode(process.env.FOUNDER_PRIVATE_KEY as string)
 );
 
 const main = async () => {
-  const market = await Market.build(
+  const market = Market.build(
     Network.TEST,
     provider.wallet as IWallet,
     connection
