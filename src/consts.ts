@@ -34,9 +34,14 @@ export const PROMOTED_POOLS_MAINNET: IPromotedPool[] = [
   }, // ETH/USDC 0.09%
   {
     address: new PublicKey("86vPh8ctgeQnnn8qPADy5BkzrqoH5XjMCWvkd4tYhhmM"),
-    pointsPerSecond: new BN(35),
-    startCountTimestamp: new BN(1737041362),
+    pointsPerSecond: new BN(30),
+    startCountTimestamp: new BN(1740652000),
   }, // SOL/ETH 0.09%
+  {
+    address: new PublicKey("E2B7KUFwjxrsy9cC17hmadPsxWHD1NufZXTyrtuz8YxC"),
+    pointsPerSecond: new BN(25),
+    startCountTimestamp: new BN(1741554051),
+  }, // SOL/USDC 0.09%
   {
     address: new PublicKey("FvVsbwsbGVo6PVfimkkPhpcRfBrRitiV946nMNNuz7f9"),
     pointsPerSecond: new BN(10),
@@ -55,7 +60,7 @@ export const FULL_SNAP_START_TX_HASH_TESTNET =
   "32voE8yoznSSBP3kExxeAbxjSeFYPUheS9LeDuZubyZubhu8goRTBvLASB4qzWbXsSoNG7NLQEqov1fP8eBL4Tjw";
 
 // SWAPS
-export const SWAP_MULTIPLIER = new BN(5);
+export const SWAP_MULTIPLIER = new BN(1);
 export const POINTS_PER_USD = new BN(200).mul(SWAP_MULTIPLIER);
 export const MAX_CONFIDENCE_PERCENTAGE = new BN(25000); // 2.5%
 // Price feed IDS: https://www.pyth.network/developers/price-feed-ids
@@ -76,7 +81,7 @@ export const PROMOTED_PAIRS_MAINNET: IPromotedPair[] = [
     tokenX: new PublicKey("GU7NS9xCwgNPiAdJ69iusFrRfawjDDPjeMBovhV1d4kn"),
     xDecimal: 9,
     feedXId:
-      "0xff61491a931112ddf1bd8147cd1b641375f79f5825126d665480874634fd0ace", //  ETH/USD because there is no tETH/USD
+      "0x736999a0e4eb5f0971f3284ae492df38662f96f28c957f1417ec42f211a7f7eb", //  TETH/USD
     tokenY: new PublicKey("So11111111111111111111111111111111111111112"),
     yDecimal: 9,
     feedYId:
@@ -95,6 +100,18 @@ export const PROMOTED_PAIRS_MAINNET: IPromotedPair[] = [
       "0xff61491a931112ddf1bd8147cd1b641375f79f5825126d665480874634fd0ace", // ETH/USD
     startTxHash:
       "4X2aLE6gbWZwgDjnY69g9N7Hsfbw9BvqAtHninQRdir553z99HaQfdL6McVAzkwYTbbnAQMWpnLf36gQFuJmWgMX",
+  },
+  {
+    tokenX: new PublicKey("AKEWE7Bgh87GPp171b4cJPSSZfmZwQ3KaqYqXoKLNAEE"),
+    xDecimal: 6,
+    feedXId:
+      "0xeaa020c61cc479712813461ce153894a96a6c00b21ed0cfc2798d1f9a9e9c94a", //  USDC/USD
+    tokenY: new PublicKey("BeRUj3h7BqkbdfFU7FBNYbodgf8GCHodzKvF9aVjNNfL"),
+    yDecimal: 9,
+    feedYId:
+      "0xef0d8b6fda2ceba41da15d4095d1da392a0d2f8ed0c6c7bc0f4cfac8c280b56d", // SOL/USD
+    startTxHash:
+      "5yrNnFJrnNJgD8ZQZrcCjRSsx1mugt4D8xCwgBxRFRz8HDfmVuq1ryQGhPh7jnGsRn3PAzeRLS59cqi5R9sc6YZv",
   },
 ];
 
