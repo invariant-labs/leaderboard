@@ -13,7 +13,8 @@ const main = async () => {
 
   const outputData = JSON.parse(fs.readFileSync(OUTPUT_FILE, "utf-8"));
 
-  for (const [key, value] of Object.entries(data)) {
+  for (let [key, value] of Object.entries(data)) {
+    key = key.trim();
     const entry = {
       startTimestamp,
       endTimestamp,
