@@ -1,0 +1,175 @@
+{
+  "startTimestamp": 1743465600,
+  "endTimestamp": 1744588800,
+  "data": {
+    "37mo4JWDqEQRzn9wHExRGdvAkExJL9J3jTEzeywJipmA": 300000,
+    "Ffd5bfJKuLWzoqbf4Scwt638EKG2FAPArkuYCkWxn9Qo": 300000,
+
+    "2HAuK53JxJERRaFg2funUsAeqoHa7rdm2onMn3iJwaTS": 200000,
+    "2jbSMVRF6LDAZepMTKnRkvM9wst7Ycv9uKktdUW4rYWr": 200000,
+
+    "2XEk34W5Nr1convUg1d2hjatcmHPnqR5vmq9gibMhnYw": 100000,
+    "G1Y1FcDyAqyyWKeeeGq7o61gXMcLWffjpeSdu3NaywQD": 100000,
+    "DdygLWLyX3PKG4RasRjzedaNJyyVpFVSqbTJTnrekwdR": 100000,
+    "3sBd9gCAhfxPzGDwmtqxNFX6TfJ8Ss2Askp5WGhwSUKX": 100000,
+    "DWNNx8Z6vvAb2BmNZYKeCCiPzSDSv4LY1kBJmSSfB1bQ": 100000,
+
+    "EDJv5XUEBq2LbxDTH38pth4TXcCgiFUV7yZNk7krPQAh": 100000,
+    "5zEaF6TWGxQuxfV1izcmppyphhbnEPqczAN9KySShQMe": 100000,
+
+    "6Rf8cXFax3cJJXYne2bFVNK6N3gwVanYcEWwK9UDYrbX": 30000,
+    "BHS3NLXmWu2M7iVitKoRmmiTXdn9Wy8sCDJwGTs76NAF": 30000,
+    "9CvmrrVoHFfRF6JkaRZxiJP3Eimq2R6Zfv69LHmVMVv7": 30000,
+    "JCEFueTXmZXYg5TdxymdTGizdVH4s6db15xCiUq6TmZX": 30000,
+    "8u2cvn8CNn7Qk9wfxR3VfzCr1u2GvkL94GrHJLLommi4": 30000,
+
+    "Afk5nR3zaPtpcPTZebEMsps9EF1T9dWyeq4HcMXUVCbX": 30000,
+    "Asx3D3WHB6MngMrtZWA9MuFEDRmEWGcvAww1Md4HbVQf": 30000,
+    "4b9rCZsMmMGrm2pddbi1iJFJ2CCokcjHSh2Z7cEMSZc9": 30000,
+    "4xk3sJyM2rWYumJ6kXETQ5XMdsfuFjpzhhUMDtX9jE5u": 30000,
+    "9us9Yx7NqjJCfoiFJyCuAd6J19MSzkd2Bxfb5eF6Brqd": 30000,
+
+    "DxTdEFFZgSoDacVQhr2L5ekCw7giiE7iutiDKURZy8gr": 30000,
+    "EiGkr8zdvxkEemGPF9zfqD5Wv8REuoNvrjxrDyp1kJpo": 30000,
+    "DPdT3F4sEBhF85CdngW2Laxuq5k557L3n5UeaLjAkNWq": 30000,
+    "A6FRA9Fn4s5Eey3BdXzL4Mo7zaRrnCSxdsMPAA4A7cFP": 30000,
+    "5ZeLhvBg4UKnjZNaff8gnMaFeorbbnYA7tZ4G8n9hvGZ": 30000,
+
+    "5NHEBpRAiVXbLDy58eaXZN4LfhKkomy27cR2G6uhVQfj": 30000,
+    "3tbGxxPvfiuKoE9ryR8B6p86dRFhnYomjBrS9zrU2Ehg": 30000,
+    "Gt2Cgu5nHY245CCgC5gdBriq9nPMUq5r7wqFJV1Yzh2F": 30000,
+    "2aGokXWuC2UEh3zYjVM5w6MzzYhp5kc8nc4PQnKjfw8s": 30000,
+    "F6yM3K2PT2CP6R5EyT5tdFMocpeEnz4omnoL96DFvVkY": 30000,
+
+    "VB7i6iUMSiH2FRfqjkGuLnZdCQSmHSXzsXYqH6TLgSM": 15000,
+    "F2c6r5T7hr8FTgRQZ7phNimLTSzdvxautZRFrnpdgznj": 15000,
+    "2CnnYLoasq9LZNtGebHMYqeFoEj4EAoeBXCEvyZywHGk": 15000,
+    "5GBBtsiraUV57XCz2TqB6NFFEv3w2miqQGpveggGomfg": 15000,
+    "JobYQiiQjhLqf8TSavZwuduwWR6dDwxnAGXMFR9aTP9": 15000,
+
+    "4Zv5EbWNFWThtcwqY8oL5KzStu9CsbSfYFtU7zYN4pnb": 15000,
+    "6HU3wvAdya83VNDLtKLCtwAhNzs6MHoQQwf6Wz71HSoU": 15000,
+    "FWuNa13JEgZiXLxPVkdDJxEzdpvfwgDiE3xSJUCdLkEA": 15000,
+    "2mtayXKVTHPxbhWoKRKajgnH5yxbHZF9sQmaoAUeqVUL": 15000,
+    "CsuFxTMd33D7tspuXwbtjmNgyM8T4kmu2vxnF7icoFnB": 15000,
+
+    "AAYnQYRpD5RnPVYdV93kCnXEfnL1MYVTM7iTZA5koT4F": 15000,
+    "DkhVYFaACH7Py4wBrngVZZcnbMWbee7pjqT2g42SDXHL": 15000,
+    "knjkPgSpign5PSDM5wq4AUNL5daqg3BvUMm1AFvizGB": 15000,
+    "DyEWx33cWoBdGF1xmWckyhxEodzZUzuDcxR48S76Mswj": 15000,
+    "GE6W6ENLJAMe5iVfVb2gBKAnS2tJAPGgBkYRuk6DTT5e": 15000,
+
+    "3C2yvtqNYC1cSxE3rRuzphnPFL2V5hcsa3vQoBPTXbQ8": 15000,
+    "4ALryG7cyEp3n6Ntt8RpapWYHPEXYd3mFrGT2RTEtT9S": 15000,
+    "DXJGy9iuHSh7LiwNaGEJrgCf1iXnSFEUj8efqeK6q6em": 15000,
+    "6HFzF94XZhakQVocjVGMt2WFNgN3KqpCtBw6c975ar7x": 15000,
+    "9NwP2x4eAWZkPfpY446SFEZmcqyjhr8Ei6N1eCLm96TS": 15000,
+
+    "FdVFQojzLyWkr3NxRuD17y7LPWGbWWc1REbc4GRQsQ85": 15000,
+    "8i4obNdYDdZPZVdEWsLa63mNzkH9gYY69yENd5nvUaT3": 15000,
+    "HjS3sjRRaSrrN3pyALjDv43hzMJ9R7HNS9dn4YzwE9wL": 15000,
+    "GzUaWAWHYd11LauoYWuz1X3gwEfqfyg2niXZooZABeA4": 15000,
+    "H4FzKE5qeCrPX9Gb5PTHS4BUtaEQKaAWiCNgzeWL1FTH": 15000,
+
+    "4B3qcFWiwXsv4eYvFRJmJLwyp9dMZtVT6c191BcKKdeH": 15000,
+    "69yLQyynv2SUBMHwNVm7FS3g7T9duo8aReiEnacymxD2": 15000,
+    "3eKr17fXU12w4cse9xrh2KiWSWYNqXFspy2J1MZQadny": 15000,
+    "E41KxgbwTaKpEGfeYM5qNeHhGULRguowxbjS8Xxs5GnJ": 15000,
+    "9wozpXpx7JpLYc5NF9beeBbNrNPC2KLNjr3CUNkbseKW": 15000,
+
+    "81yxe3waUNy4BX48658T7o9fcUuzGc2fsHGsvv6zvW1q": 15000,
+    "4Y1CcJzYUT2GCQsxqQzAcRGPXDkhfRQLRD3grkkzkbUr": 15000,
+    "FQ9vfhG2HdTcWiLLfevbxn1cinpyxLdxiZgnwhXZbzEk": 15000,
+    "HVShUUbPb3BaNTmShXnz3iYu8nR2SgtaCA2UJ5H9wWjK": 15000,
+    "GHGu1sXJxMXR7bLt1ZxeATufkNYs6QhZDfw4ufKFKHFX": 15000,
+
+    "5YP2t8sEm68GYACBEHN2rKNUKU3jrZtHqAkMXsfwb6TN": 15000,
+    "92jxWWQbbfeomyjyXsSs46zqTbgar4F5TFct5yrjgMxB": 15000,
+    "3LzX8EHHa8PGrQPPjNxKh4itKSjUdn1jT3qfPPRJWbui": 15000,
+    "8MpuBJNd3PSRjmkJ4dUYFAAfiSh7hbAxXzJ56uNQKjb2": 15000,
+    "GgxF2wW5nQGYG1wh4ea1YuXewT9Cka8RRfmyCUhBXsiw": 15000,
+
+    "fQLpG7HghGLNL99VEdWmY82dcPH4S5xvwU5t11AEAai": 15000,
+    "Aug3CBHd84QBpkvtNGJQ665FeHWwSuupUJzFVCRrUhN5": 15000,
+    "DJJiXx68PGeDiDM2tvmKtzfSKSWaXjtdmTjh8xkuCKat": 15000,
+    "8weWwmEU4BqBrZJM5yspxAcBcCy8ykM7BsSc2PcXt4LJ": 15000,
+    "6kxXDjuUjBSDFu6YwoDrAWpfq47WpkTrS2xp6V6hzAvm": 15000,
+
+    "CyBKLyMGF3yPXug6mJqqU4urWEH3BbAnZekYr2wzCK6K": 15000,
+    "Cxf3RT4zs4k7nEVcN7FHQhZ3SvpN368a6QY8M3MB1fcG": 15000,
+    "G1GRq7nbw4rtr3wnv3GQMx8oRVRQRzcyJCA94g3r85A1": 15000,
+    "D676Df3CRZaWyvbWb4RGwzXmnnQSUdeiAjfvTKq5Wo63": 15000,
+
+    "FPRNPsJDhzBG6Pp7mLCGvA2D7Ds3ThAs4kDYxCuasZdy": 5000,
+    "2NgiWUDykAjA8LTgqmnS893ekWrTKiAsAL3avEpeL4hp": 5000,
+    "EoXMBf44DxLcoFSooP4qs8Anoc79wuLDu4xjrTdvNcJg": 5000,
+    "7WQ3fWcSLPQTcVL5wWpMnCQ2CRjcauYUAXmWgEcvqhWV": 5000,
+    "449gqBhT7VoonydaSW7Qn6hAAT1ZmnNJ3pGJEvPWdQwH": 5000,
+
+    "B69rB2dqPHKFn8n2L5ZWFdhgnCq1Rx4iNwJ6L6BV6QTD": 5000,
+    "9Q7EaFTUWnGirYnB6J2tgj5DZ2Gf81LdHfWVg6EfMhX1": 5000,
+    "ArNEHp1TvvJ9tdNt7dfMhmqbgUhhNn988hBqSuL35WU9": 5000,
+    "AjgR3hBHAoDuJUjUm7RCq5vvES2Gjg1wVXPo8tDjVARM": 5000,
+    "ChxJhdicWYJFymTJ9gwTby1xpsKxBYCBk36dxdasWY1L": 5000,
+
+    "GfntvjBiUUKqgBf7Ew9VFnTzXgvdQGFwEYYjBjZ7Gc7f": 5000,
+    "FuKCrCJNbTbTPVaSWRCSbHrzoxs1pL3winLB9xGiZs1D": 5000,
+    "HBWfSQazLq6NiqD3hEdwvrxAHxeHj7F7cJuprmzfefK1": 5000,
+    "DXvRc2Sx5TrRWSfC7miUyFA8Z95uuKFRT146Sqgw2EKz": 5000,
+    "DmXYTxx3mzBbqaD8egGExr8AXKLAEurs5xEQbGF4kX8s": 5000,
+
+    "A7zaaQk8AtkNtCy8xp4ENs2idCSicMa5EtwekeC2n2Gn": 5000,
+    "GhdKbc3bnkoSARwHc8QJ7fA4CCSdNpWZMcBVqMrgpmCB": 5000,
+    "8GS9jsmjaPE2EJo2D44XveJqNJrY339GPpkTfp5RNw1J": 5000,
+    "GVjREh1nXRyWyPLAKrHaDFnV6YzPVqzftjDEp8jeadef": 5000,
+    "5tb2Lz15oMi3bzxCAiTGV6ggq4rzBEgiQB5RstqBwuMV": 5000,
+
+    "8KhWbG57vxZCarCSZho7sfjGgzNPh5sxtJ42gBNJ4oJu": 5000,
+    "EWqouAMDf9wfUiFwxXpGx2gRnqyCC7VnnM466C3ZJycX": 5000,
+    "5N4wnNS9ci1qG4UYkqNHAzEkdDFbf1kiPBpoBhtnSJR2": 5000,
+    "GuV6CUzHi7DSC9emZvGnoa1czoLtBjhmX3hG9Ntwautc": 5000,
+    "EN5KJfABHkVjcQVP99rwrKoU4iSWpK89XH6s87j2mnbL": 5000,
+
+    "D91y3GckEXjjG166V64DmLUH4J3VoPZM4ShrUtWviA1N": 5000,
+    "2Yxe3PdZnuxxA51rixhoMHCv4UogpK371QQVMpfhbZdo": 5000,
+    "AhgyS8Prkd6qGaiUUjLFW3pX8Z4QEoPnsgEo7osoznma": 5000,
+    "14NfRBBhPiKcRg9MBWvgjHfuZ2QcZf4gj1iTTYXpBDo6": 5000,
+    "EHdCooJDetv6V5R8ZVF5jTUV7hXEwwhuRahcSLys6wSX": 5000,
+
+    "9LiRGrwZt7QctXkJ4gnZVRQhUG324rSXkRprKJGo6Uqk": 5000,
+    "HC6uWcuVpPLPD3JQiCdjtEgdtmisPiM1U6eN6MKt8bjr": 5000,
+    "ECiPGCrciZ1wAHetcgXTt2PAE9a3ky3EDSf46APVZ6oF": 5000,
+    "BBPvo9kNKuBm7S6uyZz4xqayZkfDeuieT3Hwq5o61FYY": 5000,
+    "Avu4jdnX5fHTt5s7F8rprykHezmwyL5U4Ws8VTa5uTy5": 5000,
+
+    "HuPfPbegSorMgfLS5vgL2DHvZeiiQyY6fyRZ1tgWHY85": 5000,
+    "38Q3Z1scqNabrYc2CsSoU86vmdJmZMpWR1cAwg5MpjED": 5000,
+    "HSKNvz83aHJsXRAJ6kDoJHJFnHGCwK7QRjuK6d9T8Nco": 5000,
+    "CV1o9gjMKAhj9mkU7EbBxC8sbXfSZ3dDA4mzFLkTyZTY": 5000,
+    "3iAEgjbmoKxHTa2Jxjynxr272CT3hZhLM7inMx2K6bkH": 5000,
+
+    "6fLdrVuRGmq1KowkbtuN6ZzRZ5gyPZHfPe2dMUqJCC48": 5000,
+    "JA4ekEGC7Z94jYkpswS3RSLgtbugHbwmnMu9LT1J7P34": 5000,
+    "5jros8zDuMBEK1mwgfAcFYrbSPh52mDByMhwpv6oopzi": 5000,
+    "BqxkPt1BRig1zcDPozmB3QPuVPxPhCCbjGfrpEkk41mD": 5000,
+    "3PXEEcnnxfNiAVGx4pnwF2kYisWbmkiCmeeK6PwsN4Pw": 5000,
+
+    "7rt4gKqoTVd3rVDR5J5RNAri4HRegkjQ8Lkd6bf1pehT": 5000,
+    "72NM1qxRzmoTiPkhGGZ8Usgivk4V4qAKWTKPGzHKykcS": 5000,
+    "49nYHcDhjH1RZw7QGEk8neg73vSV3YG5d9yfX7S9Rkwe": 5000,
+    "BbbXnbpvixcvwG25rePghKoY3QcQgCqZrooxJdMJj4Tr": 5000,
+    "8VZNfHEu7j8yPTcBXuVNwBQGVLWL1YGyvpJTb5sh1v8r": 5000,
+
+    "9FLSNNVFJ14RyT12YMMTaB8vyHmk7pq1PdnbnMbfKtEM": 5000,
+    "AQezA2FWCyVtMNxb3yKigwrNDrY6M8t6Q7XCp9C3uHd2": 5000,
+    "gLP2k1AgwZFo1UBuYBfsAX3Wxhjfu42P1xN57NudTBB": 5000,
+    "RRX2EMU1VoWeXokQCPyaD27UZyxrVTae56fSwv1Gq7D": 5000,
+    "7kbW1o9h922ubdD9iUHtDchVAjRhZRAof6L9ELKE6xUF": 5000,
+
+    "DLiQ7jVKW111HtDnC8VDBgTVD5KNZ2Bd5SD1RzhnfVQd": 5000,
+    "9L4fUzjDjveQ63nbXFMWApXD9AmsfcAVyabb7LuFGKxa": 5000,
+    "3sH2mA9UzUF1kNMcPe8MRLGCrayZxA5A3mrLKjHHTAj9": 5000,
+    "FBsSSwpYNTDqURZQeX3paBTLyFSyteQNxMiUbMzcDJRg": 5000,
+    "JCseYNr9ek9F1pWafLyCAWv78QzAmAG7FYZ136XeXDzP": 5000
+  }
+}

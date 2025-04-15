@@ -35,8 +35,8 @@ export default function (req: VercelRequest, res: VercelResponse) {
         tokenY: pair.tokenY.toString(),
       };
     }),
-    contentProgramDateStart: "01.04.2025",
-    contentProgramDateEnd: "14.04.2025",
+    contentProgramDateStart: "15.04.2025",
+    contentProgramDateEnd: "30.04.2025",
   };
 
   res.json(config);
