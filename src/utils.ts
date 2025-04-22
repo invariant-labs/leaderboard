@@ -83,7 +83,9 @@ export const fetchAllSignatures = async (
     }
   }
 
-  return allSignatures.map((signatureInfo) => signatureInfo.signature);
+  return allSignatures
+    .filter((signatureInfo) => signatureInfo.err === null)
+    .map((signatureInfo) => signatureInfo.signature);
 };
 
 export const processParsedTransactions = (
