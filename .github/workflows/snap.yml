@@ -46,6 +46,8 @@ jobs:
           solana --version
           solana-keygen new -o "$HOME/.config/solana/id.json" --no-passphrase --silent
       - name: snapshot
+        env:
+          GITHUB_SECRET_RPC_URL: ${{ secrets.GITHUB_SECRET_RPC_URL }}
         run: |
           export PATH="/home/runner/.local/share/solana/install/active_release/bin:$PATH"
           export ANCHOR_WALLET="/home/runner/.config/solana/id.json"

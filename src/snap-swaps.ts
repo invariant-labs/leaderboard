@@ -49,7 +49,9 @@ export const createSnapshotForNetwork = async (network: Network) => {
 
   switch (network) {
     case Network.MAIN:
-      provider = AnchorProvider.local("https://eclipse.helius-rpc.com");
+      provider = AnchorProvider.local(
+        process.env.GITHUB_SECRET_RPC_URL ?? "https://eclipse.helius-rpc.com"
+      );
       pointsFileName = path.join(__dirname, "../data/points_swap_mainnet.bin");
       pairsFileName = path.join(
         __dirname,
