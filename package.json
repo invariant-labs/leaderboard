@@ -10,6 +10,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "@api/rarible": "file:.api/apis/rarible",
     "@coral-xyz/anchor": "0.29.0",
     "@invariant-labs/sdk-eclipse": "^0.0.68",
     "@onsol/tldparser": "^0.6.7",
