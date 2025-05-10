@@ -65,7 +65,9 @@ export const prepareFinalData = async (network: Network) => {
         __dirname,
         "../data/final_data_lp_testnet.json"
       );
-      data = {};
+      data = PointsBinaryConverter.readBinaryFile(
+        path.join(__dirname, "../data/points_testnet.bin")
+      );
       staticData = {};
       staticSwap = {};
       contentProgramData = {};
