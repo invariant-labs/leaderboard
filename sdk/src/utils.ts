@@ -43,6 +43,10 @@ export const estimatePointsForLiquidity = (
   compoundLiquidity: boolean = true,
   period: BN = ONE_DAY
 ) => {
+  if (pool.liquidity.isZero()) {
+    return new BN(0);
+  }
+
   const points = pointsPerSecond.mul(period);
 
   if (compoundLiquidity) {
@@ -60,6 +64,10 @@ export const estimatePointsForUserPositions = (
   compoundLiquidity: boolean = false,
   period: BN = ONE_DAY
 ) => {
+  if (pool.liquidity.isZero()) {
+    return new BN(0);
+  }
+
   const liquidity = positions.reduce((acc, position) => {
     if (isPositionActive(pool, position)) {
       return acc.add(position.liquidity);
