@@ -1,0 +1,10 @@
+{
+  "name": "PoC NFT Token",
+  "symbol": "pNFT",
+  "description": "Proof of Concept NFT.",
+  "image": "https://eclipse.invariant.app/sBitz.png",
+  "attributes": [
+    { "trait_type": "Background", "value": "Blue" },
+    { "trait_type": "Type", "value": "PoC" }
+  ]
+}
